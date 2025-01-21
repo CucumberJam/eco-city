@@ -4,26 +4,32 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 
-import {MapContainer, Marker, TileLayer, Tooltip, } from "react-leaflet";
-import {useEffect, useRef, useState} from "react";
+import {MapContainer, Marker, TileLayer, Tooltip,} from "react-leaflet";
+import {useEffect, useRef} from "react";
 import {getIconByRole} from "@/app/_ui/map/MapIcons";
 import {useModal} from '@/app/_context/ModalContext'
 import {ModalView} from "@/app/_ui/ModalView";
 import UserDescription from "@/app/_ui/user/UserDescription";
+import LocationMarker from "@/app/_ui/map/LocationMarker";
 
-const Map= ({
+const Map = ({
                 users = [],
                 position = [4.79029, -75.69003],
-                zoom = 11,
+                 withUsers = true,
+                zoom = withUsers ? 11 : 13,
                 scrollWheelZoom = false,
-                activeUser,
-                setActiveUser}) => {
+                activeUser = null,
+                setActiveUser,
+                needDefineLocation = false,
+             }) => {
 
     const isInitialized = useRef(false);
     const {currentOpen, close, open} = useModal();
 
     useEffect(() => {
         isInitialized.current = true;
+        const elem = document.querySelector('.leaflet-control-attribution');
+        elem.style.display = 'none'
         return () => {
             isInitialized.current = false;
         };
@@ -46,7 +52,8 @@ const Map= ({
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                    {users.map(user => (
+
+                    {withUsers ? users.map(user => (
                         <Marker key={user.id}
                                 position={[ +user.latitude, +user.longitude ]}
                                 draggable={false}
@@ -59,15 +66,16 @@ const Map= ({
                                 </div>
                             </Tooltip>
                         </Marker>
-                    ))}
-                    <Marker key={position.latitude}
-                            position={position}
-                            draggable={false}>
-                    </Marker>
+                    )) : <LocationMarker setUserPosition={setActiveUser}
+                                         needDefineLocation={needDefineLocation}/>}
+                    {withUsers && <Marker key={position.latitude}
+                             position={position}
+                             draggable={false}>
+                    </Marker>}
                 </>
                 <ModalView isOpen={currentOpen === activeUser?.id}
                            title="Сведения об участнике"
-                           handleClose={()=> setActiveUser(null)}>
+                           handleClose={()=> setActiveUser?.(null)}>
                     <UserDescription data={activeUser}/>
                 </ModalView>
             </MapContainer>

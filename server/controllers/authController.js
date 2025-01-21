@@ -20,8 +20,8 @@ const signup = catchAsyncErrorHandler(async(req, res, next)=> {
         wastes: body.wastes,
         wasteTypes: body.wasteTypes,
         address: body.address,
-        latitude: body.latitude || null,
-        longitude: body.longitude || null,
+        latitude: +body.latitude || null,
+        longitude: +body.longitude || null,
         workingHourStart: body.workingHourStart || null,
         workingHourEnd: body.workingHourEnd || null,
         workingDays: body.workingDays || null,
@@ -33,9 +33,9 @@ const signup = catchAsyncErrorHandler(async(req, res, next)=> {
     if(!newUser) return next(new AppError('Failed to create a new user', 400));
 
     const result = removeCreatedFields(newUser, ['password']);
-    result.token = generateToken({
+    /*result.token = generateToken({
         id: result.id
-    });
+    });*/
     return res.status(201).json({
         status: 'success',
         data: result

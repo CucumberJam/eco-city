@@ -5,9 +5,30 @@ const statusTitle = {
     default: ''
 }
 const daysNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+//"workingDays": ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+const workingDays = [
+    {id: 1, label: "Понедельник"},
+    {id: 2, label: "Вторник"},
+    {id: 3, label: "Среда"},
+    {id: 4, label: "Четверг"},
+    {id: 5, label: "Пятница"},
+    {id: 6, label: "Суббота"},
+    {id: 7, label: "Воскресенье"},
+]
+const workingDaysDB = {
+    "Понедельник": 0,
+    "Вторник": 1,
+    "Среда": 2,
+    "Четверг": 3,
+    "Пятница": 4,
+    "Суббота": 5,
+    "Воскресенье": 6,
+}
 
 // https://mastera.academy/vidy-plastika-kotoryj-mozhno-i-nelzya-sdat-v-pererabotku/
 
+const defaultStartTime  = '09:00';
+const defaultEndTime  = '18:00';
 const recycledWastes = [
      {
          name: 'пластик',
@@ -169,6 +190,15 @@ const nonRecycledWastes = [
     }
 ]
 
+const REG_EXPR_WEBSITES = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+///^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$/
+    ///(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?\/[a-zA-Z0-9]{2,}/
+const REG_EXPR_EMAIL = /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/;
+//https://code.mu/ru/javascript/book/supreme/regular/repeat-operators/
+const REG_EXPR_PHONE = /^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$/;
+
 export {
-    statusTitle, daysNames, recycledWastes
+    statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
+    workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
+    workingDaysDB,
 }
