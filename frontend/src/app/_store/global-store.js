@@ -17,8 +17,8 @@ export const defaultInitState = {
 export const createGlobalUIStore = (initState = defaultInitState) => {
     return createStore()((set) => ({
         ...initState,
-        setCities: (payload) => set((state) => ({...state, cities: [...payload]})),
         setCurrentCity: (payload) => set(() => ({ currentCity: payload})),
+        setCities: (payload) => set((state) => ({...state, cities: [...payload]})),
         setRoles: (payload) => set((state) => ({...state, roles: [...payload]})),
         setCurrentRole: (payload) => set(() => ({ currentRole: payload})),
         setWastes: (payload) => set((state) => ({ ...state, wastes: [...payload]})),

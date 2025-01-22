@@ -5,7 +5,10 @@ import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import PaginatedList from "@/app/_ui/PaginatedList";
 import UserCard from "@/app/_ui/user/UserCard";
 
-export default function LazyMap(){
+export default function LazyMap({
+                                    withUsers = true,
+                                    needDefineLocation = false,
+                                    changePositionHandler = null}){
     const { currentCity,
         users,
         wastes, wasteTypes,
@@ -14,11 +17,22 @@ export default function LazyMap(){
 
     const Map = useMemo(()=> dynamic(
         ()=> import('./Map'), {
-            loading: ()=> <p>A map is loading...</p>,
+            loading: ()=> <p className='flex w-full my-0 mx-auto justify-items-center'>Загрузка гео-данных...</p>,
             ssr: false,
         }
     ), [currentCity?.id, users?.length]);
 
+
+    if(!withUsers) return (
+        <>
+            <div className="bg-white mx-auto my5 w-[98%] h-full relative z-10">
+                <Map position={currentCity? [currentCity.latitude, currentCity.longitude] : [4.79029, -75.69003]}
+                     withUsers={withUsers}
+                     needDefineLocation={needDefineLocation}
+                     setActiveUser={changePositionHandler}/>
+            </div>
+        </>
+    );
     const displayedUsers = useMemo(()=>{
         if(!currentRole && !currentWaste && !currentWasteType && query.length === 0) return users;
         return users.filter(user => {

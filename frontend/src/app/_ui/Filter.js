@@ -1,6 +1,8 @@
 "use client";
 import useSetSearchURL from "@/app/_hooks/useSetSearchURL";
 import {Dropdown, DropdownItem, Popover} from "flowbite-react";
+import {prepareName} from "@/app/_lib/helpers";
+import DisabledButton from "@/app/_ui/DisabledButton";
 export default function Filter({
                                    data = [],
                                    dataName = 'role',
@@ -32,9 +34,6 @@ export default function Filter({
                 alternativeName={alternativeName}>
         </DisabledButton>
     );
-    function prepareName(str){
-        return str.substring(0,1).toUpperCase() + str.substring(1).toLowerCase();
-    }
     return (
             <Dropdown label={itemValue? prepareName(itemValue) : prepareName(dataLabel)}
                       inline size="sm"
@@ -56,6 +55,7 @@ export default function Filter({
             </Dropdown>
     );
 }
+/*
 function DisabledButton({label,alternativeName}){
     return (
         <Popover placement="top"
@@ -72,4 +72,4 @@ function DisabledButton({label,alternativeName}){
             </a>
         </Popover>
     );
-}
+}*/

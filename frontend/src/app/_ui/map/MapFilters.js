@@ -1,8 +1,7 @@
 "use client";
 import Filter from "@/app/_ui/Filter";
-import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
-import {useEffect, useMemo} from "react";
-import {getUsers} from "@/app/_lib/data-service";
+import {useMemo} from "react";
+import useRolesWastes from "@/app/_hooks/useRolesWastes";
 
 const filters = [
     {label: 'Статус участника', urlName: 'role', value: null},
@@ -10,15 +9,11 @@ const filters = [
     {label: `Тип отходов`, alternativeName: 'Выберите вид отходов', urlName: 'wasteType', value: null},
 ]
 export default function MapFilters({rolesAPI, wastesApi, wasteTypesApi}){
-    const {roles, setRoles, setCurrentRole, currentRole,
-        wastes, setWastes, setCurrentWaste, currentWaste,
-        wasteTypes, setWasteTypes, setCurrentWasteType, currentWasteType} = useGlobalUIStore((state) => state);
 
-    useEffect(() => {
-        setRoles(rolesAPI);
-        setWastes(wastesApi);
-        setWasteTypes(wasteTypesApi);
-    }, []);
+    const {roles, setCurrentRole, currentRole,
+        wastes, currentWaste, setCurrentWaste,
+        wasteTypes, currentWasteType, setCurrentWasteType} = useRolesWastes(rolesAPI, wastesApi, wasteTypesApi);
+
 
     const displayedWasteTypes = useMemo(()=> {
         if(!currentWaste) return [];

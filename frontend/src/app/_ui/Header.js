@@ -1,4 +1,4 @@
-import NavigationMain from '@/app/_ui/NavigationMain';
+import NavigationMain from '@/app/_ui/navigation/NavigationMain';
 import Logo from '@/app/_ui/Logo';
 import CitySection from "@/app/_ui/CitySection";
 import {getCities} from "@/app/_lib/data-service";
