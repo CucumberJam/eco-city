@@ -1,3 +1,16 @@
+import {UserIcon} from "@heroicons/react/24/outline";
+import {HomeIcon} from "@heroicons/react/24/outline";
+import {EnvelopeIcon} from "@heroicons/react/24/outline";
+import {Cog6ToothIcon} from "@heroicons/react/24/outline";
+import {PlusIcon} from "@heroicons/react/24/outline";
+import {ClipboardDocumentCheckIcon} from "@heroicons/react/24/outline";
+import {ChatBubbleOvalLeftEllipsisIcon} from "@heroicons/react/24/outline";
+import {PencilSquareIcon} from "@heroicons/react/24/outline";
+import {PencilIcon} from "@heroicons/react/24/outline";
+import {LockClosedIcon} from "@heroicons/react/24/outline";
+import {TrashIcon} from "@heroicons/react/24/outline";
+import {ChartBarIcon} from "@heroicons/react/24/outline";
+import {InformationCircleIcon} from "@heroicons/react/24/outline";
 const statusTitle = {
     producer: 'Производитель отходов',
     recycler: 'Переработчик отходов',
@@ -196,9 +209,70 @@ const REG_EXPR_WEBSITES = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/
 const REG_EXPR_EMAIL = /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/;
 //https://code.mu/ru/javascript/book/supreme/regular/repeat-operators/
 const REG_EXPR_PHONE = /^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$/;
-
+const accountTabs = [
+    {
+        name: 'Главная',
+        icon: <HomeIcon/>,
+    },
+    {
+        name:'Сообщения',
+        icon: <EnvelopeIcon/>,
+    },
+    {
+        name: 'Аккаунт',
+        icon: <UserIcon/>
+    },
+    {
+        name:  'Настройки',
+        icon: <Cog6ToothIcon/>
+    }
+]
+const accountTabOptions = {
+    'Сообщения': [
+        {
+            name: 'Создать',
+            icon: <PlusIcon/>
+        },
+        {
+            name: 'Публикации',
+            icon: <ClipboardDocumentCheckIcon/>
+        },
+        {
+            name: 'Чаты',
+            icon: <ChatBubbleOvalLeftEllipsisIcon/>
+        },
+        {
+            name: 'Отклики',
+            icon: <PencilSquareIcon/>
+        }
+    ],
+    'Аккаунт': [
+        {
+            name: 'Редактировать',
+            icon: <PencilIcon/>
+        },
+        {
+            name: 'Сменить пароль',
+            icon: <LockClosedIcon/>
+        },
+        {
+            name: 'Удалить аккаунт',
+            icon: <TrashIcon/>
+        }
+    ],
+    'Настройки': [
+        {
+            name: 'Статистика',
+            icon: <ChartBarIcon/>
+        },
+        {
+            name: 'Помощь',
+            icon: <InformationCircleIcon/>
+        }
+    ]
+}
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB,
+    workingDaysDB, accountTabs, accountTabOptions
 }

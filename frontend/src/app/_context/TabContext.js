@@ -1,22 +1,41 @@
 'use client';
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
+import {accountTabOptions, accountTabs} from "@/app/_store/constants";
 
-const CityContext = createContext();
+const TabContext = createContext();
 
-const initialCity = null;
+const initialContext = accountTabs[0].name;
 
-function CityProvider({children}){
-    const [city, setCity] = useState(initialCity);
-    const resetCity = ()=> setCity(initialCity);
+function TabProvider({children}){
+    const [tab, setTab] = useState(initialContext);
+    const [tabOptions, setTabOptions] = useState([]);
+    const [selectedTabOpt, selectTabOpt] = useState(null);
+
+    useEffect(()=>{
+        if(tab === initialContext) return;
+        setTabOptions(prev => accountTabOptions[tab]);
+        selectTabOpt(accountTabOptions[tab][0].name);
+    }, [tab]);
+
+    const resetTab = ()=> setTab(initialContext);
+    function setTabBack(){
+        const foundIndex = accountTabs.findIndex(el => el.name === tab);
+        if(foundIndex && foundIndex !== 0){
+            setTab(accountTabs[foundIndex-1].name);
+        }
+    }
+
     return (
-        <CityContext.Provider value={{city, setCity, resetCity}}>
+        <TabContext.Provider value={{tab, setTab,
+            setTabBack, tabOptions,
+            selectedTabOpt, selectTabOpt}}>
             {children}
-        </CityContext.Provider>
+        </TabContext.Provider>
     );
 }
-function useCity(){
-    const context = useContext(CityContext);
-    if(context === undefined) throw new Error('City context was used outside provider');
+function useTab(){
+    const context = useContext(TabContext);
+    if(context === undefined) throw new Error('Tab context was used outside provider');
     return context;
 }
-export {CityProvider, useCity};
+export {TabProvider, useTab};
