@@ -231,19 +231,35 @@ const accountTabOptions = {
     'Сообщения': [
         {
             name: 'Создать',
-            icon: <PlusIcon/>
+            icon: <PlusIcon/>,
+            permits: ['PRODUCER', 'RECEIVER'],
         },
         {
             name: 'Публикации',
-            icon: <ClipboardDocumentCheckIcon/>
+            icon: <ClipboardDocumentCheckIcon/>,
+            permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
+            rights: ['Свои заявки', 'Заявки участников'],
+            personalRights: {
+                PRODUCER: [0],
+                RECEIVER: [0,1],
+                RECYCLER: [1]
+            }
         },
         {
             name: 'Чаты',
-            icon: <ChatBubbleOvalLeftEllipsisIcon/>
+            icon: <ChatBubbleOvalLeftEllipsisIcon/>,
+            permits: ['PRODUCER', 'RECEIVER', 'RECYCLER']
         },
         {
             name: 'Отклики',
-            icon: <PencilSquareIcon/>
+            icon: <PencilSquareIcon/>,
+            permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
+            rights: ['Свои отклики', 'Отклики участников'],
+            personalRights: {
+                PRODUCER: [1],
+                RECEIVER: [0,1],
+                RECYCLER: [0]
+            }
         }
     ],
     'Аккаунт': [
@@ -271,6 +287,7 @@ const accountTabOptions = {
         }
     ]
 }
+
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,

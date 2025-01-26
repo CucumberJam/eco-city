@@ -1,17 +1,20 @@
 import AccountHeader from "@/app/_ui/account/AccountHeader";
 import AccountSidebar from "@/app/_ui/account/AccountSidebar";
 import {TabProvider} from '@/app/_context/TabContext';
-export default function AccountPanel(){
+import {auth} from "@/auth";
+import AccountMode from "@/app/_ui/account/AccountMode";
+export default async function AccountPanel(){
+    const session = await auth();
     return (
         <StyledLayout>
             <TabProvider>
                 <AccountHeader/>
-                <MainSection>
+                <AccountMode userRole={session?.user?.role || 'all'}>
                     <AccountSidebar/>
                     <Container>
                         Here need to be content
                     </Container>
-                </MainSection>
+                </AccountMode>
             </TabProvider>
         </StyledLayout>
     );
@@ -20,13 +23,6 @@ export default function AccountPanel(){
 function StyledLayout({children}){
     return (
         <div className='flex flex-col px-6'>
-            {children}
-        </div>
-    );
-}
-function MainSection({children}){
-    return (
-        <div className='flex'>
             {children}
         </div>
     );
