@@ -25,8 +25,8 @@ export default function LoginForm(){
             setIsFetching(prev => true);
 
             const response = await signInAction(formData);
-            if(!response?.success && response.message !== "NEXT_REDIRECT"){
-                throw new Error(response.message);
+            if(!response?.success && response?.message !== "NEXT_REDIRECT"){
+                throw new Error(response?.message);
             }else {
                 setIsFetching(prev => false);
                 router.push('/account');
