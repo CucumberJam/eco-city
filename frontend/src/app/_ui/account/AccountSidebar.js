@@ -6,7 +6,7 @@ import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {useOnClickOutside} from "usehooks-ts";
 import {ListGroup} from "flowbite-react";
 export default function AccountSidebar(){
-    const {tab, tabOptions, selectedTabOpt, selectTabOpt, mode, setInternalTabOption} = useTab();
+    const {pathName, tabOptions, selectedTabOpt, selectTabOpt, mode, setInternalTabOption} = useTab(); //tab
     const [isOpen, setIsOpen] = useState(true);
 
     const filteredTabOptions = tabOptions.filter(option => !option.hasOwnProperty('permits') || option.permits.includes(mode));
@@ -15,7 +15,7 @@ export default function AccountSidebar(){
     }, [mode, tabOptions]);
 
 
-    if(tab === accountTabs[0].name || mode === 'all') return null;
+    if(pathName === accountTabs[0].href || mode === 'all') return null;
 
     if(!isOpen) return (
         <div className='w-[6px] bg-primary-10 h-full cursor-pointer'

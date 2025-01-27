@@ -212,84 +212,90 @@ const REG_EXPR_PHONE = /^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12
 const accountTabs = [
     {
         name: 'Главная',
+        href: '/account',
         icon: <HomeIcon/>,
     },
     {
         name:'Сообщения',
+        href: '/account/messages',
         icon: <EnvelopeIcon/>,
+        menu: [
+            {
+                name: 'Создать',
+                icon: <PlusIcon/>,
+                permits: ['PRODUCER', 'RECEIVER'],
+            },
+            {
+                name: 'Публикации',
+                icon: <ClipboardDocumentCheckIcon/>,
+                permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
+                rights: ['Свои заявки', 'Заявки участников'],
+                personalRights: {
+                    PRODUCER: [0],
+                    RECEIVER: [0,1],
+                    RECYCLER: [1]
+                }
+            },
+            {
+                name: 'Чаты',
+                icon: <ChatBubbleOvalLeftEllipsisIcon/>,
+                permits: ['PRODUCER', 'RECEIVER', 'RECYCLER']
+            },
+            {
+                name: 'Отклики',
+                icon: <PencilSquareIcon/>,
+                permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
+                rights: ['Свои отклики', 'Отклики участников'],
+                personalRights: {
+                    PRODUCER: [1],
+                    RECEIVER: [0,1],
+                    RECYCLER: [0]
+                }
+            }
+        ]
     },
     {
         name: 'Аккаунт',
-        icon: <UserIcon/>
+        href: '/account/profile',
+        icon: <UserIcon/>,
+        menu: [
+            {
+                name: 'Редактировать',
+                icon: <PencilIcon/>
+            },
+            {
+                name: 'Сменить пароль',
+                icon: <LockClosedIcon/>
+            },
+            {
+                name: 'Удалить аккаунт',
+                icon: <TrashIcon/>
+            }
+        ]
     },
     {
         name:  'Настройки',
-        icon: <Cog6ToothIcon/>
+        href: '/account/settings',
+        icon: <Cog6ToothIcon/>,
+        menu: [
+            {
+                name: 'Статистика',
+                icon: <ChartBarIcon/>
+            },
+            {
+                name: 'Помощь',
+                icon: <InformationCircleIcon/>
+            }
+        ]
     }
 ]
-const accountTabOptions = {
-    'Сообщения': [
-        {
-            name: 'Создать',
-            icon: <PlusIcon/>,
-            permits: ['PRODUCER', 'RECEIVER'],
-        },
-        {
-            name: 'Публикации',
-            icon: <ClipboardDocumentCheckIcon/>,
-            permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
-            rights: ['Свои заявки', 'Заявки участников'],
-            personalRights: {
-                PRODUCER: [0],
-                RECEIVER: [0,1],
-                RECYCLER: [1]
-            }
-        },
-        {
-            name: 'Чаты',
-            icon: <ChatBubbleOvalLeftEllipsisIcon/>,
-            permits: ['PRODUCER', 'RECEIVER', 'RECYCLER']
-        },
-        {
-            name: 'Отклики',
-            icon: <PencilSquareIcon/>,
-            permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
-            rights: ['Свои отклики', 'Отклики участников'],
-            personalRights: {
-                PRODUCER: [1],
-                RECEIVER: [0,1],
-                RECYCLER: [0]
-            }
-        }
-    ],
-    'Аккаунт': [
-        {
-            name: 'Редактировать',
-            icon: <PencilIcon/>
-        },
-        {
-            name: 'Сменить пароль',
-            icon: <LockClosedIcon/>
-        },
-        {
-            name: 'Удалить аккаунт',
-            icon: <TrashIcon/>
-        }
-    ],
-    'Настройки': [
-        {
-            name: 'Статистика',
-            icon: <ChartBarIcon/>
-        },
-        {
-            name: 'Помощь',
-            icon: <InformationCircleIcon/>
-        }
-    ]
-}
 
+const internalTabOptionStates = {
+    'Свои': 0,
+    'участников': 1
+}
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB, accountTabs, accountTabOptions
+    workingDaysDB, accountTabs, internalTabOptionStates
 }

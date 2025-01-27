@@ -1,33 +1,34 @@
 'use client';
+import { useRouter } from 'next/navigation'
 import {createContext, useContext, useEffect, useState} from "react";
-import {accountTabOptions, accountTabs} from "@/app/_store/constants";
+import {accountTabs, internalTabOptionStates} from "@/app/_store/constants";
+import {usePathname} from "next/navigation";
 
 const TabContext = createContext();
-
-const initialContext = accountTabs[0].name;
-const internalTabOptionStates = {
-    'Свои': 0,
-    'участников': 1
-}
 function TabProvider({children}){
-    const [tab, setTab] = useState(initialContext);
+    const router = useRouter()
+    const pathName = usePathname();
+
+    const [mode, setMode] = useState('all');
+
     const [tabOptions, setTabOptions] = useState([]);
     const [selectedTabOpt, selectTabOpt] = useState(null);
     const [selectedInternTabOpt, selectInternTabOpt] = useState(internalTabOptionStates['Свои']);
-    const [mode, setMode] = useState('all');
 
     useEffect(()=>{
-        if(tab === initialContext) return;
-        setTabOptions(prev => accountTabOptions[tab]);
-        const firstShownOption = accountTabOptions[tab].find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode))
-        selectTabOpt(firstShownOption);
-    }, [tab, mode]);
+        if(pathName === '/account' || !pathName.startsWith('/account')) return;
+        const foundTab = accountTabs.find(el => el.href  === pathName);
+        if(foundTab){
+            setTabOptions(foundTab.menu);
+            const firstShownOption = foundTab.menu.find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode))
+            selectTabOpt(firstShownOption);
+        }
+    }, [pathName, mode]);
 
-    const resetTab = ()=> setTab(initialContext);
     function setTabBack(){
-        const foundIndex = accountTabs.findIndex(el => el.name === tab);
+        const foundIndex = accountTabs.findIndex(el => el.href  === pathName);
         if(foundIndex && foundIndex !== 0){
-            setTab(accountTabs[foundIndex-1].name);
+            router.push(accountTabs[foundIndex-1].href)
         }
     }
     function setInternalTabOption(action){
@@ -38,11 +39,12 @@ function TabProvider({children}){
     }
 
     return (
-        <TabContext.Provider value={{tab, setTab,
+        <TabContext.Provider value={{
             setTabBack, tabOptions,
             selectedTabOpt, selectTabOpt,
             mode, setMode,
-            selectedInternTabOpt, setInternalTabOption}}>
+            selectedInternTabOpt, setInternalTabOption,
+            pathName}}>
             {children}
         </TabContext.Provider>
     );

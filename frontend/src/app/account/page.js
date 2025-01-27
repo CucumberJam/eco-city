@@ -1,11 +1,9 @@
-import AccountPanel from "@/app/_ui/account/AccountPanel";
+import MapContainer from "@/app/_ui/map/MapContainer";
 export const metadata = {
     title: 'Личный кабинет'
 }
 export default async function Page(){
     return (
-        <>
-            <AccountPanel/>
-        </>
+        <MapContainer/>
     );
 }
