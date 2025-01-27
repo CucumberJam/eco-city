@@ -4,16 +4,17 @@ import {accountTabs} from "@/app/_store/constants";
 import {useTab} from "@/app/_context/TabContext";
 
 export default function AccountHeader(){
-    const {tab, setTab, setTabBack} = useTab();
+    const {mode, tab, setTab, setTabBack} = useTab();
     return (
         <header className='px-4 py-4
                            border-b border-t border-grey-5
                            flex items-center justify-between'>
-            <div>
+            <div className='flex items-center space-x-2'>
                 {tab !== accountTabs[0].name &&
                     <ChevronLeftIcon className='w-[20px] cursor-pointer hover:text-gray-300 transition-colors'
                                      onClick={setTabBack}/>
                 }
+                {mode !== 'all' && <p>{mode}</p>}
             </div>
             <HeaderMenu tabValue={tab} setTabHandler={setTab}/>
         </header>
