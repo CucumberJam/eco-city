@@ -5,35 +5,23 @@ import AccountMessagesTab from "@/app/_ui/account/tabs/AccountMessagesTab";
 import AccountProfileTab from "@/app/_ui/account/tabs/AccountProfileTab";
 import AccountSettingsTab from "@/app/_ui/account/tabs/AccountSettingsTab";
 import {memo} from "react";
+import useRolesWastes from "@/app/_hooks/useRolesWastes";
 
-export default function AccountContainer({userData}){
+export default function AccountContainer({userData, rolesAPI, wastesApi, wasteTypesApi}){
     const {mode, tab, selectedTabOpt, selectedInternTabOpt} = useTab();
-    console.log(userData);
-
-    const Content = memo(() => { //    //tab = Главная / Сообщения / Аккаунт / Настройки;
-        switch (tab) {
-            case 'Главная': {
-                return <AccountMainTab mode={mode}/>
-            }
-            case 'Сообщения': {
-                return <AccountMessagesTab mode={mode}
-                                           tabOption={selectedTabOpt}
-                                           tabAction={selectedInternTabOpt}/>
-            }
-            case 'Аккаунт': {
-                return <AccountProfileTab/>
-            }
-            case 'Настройки': {
-                return <AccountSettingsTab/>
-            }
-        }
-    }, [tab]);
+    const {roles, wastes, wasteTypes} = useRolesWastes(rolesAPI, wastesApi, wasteTypesApi);
 
     return (
-        <main className='col-span-2 row-span-2 py-2 px-4 overflow-auto'>
-            <div className='flex flex-col max-w-[120rem] mx-auto my-0'>
-                <Content/>
-            </div>
+        <main className='w-full flex flex-col mx-auto my-0 py-2 px-3'>
+            {tab === 'Главная' && <AccountMainTab mode={mode}
+                                                  roles={roles}
+                                                  wastes={wastes}
+                                                  wasteTypes={wasteTypes}/>}
+            {tab === 'Сообщения' && <AccountMessagesTab mode={mode}
+                                                        tabOption={selectedTabOpt}
+                                                        tabAction={selectedInternTabOpt}/>}
+            {tab === 'Аккаунт' && <AccountProfileTab/>}
+            {tab === 'Настройки' && <AccountSettingsTab/>}
         </main>
     );
 }
