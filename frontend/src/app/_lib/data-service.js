@@ -19,6 +19,16 @@ export const getRoles = async ()=> {
         return {status: 'error', data: e.message};
     }
 }
+export const getDimensions = async ()=> {
+    try{
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dimensions`);
+        const data = await res.json();
+        if(data.status) return data.data;
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', data: e.message};
+    }
+}
 export const getWastes = async ()=> {
     try{
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/wastes`);

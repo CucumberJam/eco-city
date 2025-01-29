@@ -6,7 +6,7 @@ import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {useOnClickOutside} from "usehooks-ts";
 import {ListGroup} from "flowbite-react";
 export default function AccountSidebar(){
-    const {pathName, tabOptions, selectedTabOpt, selectTabOpt, mode, setInternalTabOption} = useTab(); //tab
+    const {pathName, router, tabOptions, mode, setInternalTabOption} = useTab();
     const [isOpen, setIsOpen] = useState(true);
 
     const filteredTabOptions = tabOptions.filter(option => !option.hasOwnProperty('permits') || option.permits.includes(mode));
@@ -35,8 +35,8 @@ export default function AccountSidebar(){
                     <SidebarItem key={el.name}
                                  item={el}
                                  mode={mode}
-                                 active={selectedTabOpt?.name === el.name}
-                                 clickHandler={selectTabOpt}
+                                 active={pathName === el.href}
+                                 clickHandler={() => router.push(el.href)}
                                  selectInternalOption={setInternalTabOption}/>
                 ))}
             </ul>
@@ -59,9 +59,10 @@ function SidebarItem({item, clickHandler, mode, selectInternalOption, active = f
         if(haveOptions) setShowOptions(true);
         clickHandler(item);
     }
-    useOnClickOutside(ref, ()=> setShowOptions(prev => false));
-    return (
 
+    useOnClickOutside(ref, ()=> setShowOptions(prev => false));
+
+    return (
         <li className={active ? `${commonStyle} ${activeStyle}` : `${commonStyle}`}
             ref={ref}
             onClick={showOptionsHandler}>

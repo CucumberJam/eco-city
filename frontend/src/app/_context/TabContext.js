@@ -10,27 +10,21 @@ function TabProvider({children}){
     const pathName = usePathname();
 
     const [mode, setMode] = useState('all');
-
     const [tabOptions, setTabOptions] = useState([]);
-    const [selectedTabOpt, selectTabOpt] = useState(null);
     const [selectedInternTabOpt, selectInternTabOpt] = useState(internalTabOptionStates['Свои']);
 
     useEffect(()=>{
-        if(pathName === '/account' || !pathName.startsWith('/account')) return;
-        const foundTab = accountTabs.find(el => el.href  === pathName);
-        if(foundTab){
+        if(mode === 'all' || pathName === '/account' || !pathName.startsWith('/account')) return;
+        const hrefSlugs = pathName.split('/').slice(1);
+        const foundTab = accountTabs.slice(1).find(el => el.href === `/${hrefSlugs[0]}/${hrefSlugs[1]}`);
+        if(foundTab && foundTab.menu){
             setTabOptions(foundTab.menu);
-            const firstShownOption = foundTab.menu.find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode))
-            selectTabOpt(firstShownOption);
+            if(hrefSlugs.length === 2){
+                const firstShownOption = foundTab.menu.find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode));
+                router.replace(firstShownOption.href);
+            }
         }
     }, [pathName, mode]);
-
-    function setTabBack(){
-        const foundIndex = accountTabs.findIndex(el => el.href  === pathName);
-        if(foundIndex && foundIndex !== 0){
-            router.push(accountTabs[foundIndex-1].href)
-        }
-    }
     function setInternalTabOption(action){
         const str = action.split(' ');
         if(str[0] === Object.keys(internalTabOptionStates)[0]){
@@ -40,11 +34,10 @@ function TabProvider({children}){
 
     return (
         <TabContext.Provider value={{
-            setTabBack, tabOptions,
-            selectedTabOpt, selectTabOpt,
+            tabOptions,
             mode, setMode,
             selectedInternTabOpt, setInternalTabOption,
-            pathName}}>
+            router, pathName}}>
             {children}
         </TabContext.Provider>
     );

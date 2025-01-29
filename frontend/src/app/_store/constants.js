@@ -223,11 +223,13 @@ const accountTabs = [
             {
                 name: 'Создать',
                 icon: <PlusIcon/>,
+                href: '/account/messages/create',
                 permits: ['PRODUCER', 'RECEIVER'],
             },
             {
                 name: 'Публикации',
                 icon: <ClipboardDocumentCheckIcon/>,
+                href: '/account/messages/adverts',
                 permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
                 rights: ['Свои заявки', 'Заявки участников'],
                 personalRights: {
@@ -239,11 +241,13 @@ const accountTabs = [
             {
                 name: 'Чаты',
                 icon: <ChatBubbleOvalLeftEllipsisIcon/>,
+                href: '/account/messages/dialogs',
                 permits: ['PRODUCER', 'RECEIVER', 'RECYCLER']
             },
             {
                 name: 'Отклики',
                 icon: <PencilSquareIcon/>,
+                href: '/account/messages/responses',
                 permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
                 rights: ['Свои отклики', 'Отклики участников'],
                 personalRights: {
@@ -261,14 +265,17 @@ const accountTabs = [
         menu: [
             {
                 name: 'Редактировать',
-                icon: <PencilIcon/>
+                icon: <PencilIcon/>,
+                href: '/account/profile/edit',
             },
             {
                 name: 'Сменить пароль',
-                icon: <LockClosedIcon/>
+                icon: <LockClosedIcon/>,
+                href: '/account/profile/password',
             },
             {
                 name: 'Удалить аккаунт',
+                href: '/account/profile/remove',
                 icon: <TrashIcon/>
             }
         ]
@@ -280,11 +287,13 @@ const accountTabs = [
         menu: [
             {
                 name: 'Статистика',
-                icon: <ChartBarIcon/>
+                icon: <ChartBarIcon/>,
+                href: '/account/settings/stats',
             },
             {
                 name: 'Помощь',
-                icon: <InformationCircleIcon/>
+                icon: <InformationCircleIcon/>,
+                href: '/account/settings/help',
             }
         ]
     }
@@ -294,8 +303,9 @@ const internalTabOptionStates = {
     'Свои': 0,
     'участников': 1
 }
+const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено']
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB, accountTabs, internalTabOptionStates
+    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses
 }
