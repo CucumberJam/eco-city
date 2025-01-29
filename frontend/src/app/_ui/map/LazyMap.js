@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import {useMemo} from "react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
-import PaginatedList from "@/app/_ui/PaginatedList";
+import PaginatedList from "@/app/_ui/general/PaginatedList";
 import UserCard from "@/app/_ui/user/UserCard";
 
 export default function LazyMap({

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import logo from '../../../public/logo-small.png'
+import logo from '../../../../public/logo-small.png'
 import Link from "next/link";
 //https://app.freelogodesign.org/design/156717c1bb694f55953757650fcace7f/edit
 function Logo() {

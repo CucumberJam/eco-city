@@ -8,7 +8,7 @@ import {MapContainer, Marker, TileLayer, Tooltip,} from "react-leaflet";
 import {useEffect, useRef} from "react";
 import {getIconByRole} from "@/app/_ui/map/MapIcons";
 import {useModal} from '@/app/_context/ModalContext'
-import {ModalView} from "@/app/_ui/ModalView";
+import {ModalView} from "@/app/_ui/general/ModalView";
 import UserDescription from "@/app/_ui/user/UserDescription";
 import LocationMarker from "@/app/_ui/map/LocationMarker";
 

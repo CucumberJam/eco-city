@@ -1,4 +1,4 @@
-import DisabledButton from "@/app/_ui/DisabledButton";
+import DisabledButton from "@/app/_ui/general/DisabledButton";
 
 export default function FormButton({title = 'Вход в личный кабинет',
                                    isDisabled = false,

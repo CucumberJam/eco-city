@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
 import {ListGroup} from "flowbite-react";
 import {workingDays} from "@/app/_store/constants";
-import TimeRangePicker from "@/app/_ui/TimeRangePicker";
+import TimeRangePicker from "@/app/_ui/general/TimeRangePicker";
 
 export default function FormWorkTime({
                                          buttonTitle = 'Часы работы:',

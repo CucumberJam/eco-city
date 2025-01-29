@@ -1,6 +1,6 @@
 import { Nunito_Sans } from "next/font/google";
 import "@/app/_styles/globals.css";
-import Header from "@/app/_ui/Header";
+import Header from "@/app/_ui/general/Header";
 import {GlobalStoreProvider} from '@/app/_context/GlobalUIContext';
 import {ModalProvider} from '@/app/_context/ModalContext'
 //https://fonts.google.com/specimen/Nunito+Sans?lang=ru_Cyrl

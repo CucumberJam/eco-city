@@ -1,5 +1,5 @@
 "use client";
-import Filter from "@/app/_ui/Filter";
+import Filter from "@/app/_ui/general/Filter";
 import {useMemo} from "react";
 import useRolesWastes from "@/app/_hooks/useRolesWastes";
 

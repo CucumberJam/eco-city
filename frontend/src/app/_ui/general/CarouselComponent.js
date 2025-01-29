@@ -1,9 +1,9 @@
 import { Carousel } from "flowbite-react";
 import Image from "next/image";
-import banner from "../../../public/baner/banner.jpg";
-import glasses from "../../../public/baner/bottles.jpg";
-import carton from "../../../public/baner/carton.jpg";
-import plastic from "../../../public/baner/plastic.avif";
+import banner from "../../../../public/baner/banner.jpg";
+import glasses from "../../../../public/baner/bottles.jpg";
+import carton from "../../../../public/baner/carton.jpg";
+import plastic from "../../../../public/baner/plastic.avif";
 //https://www.nationalgeographic.com/environment/article/plastic-pollution
 export default function CarouselComponent(){
     return  <div className="h-[30rem] relative">
