@@ -25,7 +25,7 @@ export default function AccountSidebar(){
     return (
         <aside className='pt-4 px-3 pb-2 md:w-34 flex
                          border-r border-grey-5
-                         flex-col justify-between h-full'>
+                         flex-col h-full'>
             <button className=' self-center mb-4 w-[20px] cursor-pointer hover:text-gray-300 transition-colors'
                      onClick={() => setIsOpen(false)}>
                 <ArrowLeftIcon/>

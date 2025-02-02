@@ -8,7 +8,8 @@ import UserCard from "@/app/_ui/user/UserCard";
 export default function LazyMap({
                                     withUsers = true,
                                     needDefineLocation = false,
-                                    changePositionHandler = null}){
+                                    changePositionHandler = null,
+                                    pickedUpPos = []}){
     const { currentCity,
         users,
         wastes, wasteTypes,
@@ -27,6 +28,7 @@ export default function LazyMap({
         <>
             <div className="bg-white mx-auto my5 w-[98%] h-full relative z-10">
                 <Map position={currentCity? [currentCity.latitude, currentCity.longitude] : [4.79029, -75.69003]}
+                     pickedUpPos={pickedUpPos}
                      withUsers={withUsers}
                      needDefineLocation={needDefineLocation}
                      setActiveUser={changePositionHandler}/>

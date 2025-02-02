@@ -298,14 +298,15 @@ const accountTabs = [
         ]
     }
 ]
-
+const widthInputAdvertForm = 220;
 const internalTabOptionStates = {
     'Свои': 0,
     'участников': 1
 }
-const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено']
+const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено'];
+
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses
+    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, widthInputAdvertForm
 }

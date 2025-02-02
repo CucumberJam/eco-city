@@ -2,12 +2,11 @@
 import LazyMap from "@/app/_ui/map/LazyMap";
 import {Button} from "flowbite-react";
 import {useState} from "react";
-import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {CheckIcon} from "@heroicons/react/24/outline";
 import {ExclamationCircleIcon} from "@heroicons/react/24/outline";
-export default function FormItemMap({changePositionHandler, isPosSet = false}){
+export default function FormItemMap({changePositionHandler, isPosSet = false, pickedUpPos = []}){
     const [needDefineLocation, setNeedDefineLocation] = useState(false);
-    //const {currentUser} = useGlobalUIStore((state) => state);
+
     return (
         <div className=' bg-white w-full'>
             <div className='py-1 flex items-center justify-between mb-1'>
@@ -24,6 +23,7 @@ export default function FormItemMap({changePositionHandler, isPosSet = false}){
             </div>
             <div className="w-full h-[350px]">
                 <LazyMap withUsers={false}
+                         pickedUpPos={pickedUpPos}
                          needDefineLocation={needDefineLocation}
                          changePositionHandler={changePositionHandler}/>
             </div>

@@ -2,7 +2,7 @@ import DisabledButton from "@/app/_ui/general/DisabledButton";
 
 export default function FormButton({title = 'Вход в личный кабинет',
                                    isDisabled = false,
-                                    disableTip = '',
+                                   disableTip = '',
                                    typeBtn = 'submit',
                                    clickHandler = null}){
     if(isDisabled) return (
@@ -17,9 +17,10 @@ export default function FormButton({title = 'Вход в личный кабин
     return (
         <button type={typeBtn}
                 disabled={isDisabled}
-                className='mt-8 py-4 px-20 self-center
-                bg-inherit border border-primary-300 hover:border-white
-                rounded flex justify-center items-center cursor-pointer'
+                className={`transition-colors mt-8 py-4 px-20 self-center
+                border border-primary-300 hover:border-white
+                rounded flex justify-center items-center cursor-pointer 
+                ${typeBtn === 'submit' ? 'bg-accent-10 text-white hover:bg-primary-10' : 'bg-inherit hover:bg-grey-3 hover:text-white'}`}
                 onClick={clickHandler}>
             {title}
         </button>

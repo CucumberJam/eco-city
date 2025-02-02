@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from "react";
 
-export default function useFormWastes(){
-    const [showedWasteTypes, setShowedWasteTypes] = useState([]);
+export default function useFormWastes(initialWastes = [], initialWasteTypes = []){
+    const [showedWasteTypes, setShowedWasteTypes] = useState(initialWasteTypes);
     const [chosenWastes, setChosenWastes] = useState([]);
     const [chosenWasteTypes, setChosenWasteTypes] = useState([]);
 
@@ -33,14 +33,19 @@ export default function useFormWastes(){
     const pickWasteType = useCallback((item, res) => {
         if(res){
             // add to chosenWasteTypes
-            setChosenWasteTypes(prev => [...prev, item])
+            setChosenWasteTypes(prev => [...prev, item]);
+            // check if chosenWasteType chosenWaste has its wasteParentId:
+            const existChosenWaste = chosenWasteTypes.find(el => el.id === item.typeId);
+            if(!existChosenWaste) {
+                const found = initialWastes.find(el => el.id === item.typeId);
+                if(found) setChosenWastes(prev => [...prev, found]);
+            }
         }else{
             //remove from chosenWasteTypes
             const updatedWasteTypes = chosenWasteTypes.filter(wasteType => wasteType.id !== item.id);
-
             //check if chosenWasteTypes has np longer any with the same typeId, if so remove waste with id = typeId from chosenWastes
             const typeId = item.typeId;
-            const hasOthers = updatedWasteTypes.any(wasteType => wasteType.typeId === typeId);
+            const hasOthers = updatedWasteTypes?.some(wasteType => wasteType.typeId === typeId);
             if(!hasOthers){
                 const updatedChosenWastes = chosenWastes.filter(waste => waste.id !== typeId);
                 setChosenWastes(prev => [updatedChosenWastes]);
@@ -48,6 +53,11 @@ export default function useFormWastes(){
         }
     }, []);
 
+    const resetFormWastesData= () => {
+        setShowedWasteTypes([]);
+        setChosenWastes([]);
+        setChosenWasteTypes([]);
+    }
 
     const getChosenWastesAndTypes = () => {
         const wastes = [...chosenWastes].map(el => el?.id);
@@ -57,5 +67,5 @@ export default function useFormWastes(){
     }
 
     return {showedWasteTypes, pickWaste, pickWasteType,getChosenWastesAndTypes,
-        chosenWastes, chosenWasteTypes};
+        chosenWastes, chosenWasteTypes, resetFormWastesData};
 }

@@ -63,7 +63,8 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
 
 const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-
+    console.log(req?.params?.userId);
+    console.log(userId);
     if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
 
     const adverts = await advert.findAndCountAll({
@@ -85,26 +86,30 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
 });
 
 const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
+    const formData = req?.body?.formData;
+    if(!formData) return next(new AppError('Failed to create new advert: no body in request', 400));
+    console.log(req?.user);
     const newAdvert = await advert.create({
         userId: +req?.user?.id,
         userName: req?.user?.name,
-        address: req?.body?.address || req?.user?.address,
-        longitude: req?.body?.longitude || req?.user?.longitude,
-        latitude: req?.body?.latitude || req?.user?.latitude,
+        address: formData.address || req?.user?.address,
+        longitude: +formData.longitude || +req?.user?.longitude,
+        latitude: +formData.latitude || +req?.user?.latitude,
         userRole: req?.user?.role,
-        cityId: +req?.body?.cityId || +req?.user?.cityId,
-        waste: req?.body?.waste,
-        wasteType: req?.body?.wasteType || null,
-        dimension: req?.body?.dimension,
-        amount: req?.body?.amount || 1.0,
-        price: req?.body?.price || 0.0,
-        totalPrice: req?.body?.totalPrice || 0.0,
-        isPickedUp: req?.body?.isPickedUp || true,
-        photos: req?.body?.photos || null,
-        comment: req?.body?.comment || null,
-        finishDate: req?.body?.finishDate,
-        priceWithDelivery: req?.body?.priceWithDelivery || false,
+        cityId: +formData.cityId || +req?.user?.cityId,
+        waste: +formData.waste,
+        wasteType: +formData?.wasteType || null,
+        dimension: +formData.dimension,
+        amount: +formData.amount || 1.0,
+        price: +formData.price || 0.0,
+        totalPrice: +formData.totalPrice || 0.0,
+        isPickedUp: formData.isPickedUp || true,
+        photos: formData?.photos || null,
+        comment: formData?.comment || null,
+        finishDate: new Date(Date.parse(formData.finishDate)),
+        priceWithDelivery: formData?.priceWithDelivery || false,
     });
+    console.log(newAdvert);
     if(!newAdvert) return next(new AppError('Failed to create new advert', 400));
     const result = removeCreatedFields(newAdvert, null, false);
     return res.status(200).json({

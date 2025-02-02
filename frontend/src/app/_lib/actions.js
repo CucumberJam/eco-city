@@ -3,8 +3,16 @@ import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
 import {DEFAULT_LOGIN_REDIRECT} from "@/routes";
 import {FNS_URL} from "@/app/_lib/URLS";
-import {getUserByEmail} from "@/app/_lib/data-service";
 
+const getOptions = (token, method = 'GET')=>{
+    return {
+        method: method,
+        headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    }
+}
 export async function signInAction(formData) {
     try {
         const res = await signIn('credentials', {
@@ -32,16 +40,29 @@ export async function signInAction(formData) {
 export async function getDialogs(id, token){
     if(!id) return;
     try{
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs`, {
-            method: 'GET',
-            headers: {
-                authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs`, options);
         const data = await res.json();
         console.log('Response from dialogs: ', data)
         if(data.status === 'fail'){
+            throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', data: e.message};
+    }
+}
+
+export async function getAdverts(userId, token){
+    console.log(userId);
+    if(!userId) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${userId}`, options);
+        const data = await res.json();
+        //console.log('Response from Adverts: ', data)
+        if(data.status !== 'success'){
             throw Error(data.message)
         }
         return {status: 'success', data: data.data};
@@ -107,5 +128,28 @@ export async function signUpAction(params){
         return await response.json();
     }catch (e) {
         return {success: false, message: e.message};
+    }
+}
+
+export async function createAdvertAction(formData, token){
+    const options = getOptions(token, 'POST');
+    options.body = JSON.stringify({
+        formData
+    });
+    try{
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts`, options);
+        const data = await res.json();
+        console.log('Response from advert - create: ', data);
+        if(res.status === 400 || !res.ok){
+            return {status: 'error', message: data.message};
+        }
+        if(data.status === 'fail' || data.status === 400){
+            return {status: 'error', message: data.message.endsWith('is not valid JSON') ? 'Тело запроса передано не в формате JSON' : data.message};
+        }
+        if(data.status === 'success') return {status: 'success', data: data.data};
+        else return {status: 'error', message: data.message};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
     }
 }

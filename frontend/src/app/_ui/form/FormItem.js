@@ -1,16 +1,19 @@
-import {FloatingLabel, Spinner} from "flowbite-react";
-import {CheckIcon, EyeIcon, EyeSlashIcon} from "@heroicons/react/24/outline";
-import {ExclamationCircleIcon} from "@heroicons/react/24/outline";
-import {useEffect, useState} from "react";
+import {Spinner} from "flowbite-react";
+import {EyeIcon, EyeSlashIcon} from "@heroicons/react/24/outline";
+import {useState} from "react";
+import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
+import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 
 const styles = {
     input: 'border mx-2 border-gray-500 rounded bg-inherit px-2 py-1',
     label: 'text-green-50'
 }
 export function FormItem({
-                             label = 'Email:',
+                             label = '',
                              htmlName = 'email',
+                             isControlled = false,
                              type= 'email',
+                             value = type === 'number' ? 0 : '',
                              defaultVal = null,
                              placeholder = '',
                              keyUpHandler = ()=> null,
@@ -18,65 +21,108 @@ export function FormItem({
                              isDisabled= false,
                              isLoading = false,
                              isChecked = true,
+                             styles = {},
+                             changeHandler = ()=> null,
                          }){
-    const [showPassword, setShowPassword] = useState(false);
+    return (
+        <InputWrapper styleWide={styleWide}>
+            {label.length > 0 && <FormInputLabel label={label} htmlName={htmlName} styleWide={styleWide}/>}
+            {isLoading && <Spinner aria-label="Default status example"/>}
+            {type === 'password' ?
+                (
+                    <InputPassword isControlled={isControlled}
+                                   value={value}
+                                   htmlName={htmlName}
+                                   styleWide={styleWide}
+                                   defaultVal={defaultVal}
+                                   placeholder={placeholder}
+                                   keyUpHandler={keyUpHandler}
+                                   isDisabled={isDisabled}/>
+
+                ) :
+                (
+                    <InputControlled isControlled={isControlled}
+                                     value={value}
+                                     type={type}
+                                     htmlName={htmlName}
+                                     defaultVal={defaultVal}
+                                     placeholder={placeholder}
+                                     styleWide={styleWide}
+                                     isDisabled={isDisabled}
+                                     keyUpHandler={keyUpHandler}
+                                     changeHandler={changeHandler}/>
+                )
+            }
+            <FormHiddenInput name={htmlName} value={value.length === 0 ? defaultVal || '' : value} id={htmlName}/>
+        </InputWrapper>
+    );
+}
+function InputWrapper({styleWide, children}){
     return (
         <div className={styleWide ? 'm-auto w-full flex justify-start items-center space-x-2' :
             'flex justify-end items-center space-x-3'}>
-            <label htmlFor={htmlName}
-                   className={styleWide ? `whitespace-nowrap ${styles.label}` : ` ${styles.label}`}>
-                {label}
-            </label>
-            {isLoading && <Spinner aria-label="Default status example"/>}
-          {/*  {!isLoading && isChecked && <CheckIcon style={{width: '25px', color: 'green'}}/>}*/}
-            {type !== 'password' ? <input id={htmlName}
-                    type={type}
-                    name={htmlName}
-                    defaultValue={defaultVal}
-                    placeholder={placeholder}
-                    className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
-                    disabled={isDisabled}
-                    onKeyUp={keyUpHandler}/> :
-                (
-                    <>
-                        {!showPassword ? (
-                            <div className='flex relative items-center'>
-                                <input id={htmlName}
-                                       type={type}
-                                       name={htmlName}
-                                       defaultValue={defaultVal}
-                                       placeholder={placeholder}
-                                       className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
-                                       disabled={isDisabled}
-                                       onKeyUp={keyUpHandler}/>
-                                <EyeIcon color='grey'
-                                         width={18}
-                                         className='absolute right-5 cursor-pointer'
-                                onClick={()=> setShowPassword(true)}/>
-                            </div>) : (
-                            <div className='flex relative items-center'>
-                                <input id={htmlName}
-                                    type='text'
-                                    name={htmlName}
-                                    defaultValue={defaultVal}
-                                    placeholder={placeholder}
-                                    className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
-                                    disabled={isDisabled}
-                                    onKeyUp={keyUpHandler}/>
-                                <EyeSlashIcon color='grey'
-                                              width={18}
-                                              className='absolute right-5 cursor-pointer'
-                                              onClick={()=> setShowPassword(false)}/>
-                            </div>)
-                        }
-                    </>
-
-                )
-            }
-            <input id={htmlName}
-                   name={htmlName}
-                   value={defaultVal ? defaultVal : ''} type='hidden'/>
-            {/*<FloatingLabel sizing='sm' id='rom' name='rom' label="Название" variant="outlined"/>*/}
+            {children}
         </div>
+    );
+}
+function InputPassword({   isControlled = false, value,
+                           isDisabled, htmlName, defaultVal,
+                           placeholder, styleWide,  keyUpHandler}){
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+        <div className='flex relative items-center'>
+{/*            <input id={htmlName}
+                   type='text'
+                   name={htmlName}
+                   defaultValue={defaultVal}
+                   placeholder={placeholder}
+                   className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
+                   disabled={isDisabled}
+                   onKeyUp={keyUpHandler}/>*/}
+            <InputControlled isControlled={isControlled}
+                             value={value}
+                             htmlName={htmlName}
+                             defaultVal={defaultVal}
+                             placeholder={placeholder}
+                             styleWide={styleWide}
+                             isDisabled={isDisabled}
+                             keyUpHandler={keyUpHandler}/>
+            {!showPassword ? <EyeIcon color='grey'
+                                      width={18}
+                                      className='absolute right-5 cursor-pointer'
+                                      onClick={()=> setShowPassword(true)}/>
+                : <EyeSlashIcon color='grey'
+                           width={18}
+                           className='absolute right-5 cursor-pointer'
+                           onClick={() => setShowPassword(false)}/>}
+        </div>
+    );
+}
+function InputControlled({htmlName, type = 'text', defaultVal, placeholder,
+                             styleWide, isDisabled, keyUpHandler,
+                             value, changeHandler, isControlled = false}){
+
+    if(isControlled){
+        return <input id={htmlName}
+               type={type}
+               name={htmlName}
+               value={value}
+               placeholder={placeholder}
+               className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
+               disabled={isDisabled}
+               onKeyUp={keyUpHandler}
+               onChange={(event)=> changeHandler(event.target.value, htmlName)}/>
+    }
+    return (
+        <input id={htmlName}
+               type={type}
+               name={htmlName}
+               defaultValue={defaultVal}
+               placeholder={placeholder}
+               className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
+               disabled={isDisabled}
+               onKeyUp={keyUpHandler}
+               onChange={changeHandler}/>
     );
 }

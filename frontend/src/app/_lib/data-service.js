@@ -1,4 +1,14 @@
 const serverAPI = 'http://localhost:4000/'
+const getOptions = (token, method = 'GET')=>{
+    return {
+        method: method,
+        headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    }
+}
+
 export const getCities = async ()=> {
     try{
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/cities`);
@@ -47,6 +57,23 @@ export const getWasteTypes = async ()=> {
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
+    }
+}
+export async function getAdverts(userId, token){
+    console.log(userId);
+    if(!userId) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${userId}`, options);
+        const data = await res.json();
+        console.log('Response from Adverts: ', data)
+        if(data.status !== 'success'){
+            throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
     }
 }
 export async function getUsers(params){
@@ -112,5 +139,77 @@ export async function loginAPI(email, password){
         return  {status: 'success', token: data.token, data: data.data};
     }catch (e) {
         return {status: 'error', message: e.message};
+    }
+}
+
+export function hasAdvertCreateFormErrors(formData, currentCity, userData, wasteTypes, errorHandler){
+    const params = {}
+    // check address:
+    const isPickedUp = formData.get('isPickedUp');
+    const address = formData.get('address');
+    const latitude =  formData.get('latitude');
+    const longitude = formData.get('longitude');
+    const priceWithDelivery = formData.get('priceWithDelivery');
+    if(isPickedUp){
+        //check priceWithDelivery:
+        formData.set('priceWithDelivery', 'false');
+        if(isPickedUp && errorHandler('advert', {type: 'address', currentCity, userAddress: userData.address, address, latitude, longitude})) return;
+    }
+    params.address = address;
+    params.latitude = +latitude;
+    params.longitude = +longitude;
+    formData.append('cityId', currentCity.id);
+    params.cityId = +currentCity.id;
+    params.isPickedUp = isPickedUp === 'true';
+    params.priceWithDelivery = isPickedUp ? false : (priceWithDelivery === 'true');
+
+    // check amount:
+    const amount = formData.get('amount');
+    if(errorHandler('advert', {type: 'amount', value: amount})) return {hasErrors: true};
+    params.amount = +amount;
+
+    // check price:
+    const price = formData.get('price');
+    if(errorHandler('advert', {type: 'price', value: price})) return {hasErrors: true};
+    const totalPrice = formData.get('totalPrice');
+    if(errorHandler('advert', {type: 'price', value: totalPrice})) return {hasErrors: true};
+    params.price = parseFloat(price);
+    params.totalPrice = parseFloat(totalPrice);
+
+    // check wastes:
+    setDefaultWasteType(formData, wasteTypes, userData.wasteTypes, userData.wastes);
+    const wastes = formData.get('waste');
+    const wasteType = formData.get('wasteType');
+    if(errorHandler('advert', {type: 'waste', wastes})) return {hasErrors: true};
+    params.waste = +wastes;
+    params.wasteType = wasteType ? +wasteType : null;
+
+    // check dimension:
+    const dimension = formData.get('dimension');
+    if(errorHandler('advert', {type: 'dimension', dimension})) return {hasErrors: true};
+    params.dimension = +dimension;
+
+    // check finishDate:
+    const finishDate = formData.get('finishDate');
+    if(errorHandler('advert', {type: 'finishDate', finishDate})) return {hasErrors: true};
+    params.finishDate = finishDate;
+
+    params.comment = formData.get('comment');
+
+    params.photos = null;
+
+    return {hasErrors: false, data: params};
+}
+function setDefaultWasteType(formData, wasteTypesAPI, userWasteTypes, userWastes){
+    const waste = formData.get('waste');
+    if(!waste){
+        formData.set('waste', userWastes[0]);
+    }
+    const wasteType = formData.get('wasteType');
+    if(wasteType) return;
+
+    const array = wasteTypesAPI.filter(el => userWasteTypes?.includes(el.id) && +el.typeId === +waste) || [];
+    if(array.length > 0) {
+        formData.set('wasteType', array[0]?.id);
     }
 }
