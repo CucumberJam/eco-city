@@ -304,9 +304,21 @@ const internalTabOptionStates = {
     'участников': 1
 }
 const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено'];
+const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
+    return {
+        wastes: userData.wastes,
+        wasteTypes: userData.wasteTypes,
+        cityId: cityId,
+        offset: offset, // skip 0 instances
+        limit: limit, //and fetch 10 after that
+    };
+}
+
+const advertTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость (руб)"];
 
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, widthInputAdvertForm
+    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, widthInputAdvertForm,
+    getParamsToFetchAdverts, advertTableHeaders
 }

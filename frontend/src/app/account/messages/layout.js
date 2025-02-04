@@ -1,6 +1,6 @@
 export default async function Layout({children}){
     return (
-        <div>
+        <div className="h-full w-full">
             {children}
         </div>
     );

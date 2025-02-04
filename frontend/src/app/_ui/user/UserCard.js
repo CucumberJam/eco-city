@@ -6,6 +6,7 @@ import { FaRegEnvelope } from "react-icons/fa6";
 import { FaPhone } from "react-icons/fa6";
 import UserWasteList from "@/app/_ui/user/UserWasteList";
 import Link from "next/link";
+import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
 export default function UserCard({item, wasteAPI, wastesTypesAPI, handleSelect = null}){
     const wastes = useMemo(()=>{
         return getWastes(item.wastes, item.wasteTypes, wasteAPI, wastesTypesAPI);
@@ -34,7 +35,8 @@ function Label({role}){
                         justify-start items-center gap-1
                         self-start
                         pt-[20px]">
-            <div className="h-20 w-20 rounded-full" style={{backgroundColor: role === 'PRODUCER' ? '#FFC833': (role === 'RECYCLER' ? '#53D1B6' : '#60b6ff')}}></div>
+            <UserRoleCircle role={role}/>
+            {/*<div className="h-20 w-20 rounded-full" style={{backgroundColor: role === 'PRODUCER' ? '#FFC833': (role === 'RECYCLER' ? '#53D1B6' : '#60b6ff')}}></div>*/}
             <h4 className="text-center text-[12px] font-bold"
                 style={{color: role === 'PRODUCER' ? '#FFC833': (role === 'RECYCLER' ? '#53D1B6' : '#60b6ff'), textShadow: '1px 1px 2px pink'}}>
                 {statusTitle[role.toLowerCase() || 'default']}

@@ -1,9 +1,9 @@
 'use server';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
-import {DEFAULT_LOGIN_REDIRECT} from "@/routes";
+import {authRoutes, DEFAULT_LOGIN_REDIRECT} from "@/routes";
 import {FNS_URL} from "@/app/_lib/URLS";
-
+import { redirect } from 'next/navigation'
 const getOptions = (token, method = 'GET')=>{
     return {
         method: method,
@@ -53,9 +53,7 @@ export async function getDialogs(id, token){
         return {status: 'error', data: e.message};
     }
 }
-
-export async function getAdverts(userId, token){
-    console.log(userId);
+export async function getAdvertsOfUser(userId, token){
     if(!userId) return;
     try{
         const options = getOptions(token);
@@ -63,7 +61,8 @@ export async function getAdverts(userId, token){
         const data = await res.json();
         //console.log('Response from Adverts: ', data)
         if(data.status !== 'success'){
-            throw Error(data.message)
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
         }
         return {status: 'success', data: data.data};
     }catch (e) {
@@ -71,7 +70,23 @@ export async function getAdverts(userId, token){
         return {status: 'error', data: e.message};
     }
 }
-
+export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTypes, cityId}
+    try{
+        const options = getOptions(token);
+        const searchParams = new URLSearchParams(paramsObj);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/?${searchParams.toString()}`, options);
+        const data = await res.json();
+        //console.log('Response from Adverts: ', data);
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', data: e.message};
+    }
+}
 export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
     try{
         if(useApiFNS){
@@ -115,7 +130,6 @@ export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
         return {success: false, message: 'Ошибка получения данных о компании'}
     }
 }
-
 export async function signUpAction(params){
     try{
         const response = await fetch(`${process?.env?.SERVER_URL}api/v1/auth/signup`,{
@@ -152,4 +166,12 @@ export async function createAdvertAction(formData, token){
         console.log(e);
         return {status: 'error', message: e.message};
     }
+}
+
+function checkToken(errorMessage){
+    if(errorMessage === 'Invalid token') {
+        redirect(authRoutes[0]);
+        return true;
+    }
+    return false
 }

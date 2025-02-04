@@ -36,7 +36,8 @@ function TabProvider({children}){
         <TabContext.Provider value={{
             tabOptions,
             mode, setMode,
-            selectedInternTabOpt, setInternalTabOption,
+            selectedInternTabOpt, selectInternTabOpt,
+            setInternalTabOption,
             router, pathName}}>
             {children}
         </TabContext.Provider>

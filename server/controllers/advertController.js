@@ -10,7 +10,7 @@ function queryMaker(queryObject, notAdmin = true){
     const nums = ['amount', 'price', 'totalPrice'];
     const bools = ['isPickedUp', 'priceWithDelivery'];
     const strings = ['userName','userRole', 'address'];
-    const wastes = ['wastes', 'wasteTypes'];
+    const wastes = ['waste', 'wasteType'];
 
     //foo=bar&foo=qux => { wastes: [ 'стекло', 'пластик' ] }
     // foo=bar  => { wastes: 'стекло' }
@@ -29,7 +29,9 @@ function queryMaker(queryObject, notAdmin = true){
         }else if(wastes.includes(key)){
             // https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#postgres-only-range-operators
             obj.key = Array.isArray(queryObject[key]) ?
-                {[Op.contains]: queryObject[key]} : queryObject[key];
+                {
+                    [Op.or]: queryObject[key]
+                } : queryObject[key];
         } else obj.key = queryObject[key];
     }
     return obj;
@@ -38,21 +40,30 @@ function queryMaker(queryObject, notAdmin = true){
 // получить  заявки других участников:
 const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    const adverts = await advert.findAndCountAll({
-        where: {
-            userId: { // только чужие объявления
-                [Op.ne]: userId
-            },
-            cityId: +req.query?.cityId || +req?.user?.cityId,
-            ...queryMaker(req.query),
-            finishDate: {
-                [Op.gt]: new Date(), // актуальные
-            }
+    const options = {
+        userId: { // только чужие объявления
+            [Op.ne]: userId
         },
+        waste: {
+            [Op.or]: req.query?.wastes.split(',').map(el => +el)
+        },
+        status: 'На рассмотрении',
+        cityId: +req.query?.cityId || +req?.user?.cityId,
+        finishDate: {
+            [Op.gt]: new Date(), // актуальные
+        }
+    };
+    if(req.query?.wasteTypes){
+        options.wasteType = {
+            [Op.or]: req.query?.wasteTypes.split(',').map(el => +el)
+        }
+    }
+    const adverts = await advert.findAndCountAll({
+        where: options,
         include: user,
         attributes: {exclude: ['deletedAt']},
-        offset: 0,
-        limit: 10,
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
     });
     if(!adverts) return next(new AppError("Failed to get adverts", 400));
     return res.status(200).json({
@@ -63,8 +74,6 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
 
 const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    console.log(req?.params?.userId);
-    console.log(userId);
     if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
 
     const adverts = await advert.findAndCountAll({

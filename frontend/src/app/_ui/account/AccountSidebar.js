@@ -57,7 +57,15 @@ function SidebarItem({item, clickHandler, mode, selectInternalOption, active = f
 
     function showOptionsHandler(){
         if(haveOptions) setShowOptions(true);
+        else clickHandler(item);
+    }
+
+    function setInternalOption(index){
+        selectInternalOption(item.rights[index]);
         clickHandler(item);
+        setTimeout(()=>{
+            setShowOptions(false);
+        },100);
     }
 
     useOnClickOutside(ref, ()=> setShowOptions(prev => false));
@@ -68,12 +76,12 @@ function SidebarItem({item, clickHandler, mode, selectInternalOption, active = f
             onClick={showOptionsHandler}>
             <div className='w-[30px] self-center'>{item.icon}</div>
             <p className='hidden md:block text-center'>{item.name}</p>
-            {(showOptions && haveOptions) && <div className='absolute left-28
+            {(showOptions && haveOptions) && <div className='absolute left-28 z-10
                                                               flex justify-center'>
                 <ListGroup className="w-48">
                     {item?.personalRights[mode].map((el, index) => (
                         <ListGroup.Item key={index}
-                                        onClick={()=> selectInternalOption(item.rights[index])}>
+                                        onClick={()=> setInternalOption(index)}>
                             {item.rights[index]}
                         </ListGroup.Item>
                     ))}

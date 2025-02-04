@@ -17,7 +17,7 @@ export default function AccountMode({userRole, rolesAPI, wastesApi, wasteTypesAp
         </div>
     );
     return (
-        <div className='flex'>
+        <div className='flex h-full'>
             {children}
         </div>
     );
