@@ -83,10 +83,10 @@ export function preparePagination(oldPagination, newPagination){
             updatedOffset = 0;
         }else{
             if(newLimit > currentLimit){ // bigger
-                updatedPage = currentPage / (newLimit / currentLimit);
+                updatedPage =  currentPage / Math.ceil((newLimit / currentLimit));
                 updatedOffset = updatedPage === 1 ? 0: (updatedPage - 1) *  newLimit
             }else if(newLimit < currentLimit){ //smaller
-                updatedPage = currentOffset / newLimit + 1;
+                updatedPage = Math.ceil(currentOffset / newLimit) + 1;
                 updatedOffset = currentOffset;
             }
         }

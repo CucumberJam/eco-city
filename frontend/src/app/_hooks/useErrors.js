@@ -194,15 +194,25 @@ export default function useErrors(){
                     case 'finishDate':
                         const formDate = new Date(Date.parse(payload.finishDate));
                         const today = new Date();
-                        if(formDate.getFullYear() < today.getFullYear()){
+                        const formDateYear = formDate.getFullYear();
+                        const todayYear = today.getFullYear();
+                        if(formDateYear < todayYear){
                             showError('Дата окончания не может быть раньше текущего года');
                             return true;
-                        }else{
-                            if(formDate.getMonth() < today.getMonth()){
+                        }else{ //formDateYear > todayYear || formDateYear === todayYear
+                            const formDateMonth = formDate.getMonth();
+                            const todayMonth = today.getMonth();
+                            if(formDateMonth < todayMonth && formDateYear === todayYear){
                                 showError('Дата окончания не может быть раньше текущего месяца');
                                 return true;
                             }else{
-                                if(formDate.getDate() <= today.getDate()){
+                                // formDateMonth > todayMonth &&  formDateYear === todayYear
+                                // formDateMonth < todayMonth && formDateYear < todayYear
+                                // formDateMonth === todayMonth && formDateYear === todayYear
+                                const formDateDay = formDate.getDate();
+                                const todayDay = today.getDate();
+                                // formDateDay <= todayDay && formDateMonth === todayMonth && formDateYear === todayYear
+                                if(formDateDay <= todayDay && formDateMonth === todayMonth && formDateYear === todayYear){
                                     showError('Дата окончания не может быть раньше сегодня');
                                     return true;
                                 }
