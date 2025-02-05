@@ -11,6 +11,7 @@ import {LockClosedIcon} from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/24/outline";
 import {ChartBarIcon} from "@heroicons/react/24/outline";
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
+import {useMemo} from "react";
 const statusTitle = {
     producer: 'Производитель отходов',
     recycler: 'Переработчик отходов',
@@ -316,9 +317,13 @@ const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
 
 const advertTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость (руб)"];
 
+const showUserAdverts = (userRole)=>  ['RECEIVER', 'PRODUCER'].includes(userRole);
+const showOthersAdverts = (userRole)=> ['RECEIVER', 'RECYCLER'].includes(userRole);
+const paginationOptions = [1,3,5];
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
     workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, widthInputAdvertForm,
-    getParamsToFetchAdverts, advertTableHeaders
+    getParamsToFetchAdverts, advertTableHeaders, paginationOptions,
+    showUserAdverts, showOthersAdverts
 }

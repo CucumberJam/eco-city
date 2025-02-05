@@ -81,8 +81,8 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
             userId: userId,
         },
         attributes: {exclude: ['deletedAt']},
-        offset: 0,
-        limit: 10,
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
     });
     if(!adverts) return next(new AppError("Failed to get user's adverts", 400));
     return res.status(200).json({

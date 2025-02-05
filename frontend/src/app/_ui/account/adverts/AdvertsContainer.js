@@ -1,9 +1,8 @@
 "use client"
 import AdvertList from "@/app/_ui/account/adverts/AdvertList";
 import {useAdverts} from "@/app/_context/AdvertsProvider";
-import {useEffect, useMemo, useRef} from "react";
-import {getAdverts} from "@/app/_lib/actions";
-import {getParamsToFetchAdverts} from "@/app/_store/constants";
+import {useEffect, useRef} from "react";
+import {showOthersAdverts, showUserAdverts} from "@/app/_store/constants";
 import useCities from "@/app/_hooks/useCities";
 import useRolesWastes from "@/app/_hooks/useRolesWastes";
 import useDimensions from "@/app/_hooks/useDimensions";
@@ -12,42 +11,25 @@ import {HiUserCircle} from "react-icons/hi2";
 import {HiClipboardList} from "react-icons/hi";
 import {useTab} from "@/app/_context/TabContext";
 
-export default function AdvertsContainer({userData, userToken,
-                                             advertsOfUserAPI, citiesAPI, dimensionsApi,
+export default function AdvertsContainer({userData, userToken,  userId,
+                                             citiesAPI, dimensionsApi,
                                              rolesAPI, wastesApi, wasteTypesApi}){
 
     const {currentCity}  = useCities(citiesAPI, false);
     const { roles, wastes, wasteTypes } = useRolesWastes(rolesAPI, wastesApi, wasteTypesApi);
-    const {advertsUser, setAdvertsUser, adverts, setAdverts} = useAdverts();
     const {dimensions} = useDimensions(dimensionsApi);
+
+    const {advertsUser, adverts, initAdvertsContext,
+        paginationAdvertsUser, paginationAdverts, changePaginationPage} = useAdverts();
 
     const tabsRef = useRef(null);
     const {selectedInternTabOpt, selectInternTabOpt} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
     const userRole = userData.role;
 
-    const showUserAdverts = useMemo(()=> {
-        return ['RECEIVER', 'PRODUCER'].includes(userRole)
-    }, []);
-    const showOthersAdverts = useMemo(()=> {
-        return ['RECEIVER', 'RECYCLER'].includes(userRole)
-    }, []);
-
     useEffect(() => {
         if(!currentCity) return;
-        if(!advertsUser) setAdvertsUser(prev => advertsOfUserAPI);
-        if(!adverts && showUserAdverts){
-            getAdverts(getParamsToFetchAdverts(userData, +currentCity.id), userToken)
-                .then(res => {
-                    const {status, data} = res;
-                    if(status === 'success'){
-                        setAdverts(prev => data);
-                    }
-                })
-                .catch(e => {
-                console.log(e);
-            });
-        }
+        initAdvertsContext?.(userData, userToken, userId, currentCity?.id);
     }, [currentCity?.id]);
 
     return (
@@ -67,22 +49,28 @@ export default function AdvertsContainer({userData, userToken,
                     </Tabs>
                 </div>
             )}
-            {(showOthersAdverts && adverts && selectedInternTabOpt === 1) && (
+            {(showOthersAdverts(userRole) && adverts && selectedInternTabOpt === 1) && (
                 <AdvertList adverts={adverts}
                             roles={roles}
                             wastes={wastes}
                             wasteTypes={wasteTypes}
                             dimensions={dimensions}
                             showTitle={userRole !== 'RECEIVER'}
-                            title="Публикации других участников:"/>
+                            title="Публикации других участников:"
+                            pagination={paginationAdverts}
+                            changePagePagination={(page, limit, offset) =>
+                                changePaginationPage(page, limit, offset, false)}/>
             )}
-            {(showUserAdverts && advertsUser && selectedInternTabOpt === 0) && (
+            {(showUserAdverts(userRole) && advertsUser && selectedInternTabOpt === 0) && (
                 <AdvertList adverts={advertsUser}
-                          roles={roles}
-                          wastes={wastes}
-                          wasteTypes={wasteTypes}
-                          dimensions={dimensions}
-                          showTitle={userRole !== 'RECEIVER'}/>
+                              roles={roles}
+                              wastes={wastes}
+                              wasteTypes={wasteTypes}
+                              dimensions={dimensions}
+                              showTitle={userRole !== 'RECEIVER'}
+                              pagination={paginationAdvertsUser}
+                              changePagePagination={(page, limit, offset) =>
+                                  changePaginationPage(page, limit, offset, true)}/>
             )}
 
         </>

@@ -1,22 +1,18 @@
 "use client";
 import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
-import {Banner, Pagination, Table} from "flowbite-react";
-import {advertTableHeaders} from "@/app/_store/constants";
-import {useState} from "react";
+import {Banner, Table} from "flowbite-react";
+import {advertTableHeaders, paginationOptions} from "@/app/_store/constants";
 import {prepareName} from "@/app/_lib/helpers";
 import {MdAnnouncement} from "react-icons/md";
-import {HiX} from "react-icons/hi";
-export default function AdvertList({adverts, title = "Свои публикации:",
+import ServerPagination from "@/app/_ui/general/ServerPagination";
+export default function AdvertList({
+                                       adverts, title = "Свои публикации:",
                                        roles, wastes, wasteTypes, dimensions,
-                                   showTitle = true }){
-
-    const [currentPage, setCurrentPage] = useState(1);
+                                       showTitle = true,
+                                       pagination = {}, changePagePagination  = null
+                                    }){
 
     if(!adverts?.rows?.length) return <NoData title={title}/>
-    const onPageChange = async (page) => {
-        setCurrentPage(page);
-
-    }
     const pickUpAdvertHandler = (event, advert) => console.log(advert);
 
     return (
@@ -58,36 +54,10 @@ export default function AdvertList({adverts, title = "Свои публикац�
                             ))}
                         </Table.Body>
                     </Table>
-                    <div className="w-full flex overflow-x-auto sm:justify-center mt-3">
-                        <Pagination showIcons
-                                    previousLabel="Назад"
-                                    nextLabel="Вперёд"
-                                    currentPage={currentPage}
-                                    totalPages={adverts.count}
-                                    onPageChange={onPageChange} />
-                    </div>
+                    <ServerPagination pagination={pagination}
+                                      options={paginationOptions}
+                                      changePagePagination={changePagePagination}/>
                 </div>
-              {/*
-              <div className='flex flex-col space-y-2'>
-                    <AdvertRow name="Компании"
-                               waste="Отходы"
-                               amount="Количество"
-                               dimension="Ед.изм."
-                               finishDate="Срок подачи заявки"
-                               totalPrice="Стоимость (руб)"/>
-                    <ul>
-                        {adverts?.rows?.map(el => (
-                            <li key={el.id} className='space-y-2'>
-                                <AdvertRow name={el?.userName} role={el?.userRole}
-                                           waste={el?.waste} wasteType={el?.wasteType}
-                                           amount={el?.amount}
-                                           dimension={el?.dimension}
-                                           finishDate={el.finishDate}
-                                           totalPrice={el?.totalPrice}/>
-                            </li>
-                        ))}
-                    </ul>
-                </div>*/}
         </div>
     );
 }
@@ -106,9 +76,6 @@ function NoData({title}){
                         </div>
                 </div>
             </div>
-            {/*<Banner.CollapseButton color="gray" className="border-0 bg-transparent text-gray-500 dark:text-gray-400">
-                <HiX className="h-4 w-4" />
-            </Banner.CollapseButton>*/}
         </div>
     </Banner>
     );
@@ -145,32 +112,4 @@ function AdvertCompanyDimension({dimensions, userDimensionId}){
     return (
         <div className="text-center">{userDimensionLabel}</div>
     );
-}
-
-function AdvertRow({
-                       name,
-                       role = null,
-                       waste,
-                       wasteType = null,
-                       amount,
-                       dimension,
-                       finishDate,
-                       totalPrice
-                   }){
-    return (
-        <div className='flex justify-between items-center'>
-            <div className='flex items-center space-x-2'>
-                {role && <UserRoleCircle role={role}/>}
-                <h4 className="text-center text-[12px] font-bold">{name}</h4>
-            </div>
-            <div className='flex flex-col items-center space-y-2'>
-                <p>{waste}</p>
-                {wasteType && <p>{wasteType}</p>}
-            </div>
-            <div>{amount}</div>
-            <div>{dimension}</div>
-            <div>{finishDate}</div>
-            <div>{totalPrice}</div>
-        </div>
-    )
 }

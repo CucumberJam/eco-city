@@ -53,13 +53,14 @@ export async function getDialogs(id, token){
         return {status: 'error', data: e.message};
     }
 }
-export async function getAdvertsOfUser(userId, token){
+export async function getAdvertsOfUser(userId, token, offset = 0, limit = 10){
     if(!userId) return;
+    const paramsObj = {offset: offset, limit: limit};
+    const searchParams = new URLSearchParams(paramsObj);
     try{
         const options = getOptions(token);
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${userId}`, options);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${userId}?${searchParams.toString()}`, options);
         const data = await res.json();
-        //console.log('Response from Adverts: ', data)
         if(data.status !== 'success'){
             if(checkToken(data.message)) throw Error(data.message)
             else throw Error(data.message)
@@ -67,7 +68,7 @@ export async function getAdvertsOfUser(userId, token){
         return {status: 'success', data: data.data};
     }catch (e) {
         console.log(e);
-        return {status: 'error', data: e.message};
+        return {status: 'error', message: e.message};
     }
 }
 export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTypes, cityId}
@@ -84,7 +85,7 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
         return {status: 'success', data: data.data};
     }catch (e) {
         console.log(e);
-        return {status: 'error', data: e.message};
+        return {status: 'error', message: e.message};
     }
 }
 export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
