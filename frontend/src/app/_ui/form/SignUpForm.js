@@ -211,7 +211,7 @@ function FormStep3({roles, backHandler}){
 }
 function FormState4({wastes, wasteTypes, backHandler}){
     const {showedWasteTypes, pickWaste, pickWasteType,
-        getChosenWastesAndTypes} = useFormWastes();
+        getChosenWastesAndTypes} = useFormWastes(wastes);
     const {wastes: chosenWastes = [], wasteTypes: chosenWastesTypes = []} = getChosenWastesAndTypes();
 
     return (

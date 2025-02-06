@@ -5,6 +5,7 @@ import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {daysNames, statusTitle} from "@/app/_store/constants";
 import {getWastes, hasWeekDays, hasWeekendDays} from "@/app/_lib/helpers";
 import UserWasteList from "@/app/_ui/user/UserWasteList";
+import MapAddressPoint from "@/app/_ui/map/MapAddressPoint";
 
 export default function UserDescription({data}){
     return (
@@ -13,9 +14,9 @@ export default function UserDescription({data}){
             <UserStatus status={data?.role || 'default'}/>
             <div className="flex justify-center items-start gap-3">
 
-                {(data?.latitude && data?.latitude) ?
-                    <UserMap position={[+data?.latitude, +data?.latitude]}
-                             address={data.address}/> :
+                {(data?.latitude && data?.longitude) ?
+                    <MapAddressPoint position={[+data?.latitude, +data?.longitude]}
+                                     address={data.address}/> :
                     <p>Данных нет</p>
                 }
 
@@ -144,25 +145,6 @@ function WorkingTimeItem({title, startTime, endTime}){
         <div className="flex gap-2 items-center">
             <p className="text-black">{title}</p>
             <p className="text-gray-500 text-sm">{`${startTime}-${endTime}`}</p>
-        </div>
-    );
-}
-function UserMap({position = [0, 0], zoom = 11, scrollWheelZoom = false, address = ''}){
-    return (
-        <div className="bg-white mx-auto my5 w-[70%] h-[400px]">
-            <MapContainer center={position}
-                          zoom={zoom}
-                          scrollWheelZoom={scrollWheelZoom}
-                          style={{height: "100%", width: "100%"}}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                <Marker key={position.latitude}
-                        position={position}
-                        draggable={false}>
-                    <Popup>{address}</Popup>
-                </Marker>
-            </MapContainer>
         </div>
     );
 }

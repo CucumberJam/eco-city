@@ -8,19 +8,20 @@ import {MapContainer, Marker, TileLayer, Tooltip,} from "react-leaflet";
 import {useEffect, useRef} from "react";
 import {getIconByRole} from "@/app/_ui/map/MapIcons";
 import {useModal} from '@/app/_context/ModalContext'
-import {ModalView} from "@/app/_ui/ModalView";
+import {ModalView} from "@/app/_ui/general/ModalView";
 import UserDescription from "@/app/_ui/user/UserDescription";
 import LocationMarker from "@/app/_ui/map/LocationMarker";
 
 const Map = ({
                 users = [],
                 position = [4.79029, -75.69003],
-                 withUsers = true,
+                withUsers = true,
                 zoom = withUsers ? 11 : 13,
                 scrollWheelZoom = false,
                 activeUser = null,
                 setActiveUser,
                 needDefineLocation = false,
+                pickedUpPos = [],
              }) => {
 
     const isInitialized = useRef(false);
@@ -66,8 +67,17 @@ const Map = ({
                                 </div>
                             </Tooltip>
                         </Marker>
-                    )) : <LocationMarker setUserPosition={setActiveUser}
-                                         needDefineLocation={needDefineLocation}/>}
+                    )) : <>
+                            <LocationMarker setUserPosition={setActiveUser}
+                                         needDefineLocation={needDefineLocation}/>
+                        {(pickedUpPos[0] !== 0 && pickedUpPos[1] !== 0) && (
+                            <Marker key={pickedUpPos[0]}
+                                                           position={pickedUpPos}
+                                                           draggable={false}>
+                            </Marker>
+                        )}
+                        </>
+                    }
                     {withUsers && <Marker key={position.latitude}
                              position={position}
                              draggable={false}>

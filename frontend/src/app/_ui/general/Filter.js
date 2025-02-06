@@ -2,7 +2,7 @@
 import useSetSearchURL from "@/app/_hooks/useSetSearchURL";
 import {Dropdown, DropdownItem, Popover} from "flowbite-react";
 import {prepareName} from "@/app/_lib/helpers";
-import DisabledButton from "@/app/_ui/DisabledButton";
+import DisabledButton from "@/app/_ui/general/DisabledButton";
 export default function Filter({
                                    data = [],
                                    dataName = 'role',

@@ -63,19 +63,34 @@ export function getNameAddress(data, isCompany = true, useApiFNS = true){
 export function prepareName(str){
     return str.substring(0,1).toUpperCase() + str.substring(1).toLowerCase();
 }
-export function validateRegisterFormData(data){
-    const formData = new FormData(event.currentTarget);
-    //validation:
-    const ogrn = formData.get('ogrn');
-    if(!ogrn) return {success: false, message: 'Поле ОГРН должно быть заполнено'};
+export function preparePagination(oldPagination, newPagination){
+    const {newPage, newOffset, newLimit} = newPagination;
+    const {currentPage, limit: currentLimit, offset: currentOffset} = oldPagination;
 
-    const name = formData.get('name');
-    if(!name) return {success: false, message: 'Поле Наименование должно быть заполнено'};
-
-    const address = formData.get('address');
-    if(!address) return {success: false, message: 'Поле Адрес должно быть заполнено'};
-
-    const city = formData.get('city');
-    if(!city) return {success: false, message: 'Поле Город должно быть заполнено'};
-
+    let updatedOffset, updatedLimit, updatedPage;
+    // change Page:
+    if(newPage !== currentPage){
+        if((newPage - currentPage) < 0){ // go back:
+            updatedOffset = currentOffset - Math.abs(newPage - currentPage) * currentLimit;
+        }else if((newPage - currentPage) > 0){  //go forward:
+            updatedOffset = currentOffset + (newPage - currentPage)  * currentLimit;
+        }
+        updatedLimit = currentLimit;
+        updatedPage = newPage;
+    }else{ //change Limit:
+        if(currentPage === 1){
+            updatedPage = currentPage;
+            updatedOffset = 0;
+        }else{
+            if(newLimit > currentLimit){ // bigger
+                updatedPage =  currentPage / Math.ceil((newLimit / currentLimit));
+                updatedOffset = updatedPage === 1 ? 0: (updatedPage - 1) *  newLimit
+            }else if(newLimit < currentLimit){ //smaller
+                updatedPage = Math.ceil(currentOffset / newLimit) + 1;
+                updatedOffset = currentOffset;
+            }
+        }
+        updatedLimit = newLimit;
+    }
+    return {updatedOffset, updatedLimit, updatedPage};
 }

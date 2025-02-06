@@ -154,6 +154,73 @@ export default function useErrors(){
                         break;
                 }
             },
+            advert: (payload) => {
+                switch (payload.type){
+                    case 'amount':
+                        if(payload.value < 1){
+                            showError('Количество не может быть 0 или отрицательным!');
+                            return true;
+                        }
+                        break;
+                    case 'price':
+                        if(payload.value < 0){
+                            showError('Стоимость не может быть отрицательной!');
+                            return true;
+                        }
+                        break;
+                    case 'address':
+                        if(payload?.userAddress !== payload?.address && (payload?.latitude === 0 || payload?.longitude === 0)){
+                            showError('В связи со сменой адреса, укажите его на карте!');
+                            return true;
+                        }
+                        if(Math.floor(+payload?.latitude) !== Math.floor(Number.parseFloat(payload?.currentCity?.latitude))
+                            || Math.floor(+payload?.longitude) !== Math.floor(Number.parseFloat(payload?.currentCity?.longitude))){
+                            showError('Указанный Вами адрес на карте не соответствует текущему городу');
+                            return true;
+                        }
+                        break;
+                    case 'waste':
+                        if(!payload?.waste || payload?.waste?.length === 0){
+                            showError('Выберите вид отходов');
+                            return true;
+                        }
+                        break;
+                    case 'dimension':
+                        if(!payload?.dimension){
+                            showError('Укажите единицу измерения');
+                            return true;
+                        }
+                        break;
+                    case 'finishDate':
+                        const formDate = new Date(Date.parse(payload.finishDate));
+                        const today = new Date();
+                        const formDateYear = formDate.getFullYear();
+                        const todayYear = today.getFullYear();
+                        if(formDateYear < todayYear){
+                            showError('Дата окончания не может быть раньше текущего года');
+                            return true;
+                        }else{ //formDateYear > todayYear || formDateYear === todayYear
+                            const formDateMonth = formDate.getMonth();
+                            const todayMonth = today.getMonth();
+                            if(formDateMonth < todayMonth && formDateYear === todayYear){
+                                showError('Дата окончания не может быть раньше текущего месяца');
+                                return true;
+                            }else{
+                                // formDateMonth > todayMonth &&  formDateYear === todayYear
+                                // formDateMonth < todayMonth && formDateYear < todayYear
+                                // formDateMonth === todayMonth && formDateYear === todayYear
+                                const formDateDay = formDate.getDate();
+                                const todayDay = today.getDate();
+                                // formDateDay <= todayDay && formDateMonth === todayMonth && formDateYear === todayYear
+                                if(formDateDay <= todayDay && formDateMonth === todayMonth && formDateYear === todayYear){
+                                    showError('Дата окончания не может быть раньше сегодня');
+                                    return true;
+                                }
+                            }
+                        }
+                        break;
+                }
+            },
             default: (payload)=>{
                 showError(payload);
                 return true;

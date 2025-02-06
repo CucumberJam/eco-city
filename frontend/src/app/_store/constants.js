@@ -1,3 +1,17 @@
+import {UserIcon} from "@heroicons/react/24/outline";
+import {HomeIcon} from "@heroicons/react/24/outline";
+import {EnvelopeIcon} from "@heroicons/react/24/outline";
+import {Cog6ToothIcon} from "@heroicons/react/24/outline";
+import {PlusIcon} from "@heroicons/react/24/outline";
+import {ClipboardDocumentCheckIcon} from "@heroicons/react/24/outline";
+import {ChatBubbleOvalLeftEllipsisIcon} from "@heroicons/react/24/outline";
+import {PencilSquareIcon} from "@heroicons/react/24/outline";
+import {PencilIcon} from "@heroicons/react/24/outline";
+import {LockClosedIcon} from "@heroicons/react/24/outline";
+import {TrashIcon} from "@heroicons/react/24/outline";
+import {ChartBarIcon} from "@heroicons/react/24/outline";
+import {InformationCircleIcon} from "@heroicons/react/24/outline";
+import {useMemo} from "react";
 const statusTitle = {
     producer: 'Производитель отходов',
     recycler: 'Переработчик отходов',
@@ -196,9 +210,120 @@ const REG_EXPR_WEBSITES = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/
 const REG_EXPR_EMAIL = /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/;
 //https://code.mu/ru/javascript/book/supreme/regular/repeat-operators/
 const REG_EXPR_PHONE = /^(\+)?((\d{2,3}) ?\d|\d)(([ -]?\d)|( ?(\d{2,3}) ?)){5,12}\d$/;
+const accountTabs = [
+    {
+        name: 'Главная',
+        href: '/account',
+        icon: <HomeIcon/>,
+    },
+    {
+        name:'Сообщения',
+        href: '/account/messages',
+        icon: <EnvelopeIcon/>,
+        menu: [
+            {
+                name: 'Создать',
+                icon: <PlusIcon/>,
+                href: '/account/messages/create',
+                permits: ['PRODUCER', 'RECEIVER'],
+            },
+            {
+                name: 'Публикации',
+                icon: <ClipboardDocumentCheckIcon/>,
+                href: '/account/messages/adverts',
+                permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
+                rights: ['Свои заявки', 'Заявки участников'],
+                personalRights: {
+                    PRODUCER: [0],
+                    RECEIVER: [0,1],
+                    RECYCLER: [1]
+                }
+            },
+            {
+                name: 'Чаты',
+                icon: <ChatBubbleOvalLeftEllipsisIcon/>,
+                href: '/account/messages/dialogs',
+                permits: ['PRODUCER', 'RECEIVER', 'RECYCLER']
+            },
+            {
+                name: 'Отклики',
+                icon: <PencilSquareIcon/>,
+                href: '/account/messages/responses',
+                permits: ['PRODUCER', 'RECEIVER', 'RECYCLER'],
+                rights: ['Свои отклики', 'Отклики участников'],
+                personalRights: {
+                    PRODUCER: [1],
+                    RECEIVER: [0,1],
+                    RECYCLER: [0]
+                }
+            }
+        ]
+    },
+    {
+        name: 'Аккаунт',
+        href: '/account/profile',
+        icon: <UserIcon/>,
+        menu: [
+            {
+                name: 'Редактировать',
+                icon: <PencilIcon/>,
+                href: '/account/profile/edit',
+            },
+            {
+                name: 'Сменить пароль',
+                icon: <LockClosedIcon/>,
+                href: '/account/profile/password',
+            },
+            {
+                name: 'Удалить аккаунт',
+                href: '/account/profile/remove',
+                icon: <TrashIcon/>
+            }
+        ]
+    },
+    {
+        name:  'Настройки',
+        href: '/account/settings',
+        icon: <Cog6ToothIcon/>,
+        menu: [
+            {
+                name: 'Статистика',
+                icon: <ChartBarIcon/>,
+                href: '/account/settings/stats',
+            },
+            {
+                name: 'Помощь',
+                icon: <InformationCircleIcon/>,
+                href: '/account/settings/help',
+            }
+        ]
+    }
+]
+const widthInputAdvertForm = 220;
+const internalTabOptionStates = {
+    'Свои': 0,
+    'участников': 1
+}
+const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено'];
+const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
+    return {
+        wastes: userData.wastes,
+        wasteTypes: userData.wasteTypes,
+        cityId: cityId,
+        offset: offset, // skip 0 instances
+        limit: limit, //and fetch 10 after that
+    };
+}
 
+const advertTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость (руб)"];
+
+const showUserAdverts = (userRole)=>  ['RECEIVER', 'PRODUCER'].includes(userRole);
+const showOthersAdverts = (userRole)=> ['RECEIVER', 'RECYCLER'].includes(userRole);
+const paginationOptions = [5,10,20];
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB,
+    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, widthInputAdvertForm,
+    getParamsToFetchAdverts, advertTableHeaders, paginationOptions,
+    showUserAdverts, showOthersAdverts
 }

@@ -12,6 +12,7 @@ export const defaultInitState = {
     users: [],
     query: '',
     currentUser: null,
+    dimensions: [],
 }
 
 export const createGlobalUIStore = (initState = defaultInitState) => {
@@ -28,6 +29,7 @@ export const createGlobalUIStore = (initState = defaultInitState) => {
         setUsers: (payload) => set((state) => ({...state, users: [...payload]})),
         setQuery: (payload) => set(() => ({ query: payload})),
         setCurrentUser: (payload) => set(() => ({ currentUser: payload})),
+        setDimensions: (payload) => set((state) => ({ ...state, dimensions: [...payload]})),
         reset: ()=> { set(defaultInitState)}
     }))
 }

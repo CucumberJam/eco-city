@@ -28,7 +28,6 @@ const advert = sequelize.define('advert',
       userId: {
         type: DataTypes.BIGINT,
         allowNull: false,
-        unique: true,
         validate: {
           notNull: {
             msg: 'userId can not be null'

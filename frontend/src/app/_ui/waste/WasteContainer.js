@@ -1,7 +1,7 @@
 'use client';
 import WasteAnnounces from "@/app/_ui/waste/WasteAnnounces";
 import WasteList from "@/app/_ui/waste/WasteList";
-import {ModalView} from "@/app/_ui/ModalView";
+import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
 import {useState} from "react";
 import WasteTypes from "@/app/_ui/waste/WasteTypes";

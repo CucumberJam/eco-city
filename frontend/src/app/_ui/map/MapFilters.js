@@ -1,5 +1,5 @@
 "use client";
-import Filter from "@/app/_ui/Filter";
+import Filter from "@/app/_ui/general/Filter";
 import {useMemo} from "react";
 import useRolesWastes from "@/app/_hooks/useRolesWastes";
 
@@ -8,7 +8,7 @@ const filters = [
     {label: `Вид отходов`, urlName: 'waste', value: null},
     {label: `Тип отходов`, alternativeName: 'Выберите вид отходов', urlName: 'wasteType', value: null},
 ]
-export default function MapFilters({rolesAPI, wastesApi, wasteTypesApi}){
+export default function MapFilters({rolesAPI = null, wastesApi = null, wasteTypesApi = null}){
 
     const {roles, setCurrentRole, currentRole,
         wastes, currentWaste, setCurrentWaste,

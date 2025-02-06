@@ -35,6 +35,7 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
                 if(!token?.accessToken) token.accessToken = user?.token || '';
 
                 if(!token?.user) token.user = {};
+                if(!token.user?.id) token.user.id = +user.id;
                 if(!token.user?.website) token.user.website = user.website;
                 if(!token.user?.ogrn) token.user.ogrn = user.ogrn;
                 if(!token.user?.role) token.user.role = user.role;
