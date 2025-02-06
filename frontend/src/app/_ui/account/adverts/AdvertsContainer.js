@@ -1,7 +1,7 @@
 "use client"
 import AdvertList from "@/app/_ui/account/adverts/AdvertList";
 import {useAdverts} from "@/app/_context/AdvertsProvider";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {showOthersAdverts, showUserAdverts} from "@/app/_store/constants";
 import useCities from "@/app/_hooks/useCities";
 import useRolesWastes from "@/app/_hooks/useRolesWastes";
@@ -10,6 +10,11 @@ import {Tabs} from "flowbite-react";
 import {HiUserCircle} from "react-icons/hi2";
 import {HiClipboardList} from "react-icons/hi";
 import {useTab} from "@/app/_context/TabContext";
+import UserDescription from "@/app/_ui/user/UserDescription";
+import {ModalView} from "@/app/_ui/general/ModalView";
+import {useModal} from "@/app/_context/ModalContext";
+import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
+import useErrors from "@/app/_hooks/useErrors";
 
 export default function AdvertsContainer({userData, userToken,  userId,
                                              citiesAPI, dimensionsApi,
@@ -25,12 +30,24 @@ export default function AdvertsContainer({userData, userToken,  userId,
     const tabsRef = useRef(null);
     const {selectedInternTabOpt, selectInternTabOpt} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
+    const {currentOpen, close, open} = useModal();
+    const [activeAdvert, setActiveAdvert] = useState(null);
+
     const userRole = userData.role;
 
     useEffect(() => {
         if(!currentCity) return;
         initAdvertsContext?.(userData, userToken, userId, currentCity?.id);
     }, [currentCity?.id]);
+
+    const pickUpAdvertHandler = (advert, isUser = false) => {
+        if(isUser){ // need to go to its page
+
+        }else{ //show on modal
+            open(advert.id);
+            setActiveAdvert(prev => advert);
+        }
+    }
 
     return (
         <>
@@ -59,7 +76,8 @@ export default function AdvertsContainer({userData, userToken,  userId,
                             title="Публикации других участников:"
                             pagination={paginationAdverts}
                             changePagePagination={(page, limit, offset) =>
-                                changePaginationPage(page, limit, offset, false)}/>
+                                changePaginationPage(page, limit, offset, false)}
+                            pickUpAdvertHandler={pickUpAdvertHandler}/>
             )}
             {(showUserAdverts(userRole) && advertsUser && selectedInternTabOpt === 0) && (
                 <AdvertList adverts={advertsUser}
@@ -70,9 +88,22 @@ export default function AdvertsContainer({userData, userToken,  userId,
                               showTitle={userRole !== 'RECEIVER'}
                               pagination={paginationAdvertsUser}
                               changePagePagination={(page, limit, offset) =>
-                                  changePaginationPage(page, limit, offset, true)}/>
+                                  changePaginationPage(page, limit, offset, true)}
+                            pickUpAdvertHandler={(avert)=>pickUpAdvertHandler(avert, true)}/>
             )}
-
+            <ModalView isOpen={currentOpen === activeAdvert?.id}
+                       title="Сведения о заявке"
+                       handleClose={()=> {
+                           setActiveAdvert?.(null);
+                           close();
+                       }}>
+                <AdvertInfo advert={activeAdvert}
+                            wastesAPI={wastes}
+                            wasteTypesAPI={wasteTypes}
+                            dimensionsAPI={dimensions}
+                            rolesAPI={roles}
+                            token={userToken}/>
+            </ModalView>
         </>
     );
 }

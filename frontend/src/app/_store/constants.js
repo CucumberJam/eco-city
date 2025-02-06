@@ -319,7 +319,7 @@ const advertTableHeaders = ["Компании", "Отходы", "Количес�
 
 const showUserAdverts = (userRole)=>  ['RECEIVER', 'PRODUCER'].includes(userRole);
 const showOthersAdverts = (userRole)=> ['RECEIVER', 'RECYCLER'].includes(userRole);
-const paginationOptions = [1,3,5];
+const paginationOptions = [5,10,20];
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,

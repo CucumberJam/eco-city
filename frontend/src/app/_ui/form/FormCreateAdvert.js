@@ -14,10 +14,10 @@ import {Checkbox, Datepicker, Button, Textarea, ToggleSwitch,Spinner} from "flow
 import FormButton from "@/app/_ui/form/FormButton";
 import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
 import {FormItem} from "@/app/_ui/form/FormItem";
-import FormAnnounce from "@/app/_ui/form/FormAnnounce";
 import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
 import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 import FormItemMap from "@/app/_ui/form/FormItemMap";
+import FormStatus from "@/app/_ui/form/FormStatus";
 
 export default function FormCreateAdvert({dimensionFromApi, userData, userToken}){
     const router = useRouter();
@@ -57,14 +57,11 @@ export default function FormCreateAdvert({dimensionFromApi, userData, userToken}
 
     return (
         <>
-            {errMessage.length > 0 && <FormAnnounce message={errMessage}/>}
-            {isRegisterSucceeded && <FormAnnounce message="Заявка успешно создана"
-                                                  type='success'/>}
-            {isFetching && <Spinner size={"xl"}/>}
-
-            {(!isFetching && !isRegisterSucceeded) && (
-                <form className='w-[700px] flex flex-col space-y-4 items-end'
-                   onSubmit={handleForm}>
+        <FormStatus isRegisterSucceeded={isRegisterSucceeded}
+                    errMessage={errMessage}
+                    isFetching={isFetching}>
+            <form className='w-[700px] flex flex-col space-y-4 items-end'
+                  onSubmit={handleForm}>
                 <FormRowBlock>
                     <FormColumnBlock>
                         <FormWasteBlock wastes={wastes}
@@ -112,7 +109,7 @@ export default function FormCreateAdvert({dimensionFromApi, userData, userToken}
                     </FormColumnBlock>
                 </FormRowBlock>
             </form>
-            )}
+        </FormStatus>
         </>
     );
 }
@@ -132,18 +129,19 @@ function FormColumnBlock({children}){
     );
 }
 function FormWasteBlock({userDataWastes, userDataWasteTypes, wastes, wasteTypes, widthBlock}){
-    const [chosenWaste, setChosenWaste] = useState('');
-    const [chosenWasteType, setChosenWasteType] = useState('');
-
     const userWastes = useMemo(()=>{
         return wastes?.filter(el => userDataWastes?.includes(el.id)) || [];
     }, [userDataWastes.length]);
+    const [chosenWaste, setChosenWaste] = useState(userWastes[0]);
+
+    const [chosenWasteType, setChosenWasteType] = useState(null);
+
 
     const userWasteTypes = useMemo(()=>{
-        const array = wasteTypes?.filter(el => userDataWasteTypes?.includes(el.id) && +el.typeId === +chosenWaste) || [];
-        if(array.length > 0) setChosenWasteType(array[0]?.id);
+        const array = wasteTypes?.filter(el => userDataWasteTypes?.includes(el.id) && +el.typeId === +chosenWaste.id) || [];
+        if(array.length > 0) setChosenWasteType(array[0]);
         return array;
-    }, [userDataWasteTypes.length, chosenWaste]);
+    }, [userDataWasteTypes.length, chosenWaste.id]);
 
     const styles = {width: `${widthBlock}px`, height: "35px", paddingTop: "0.2rem", borderRadius: "0.3rem"}
     return (
@@ -156,19 +154,21 @@ function FormWasteBlock({userDataWastes, userDataWasteTypes, wastes, wasteTypes,
                               key='waste'
                               defaultVal={userWastes[0]}
                               options={userWastes}
-                              hiddenValue={chosenWaste}
-                              changeHandler={(chosenWaste)=> setChosenWaste(chosenWaste?.id + '')}/>
-            {(+chosenWaste === userWasteTypes?.[0]?.typeId) && (
+                              hiddenValue={chosenWaste?.id + ''}
+                              changeHandler={(chosenWaste)=> setChosenWaste(chosenWaste)}/>
+
+
+            {(+chosenWaste?.id === userWasteTypes?.[0]?.typeId) && (
                 <FormSelectUnique label='Тип отходов:'
                                withLabel={false}
                                styleBlock={styles}
                                checkRightPosition={false}
                                htmlName='wasteType'
-                               key={chosenWaste}
+                               key={chosenWaste.id}
                                defaultVal={userWasteTypes[0]}
                                options={userWasteTypes}
-                               hiddenValue={chosenWasteType}
-                               changeHandler={(chosenWasteType) => setChosenWasteType(chosenWasteType?.id + '')}/>)}
+                               hiddenValue={chosenWasteType?.id + ''}
+                               changeHandler={(chosenWasteType) => setChosenWasteType(chosenWasteType)}/>)}
         </>
     );
 }
@@ -227,7 +227,7 @@ function FormPriceCountBlock({errorHandler = null}){
                 <FormItem label='Цена (шт.):'
                           htmlName='price'
                           defaultVal={0}
-                          type='number'
+                          type='number' addType="decimal"
                           changeHandler={event => changeCalculation(event.target.value, 'price')}/>
             </div>
             <div className={style}>
@@ -236,7 +236,7 @@ function FormPriceCountBlock({errorHandler = null}){
                       htmlName='totalPrice'
                       isControlled={true}
                       value={totalPrice}
-                      type='number'
+                      type='number' addType="decimal"
                       isDisabled={true}/>
             </div>
         </>

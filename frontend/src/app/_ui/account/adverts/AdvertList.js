@@ -9,11 +9,11 @@ export default function AdvertList({
                                        adverts, title = "Свои публикации:",
                                        roles, wastes, wasteTypes, dimensions,
                                        showTitle = true,
-                                       pagination = {}, changePagePagination  = null
+                                       pagination = {}, changePagePagination  = null,
+                                       pickUpAdvertHandler
                                     }){
 
     if(!adverts?.rows?.length) return <NoData title={title}/>
-    const pickUpAdvertHandler = (event, advert) => console.log(advert);
 
     return (
         <div className='w-full flex flex-col mt-2 my-2 h-full'>
@@ -31,7 +31,7 @@ export default function AdvertList({
                             {adverts?.rows?.map(el => (
                                 <Table.Row key={el.id}
                                             className="cursor-pointer bg-white dark:border-gray-700 dark:bg-gray-800"
-                                            onClick={(event)=> pickUpAdvertHandler(event, el)}>
+                                            onClick={(event)=> pickUpAdvertHandler(el)}>
                                     <Table.Cell className="font-medium text-gray-900 dark:text-white">
                                         <AdvertCompanyName name={el?.userName}
                                                            role={el?.userRole}

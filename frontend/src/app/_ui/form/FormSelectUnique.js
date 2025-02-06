@@ -13,7 +13,7 @@ export function FormSelectUnique({label = 'Город:',
                             defaultVal = null,//{id: 2, name: 'Тюмень'}
                             options = [],
                             changeHandler = null,
-                            hiddenValue = '',
+                            hiddenValue = '' || 0,
                             checkRightPosition = true,
                             styleBlock = {width: '100%', height: "35px", paddingTop: "0.2rem", borderRadius: "0.3rem"}}) {
     const [isChecked, setIsChecked] = useState(options.length === 1);

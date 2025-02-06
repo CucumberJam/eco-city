@@ -64,6 +64,9 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
         attributes: {exclude: ['deletedAt']},
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
+        order: [
+            ['createdAt', 'DESC'],
+        ],
     });
     if(!adverts) return next(new AppError("Failed to get adverts", 400));
     return res.status(200).json({
@@ -83,6 +86,9 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         attributes: {exclude: ['deletedAt']},
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
+        order: [
+            ['createdAt', 'DESC'],
+        ],
     });
     if(!adverts) return next(new AppError("Failed to get user's adverts", 400));
     return res.status(200).json({
@@ -112,11 +118,11 @@ const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
         amount: +formData.amount || 1.0,
         price: +formData.price || 0.0,
         totalPrice: +formData.totalPrice || 0.0,
-        isPickedUp: formData.isPickedUp || true,
+        isPickedUp: formData?.isPickedUp,
         photos: formData?.photos || null,
         comment: formData?.comment || null,
         finishDate: new Date(Date.parse(formData.finishDate)),
-        priceWithDelivery: formData?.priceWithDelivery || false,
+        priceWithDelivery: formData?.priceWithDelivery,
     });
     console.log(newAdvert);
     if(!newAdvert) return next(new AppError('Failed to create new advert', 400));

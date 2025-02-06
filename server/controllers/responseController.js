@@ -80,8 +80,10 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
 
 // Публиковать отклики на заявки других участников (ADMIN, RECYCLER, RECEIVER):
 const createResponse = catchAsyncErrorHandler(async (req, res, next) => {
+    const formData = req?.body?.formData;
+    if(!formData) return;
     const newResponse = await response.create({
-        advertId: +req?.body?.advertId,
+        advertId: +formData.advertId,
         status: 'На рассмотрении',
         userId: +req?.user?.id,
         userName: req?.user?.name,
@@ -89,9 +91,9 @@ const createResponse = catchAsyncErrorHandler(async (req, res, next) => {
         longitude: req?.body?.longitude || req?.user?.longitude,
         latitude: req?.body?.latitude || req?.user?.latitude,
         userRole: req?.user?.role,
-        price: req?.body?.price || 0.0,
-        totalPrice: req?.body?.totalPrice || 0.0,
-        comment: req?.body?.comment || null
+        price: +formData?.price || 0.0,
+        totalPrice: +formData?.totalPrice || 0.0,
+        comment: formData?.comment || null
     });
     if(!newResponse) return next(new AppError('Failed to create new response', 400));
     const result = removeCreatedFields(newResponse, null, false);

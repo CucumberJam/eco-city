@@ -8,11 +8,11 @@ const styles = {
     input: 'border mx-2 border-gray-500 rounded bg-inherit px-2 py-1',
     label: 'text-green-50'
 }
-export function FormItem({
+export default function FormItem({
                              label = '',
                              htmlName = 'email',
                              isControlled = false,
-                             type= 'email',
+                             type= 'email', addType= 'integer',
                              value = type === 'number' ? 0 : '',
                              defaultVal = null,
                              placeholder = '',
@@ -44,6 +44,7 @@ export function FormItem({
                     <InputControlled isControlled={isControlled}
                                      value={value}
                                      type={type}
+                                     addType={addType}
                                      htmlName={htmlName}
                                      defaultVal={defaultVal}
                                      placeholder={placeholder}
@@ -100,11 +101,12 @@ function InputPassword({   isControlled = false, value,
     );
 }
 function InputControlled({htmlName, type = 'text', defaultVal, placeholder,
-                             styleWide, isDisabled, keyUpHandler,
+                             styleWide, isDisabled, keyUpHandler, addType= null,
                              value, changeHandler, isControlled = false}){
 
     if(isControlled){
         return <input id={htmlName}
+               step={type === 'number' ?( addType === 'integer' ? '1': ".01"): ''}
                type={type}
                name={htmlName}
                value={value}
@@ -116,6 +118,7 @@ function InputControlled({htmlName, type = 'text', defaultVal, placeholder,
     }
     return (
         <input id={htmlName}
+               step={type === 'number' ?( addType === 'integer' ? '1': ".01"): ''}
                type={type}
                name={htmlName}
                defaultValue={defaultVal}

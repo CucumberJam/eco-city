@@ -169,6 +169,29 @@ export async function createAdvertAction(formData, token){
     }
 }
 
+export async function createResponseAction(formData, token){
+    const options = getOptions(token, 'POST');
+    options.body = JSON.stringify({
+        formData
+    });
+    try{
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses`, options);
+        const data = await res.json();
+        console.log('Response from response - create: ', data);
+        if(res.status === 400 || !res.ok){
+            return {status: 'error', message: data.message};
+        }
+        if(data.status === 'fail' || data.status === 400){
+            return {status: 'error', message: data.message.endsWith('is not valid JSON') ? 'Тело запроса передано не в формате JSON' : data.message};
+        }
+        if(data.status === 'success') return {status: 'success', data: data.data};
+        else return {status: 'error', message: data.message};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message === 'Failed to fetch' ? 'Ошибка сети' : e.message};
+    }
+}
+
 function checkToken(errorMessage){
     if(errorMessage === 'Invalid token') {
         redirect(authRoutes[0]);

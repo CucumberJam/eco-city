@@ -145,15 +145,15 @@ export async function loginAPI(email, password){
 export function hasAdvertCreateFormErrors(formData, currentCity, userData, wasteTypes, errorHandler){
     const params = {}
     // check address:
-    const isPickedUp = formData.get('isPickedUp');
+    let isPickedUp = formData.get('isPickedUp');
     const address = formData.get('address');
     const latitude =  formData.get('latitude');
     const longitude = formData.get('longitude');
     const priceWithDelivery = formData.get('priceWithDelivery');
-    if(isPickedUp){
+    if(isPickedUp === 'true'){
         //check priceWithDelivery:
         formData.set('priceWithDelivery', 'false');
-        if(isPickedUp && errorHandler('advert', {type: 'address', currentCity, userAddress: userData.address, address, latitude, longitude})) return;
+        if(errorHandler('advert', {type: 'address', currentCity, userAddress: userData.address, address, latitude, longitude})) return;
     }
     params.address = address;
     params.latitude = +latitude;
@@ -161,7 +161,7 @@ export function hasAdvertCreateFormErrors(formData, currentCity, userData, waste
     formData.append('cityId', currentCity.id);
     params.cityId = +currentCity.id;
     params.isPickedUp = isPickedUp === 'true';
-    params.priceWithDelivery = isPickedUp ? false : (priceWithDelivery === 'true');
+    params.priceWithDelivery = params.isPickedUp ? false : (priceWithDelivery === 'true');
 
     // check amount:
     const amount = formData.get('amount');
@@ -177,11 +177,11 @@ export function hasAdvertCreateFormErrors(formData, currentCity, userData, waste
     params.totalPrice = parseFloat(totalPrice);
 
     // check wastes:
-    setDefaultWasteType(formData, wasteTypes, userData.wasteTypes, userData.wastes);
-    const wastes = formData.get('waste');
+    //setDefaultWasteType(formData, wasteTypes, userData.wasteTypes, userData.wastes);
+    const waste = formData.get('waste');
     const wasteType = formData.get('wasteType');
-    if(errorHandler('advert', {type: 'waste', wastes})) return {hasErrors: true};
-    params.waste = +wastes;
+    if(errorHandler('advert', {type: 'waste', waste})) return {hasErrors: true};
+    params.waste = +waste;
     params.wasteType = wasteType ? +wasteType : null;
 
     // check dimension:
@@ -199,17 +199,4 @@ export function hasAdvertCreateFormErrors(formData, currentCity, userData, waste
     params.photos = null;
 
     return {hasErrors: false, data: params};
-}
-function setDefaultWasteType(formData, wasteTypesAPI, userWasteTypes, userWastes){
-    const waste = formData.get('waste');
-    if(!waste){
-        formData.set('waste', userWastes[0]);
-    }
-    const wasteType = formData.get('wasteType');
-    if(wasteType) return;
-
-    const array = wasteTypesAPI.filter(el => userWasteTypes?.includes(el.id) && +el.typeId === +waste) || [];
-    if(array.length > 0) {
-        formData.set('wasteType', array[0]?.id);
-    }
 }
