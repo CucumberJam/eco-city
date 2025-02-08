@@ -88,6 +88,44 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
         return {status: 'error', message: e.message};
     }
 }
+
+export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
+    if(!userId) return;
+    const paramsObj = {offset: offset, limit: limit};
+    const searchParams = new URLSearchParams(paramsObj);
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${userId}?${searchParams.toString()}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
+
+export async function getOtherResponses(token, offset = 0, limit = 10, adverts = null){
+    const paramsObj = {offset: offset, limit: limit};
+    if(adverts) paramsObj.adverts = adverts;
+    const searchParams = new URLSearchParams(paramsObj);
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/?${searchParams.toString()}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
 export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
     try{
         if(useApiFNS){

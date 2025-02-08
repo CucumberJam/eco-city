@@ -3,73 +3,75 @@ const response = require("../db/models/response");
 const AppError = require("../utils/appError");
 const advert = require("../db/models/advert");
 const {removeCreatedFields} = require("./authController");
+const {Op} = require("sequelize");
 
-// Получить отклики других участников на свои заявки (PRODUCER, ADMIN, RECEIVER):
-/* на фронте сделать логику:
-- получить Ids своих объявлений
-- получить все отклики, где есть Ids
-const getResponses = catchAsyncErrorHandler(async (req, res, next) => {
+// Получить отклики других участников на свои заявки
+// (PRODUCER, ADMIN, RECEIVER):
+const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-
-    // получить Ids своих объявлений
-    const adverts = await advert.findAll({
-        where: {
-            userId: userId,
-        },
-        attributes: ['id', 'finishDate'],
-    });
-    if(!adverts) return next(new AppError("Failed to get adverts of user", 400));
-
-    // получить все отклики, где есть Ids
-    let responses = [];
-    const advertsObjs = JSON.parse(adverts)?.data; // adverts = {status,data :[{}, {}, {}]}
-    for await(const advertsObj of advertsObjs){
-        const responsesByAdvertId = await response.findAll({
-            where: {
-                advertId: advertsObj?.id
-            },
+    let adverts = req?.query?.adverts;
+    if(!adverts || adverts?.length === 0){
+        adverts = await advert.findAll({
             attributes: {
-                exclude: ['deletedAt']
-            }
+                exclude: ['deletedAt'],
+                include: ['id']
+            },
+            where: { // только id своих актуальных объявлений (в работе):
+                userId: userId,
+                status: {
+                    [Op.ne]: 'Исполнено'
+                },
+            },
+            order: [
+                ['updatedAt', 'DESC'],
+            ],
         });
-        if(responsesByAdvertId){
-            responses = responses.concat(responsesByAdvertId);
-        }
     }
-    return res.status(200).json({
-        status: 'success',
-        data: responses
-    });
-});*/
-const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
-    const responsesByAdvertId = await response.findAll({
+    if(!adverts) return next(new AppError("Failed to get adverts", 400));
+
+    const responsesByAdverts = await response.findAndCountAll({
         where: {
-            advertId: +req.params?.advertId // get advertId
+            advertId: [adverts] // get advertId
         },
         attributes: {
             exclude: ['deletedAt']
-        }
+        },
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
     });
-    if(!responsesByAdvertId) return next(new AppError("Failed to get responses of user by advert id", 400));
+    if(!responsesByAdverts) return next(new AppError("Failed to get other responses by user's adverts", 400));
 
-    return res.status(200).json({
+    const responseObj = {
         status: 'success',
-        data: responsesByAdvertId
-    });
-
-
+        data: {
+            count: responsesByAdverts.count,
+            rows: responsesByAdverts.rows,
+        },
+    }
+    if(!req?.query?.adverts || req?.query?.adverts?.length === 0){
+        responseObj.advertsIds = adverts;
+    }
+    return res.status(200).json(responseObj);
 });
 // Получить только свои отклики (ADMIN, RECYCLER, RECEIVER):
 const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
+    if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+
     const responses = await response.findAndCountAll({
         where: {
             userId: userId,
         },
         include: advert,
         attributes: {exclude: ['deletedAt']},
-        offset: 10,
-        limit: 0,
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
     });
     if(!responses) return next(new AppError("Failed to get user's responses", 400));
     return res.status(200).json({
@@ -166,7 +168,7 @@ const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
 });
 
 module.exports = {
-    getResponsesByAdvertId,
+    getOtherResponses,
     getResponsesByUserId,
     createResponse,
     updateResponseByAdvertId,

@@ -58,6 +58,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
             [Op.or]: req.query?.wasteTypes.split(',').map(el => +el)
         }
     }
+    console.log(options)
     const adverts = await advert.findAndCountAll({
         where: options,
         include: user,
@@ -65,7 +66,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
         order: [
-            ['createdAt', 'DESC'],
+            ['updatedAt', 'DESC'],
         ],
     });
     if(!adverts) return next(new AppError("Failed to get adverts", 400));
