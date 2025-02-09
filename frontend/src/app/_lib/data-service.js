@@ -11,7 +11,7 @@ const getOptions = (token, method = 'GET')=>{
 
 export const getCities = async ()=> {
     try{
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/cities`);
+        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/cities`);
         const data = await res.json();
         return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
     }catch (e) {
@@ -21,9 +21,9 @@ export const getCities = async ()=> {
 }
 export const getRoles = async ()=> {
     try{
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/roles`);
+        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/roles`);
         const data = await res.json();
-        if(data.status) return data.data;
+        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
@@ -31,9 +31,9 @@ export const getRoles = async ()=> {
 }
 export const getDimensions = async ()=> {
     try{
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dimensions`);
+        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/dimensions`);
         const data = await res.json();
-        if(data.status) return data.data;
+        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
@@ -41,9 +41,9 @@ export const getDimensions = async ()=> {
 }
 export const getWastes = async ()=> {
     try{
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/wastes`);
+        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/wastes`);
         const data = await res.json();
-        if(data.status) return data.data;
+        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
@@ -51,9 +51,9 @@ export const getWastes = async ()=> {
 }
 export const getWasteTypes = async ()=> {
     try{
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/wastes/types/`);
+        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/wastes/types/`);
         const data = await res.json();
-        if(data.status) return data.data;
+        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
@@ -64,7 +64,7 @@ export async function getAdverts(userId, token){
     if(!userId) return;
     try{
         const options = getOptions(token);
-        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${userId}`, options);
+        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/adverts/${userId}`, options);
         const data = await res.json();
         console.log('Response from Adverts: ', data)
         if(data.status !== 'success'){

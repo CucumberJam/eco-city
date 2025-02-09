@@ -13,15 +13,15 @@ import {Checkbox, Datepicker, Button, Textarea, ToggleSwitch,Spinner} from "flow
 
 import FormButton from "@/app/_ui/form/FormButton";
 import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
-import {FormItem} from "@/app/_ui/form/FormItem";
+import FormItem from "@/app/_ui/form/FormItem";
 import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
 import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 import FormItemMap from "@/app/_ui/form/FormItemMap";
 import FormStatus from "@/app/_ui/form/FormStatus";
 
-export default function FormCreateAdvert({dimensionFromApi, userData, userToken}){
+export default function FormCreateAdvert({userData, userToken}){
     const router = useRouter();
-    const {wastes, wasteTypes, currentCity} = useGlobalUIStore((state) => state);
+    const {wastes, wasteTypes, currentCity, dimensions} = useGlobalUIStore((state) => state);
 
     const {errMessage, hasError} = useErrors();
     const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
@@ -69,7 +69,7 @@ export default function FormCreateAdvert({dimensionFromApi, userData, userToken}
                                         userDataWastes={userData.wastes}
                                         userDataWasteTypes={userData.wasteTypes}
                                         widthBlock={widthInputAdvertForm}/>
-                        <FormDimensionBlock dimensionFromApi={dimensionFromApi}
+                        <FormDimensionBlock dimensionFromApi={dimensions}
                                             widthBlock={widthInputAdvertForm}/>
                         <FormPriceCountBlock errorHandler={hasError}/>
                         <FormCommentBlock/>
@@ -131,7 +131,7 @@ function FormColumnBlock({children}){
 function FormWasteBlock({userDataWastes, userDataWasteTypes, wastes, wasteTypes, widthBlock}){
     const userWastes = useMemo(()=>{
         return wastes?.filter(el => userDataWastes?.includes(el.id)) || [];
-    }, [userDataWastes.length]);
+    }, [userDataWastes?.length]);
     const [chosenWaste, setChosenWaste] = useState(userWastes[0]);
 
     const [chosenWasteType, setChosenWasteType] = useState(null);
@@ -141,7 +141,7 @@ function FormWasteBlock({userDataWastes, userDataWasteTypes, wastes, wasteTypes,
         const array = wasteTypes?.filter(el => userDataWasteTypes?.includes(el.id) && +el.typeId === +chosenWaste.id) || [];
         if(array.length > 0) setChosenWasteType(array[0]);
         return array;
-    }, [userDataWasteTypes.length, chosenWaste.id]);
+    }, [userDataWasteTypes.length, chosenWaste?.id]);
 
     const styles = {width: `${widthBlock}px`, height: "35px", paddingTop: "0.2rem", borderRadius: "0.3rem"}
     return (

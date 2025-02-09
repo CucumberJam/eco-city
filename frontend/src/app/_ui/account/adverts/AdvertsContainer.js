@@ -3,26 +3,17 @@ import AdvertList from "@/app/_ui/account/adverts/AdvertList";
 import {useAdverts} from "@/app/_context/AdvertsProvider";
 import {useEffect, useRef, useState} from "react";
 import {showOthersAdverts, showUserAdverts} from "@/app/_store/constants";
-import useCities from "@/app/_hooks/useCities";
-import useRolesWastes from "@/app/_hooks/useRolesWastes";
-import useDimensions from "@/app/_hooks/useDimensions";
 import {Tabs} from "flowbite-react";
 import {HiUserCircle} from "react-icons/hi2";
 import {HiClipboardList} from "react-icons/hi";
 import {useTab} from "@/app/_context/TabContext";
-import UserDescription from "@/app/_ui/user/UserDescription";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
 import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
-import useErrors from "@/app/_hooks/useErrors";
+import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 
-export default function AdvertsContainer({userData, userToken,  userId,
-                                             citiesAPI, dimensionsApi,
-                                             rolesAPI, wastesApi, wasteTypesApi}){
-
-    const {currentCity}  = useCities(citiesAPI, false);
-    const { roles, wastes, wasteTypes } = useRolesWastes(rolesAPI, wastesApi, wasteTypesApi);
-    const {dimensions} = useDimensions(dimensionsApi);
+export default function AdvertsContainer({userData, userId, userToken}){
+    const {currentCity} = useGlobalUIStore((state) => state);
 
     const {advertsUser, adverts, initAdvertsContext,
         paginationAdvertsUser, paginationAdverts, changePaginationPage} = useAdverts();
@@ -68,10 +59,6 @@ export default function AdvertsContainer({userData, userToken,  userId,
             )}
             {(showOthersAdverts(userRole) && adverts && selectedInternTabOpt === 1) && (
                 <AdvertList adverts={adverts}
-                            roles={roles}
-                            wastes={wastes}
-                            wasteTypes={wasteTypes}
-                            dimensions={dimensions}
                             showTitle={userRole !== 'RECEIVER'}
                             title="Публикации других участников:"
                             pagination={paginationAdverts}
@@ -81,14 +68,10 @@ export default function AdvertsContainer({userData, userToken,  userId,
             )}
             {(showUserAdverts(userRole) && advertsUser && selectedInternTabOpt === 0) && (
                 <AdvertList adverts={advertsUser}
-                              roles={roles}
-                              wastes={wastes}
-                              wasteTypes={wasteTypes}
-                              dimensions={dimensions}
-                              showTitle={userRole !== 'RECEIVER'}
-                              pagination={paginationAdvertsUser}
-                              changePagePagination={(page, limit, offset) =>
-                                  changePaginationPage(page, limit, offset, true)}
+                            showTitle={userRole !== 'RECEIVER'}
+                            pagination={paginationAdvertsUser}
+                            changePagePagination={(page, limit, offset) =>
+                              changePaginationPage(page, limit, offset, true)}
                             pickUpAdvertHandler={(avert)=>pickUpAdvertHandler(avert, true)}/>
             )}
             <ModalView isOpen={currentOpen === activeAdvert?.id}
@@ -98,10 +81,6 @@ export default function AdvertsContainer({userData, userToken,  userId,
                            close();
                        }}>
                 <AdvertInfo advert={activeAdvert}
-                            wastesAPI={wastes}
-                            wasteTypesAPI={wasteTypes}
-                            dimensionsAPI={dimensions}
-                            rolesAPI={roles}
                             token={userToken}/>
             </ModalView>
         </>

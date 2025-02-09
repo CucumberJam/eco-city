@@ -5,13 +5,14 @@ import {advertTableHeaders, paginationOptions} from "@/app/_store/constants";
 import {prepareName} from "@/app/_lib/helpers";
 import {MdAnnouncement} from "react-icons/md";
 import ServerPagination from "@/app/_ui/general/ServerPagination";
+import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 export default function AdvertList({
                                        adverts, title = "Свои публикации:",
-                                       roles, wastes, wasteTypes, dimensions,
                                        showTitle = true,
                                        pagination = {}, changePagePagination  = null,
                                        pickUpAdvertHandler
                                     }){
+    const {roles, wastes, wasteTypes, dimensions} = useGlobalUIStore((state) => state);
 
     if(!adverts?.rows?.length) return <NoData title={title}/>
 

@@ -29,6 +29,7 @@ export default function LoginForm(){
                 throw new Error(response?.message);
             }else {
                 setIsFetching(prev => false);
+
                 router.push('/account');
             }
         }catch (e) {

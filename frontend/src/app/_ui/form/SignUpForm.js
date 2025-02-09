@@ -1,11 +1,10 @@
 'use client';
 import {useEffect, useState} from "react";
-import {FormItem} from "@/app/_ui/form/FormItem";
+import FormItem from "@/app/_ui/form/FormItem";
 import FormButton from "@/app/_ui/form/FormButton";
 import {USE_FNS2} from "@/app/_lib/URLS";
 import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
 import useCities from "@/app/_hooks/useCities";
-import useRolesWastes from "@/app/_hooks/useRolesWastes";
 import FormSelectMultiple from "@/app/_ui/form/FormSelectMultiple";
 import useErrors from "@/app/_hooks/useErrors";
 import useDebounce from "@/app/_hooks/useDebounce";
@@ -19,16 +18,16 @@ import FormAnnounce from "@/app/_ui/form/FormAnnounce";
 import {Progress, Spinner} from "flowbite-react";
 import useSignUpForm from "@/app/_hooks/useSignUpForm";
 import {ChevronLeftIcon} from "@heroicons/react/24/outline";
-export default function SignUpForm({citiesAPI, rolesAPI, wastesApi, wasteTypesApi}) {
-    const {currentUser, setCurrentUser} = useGlobalUIStore((state) => state);
-    const {roles, wastes, wasteTypes} = useRolesWastes(rolesAPI, wastesApi, wasteTypesApi);
+export default function SignUpForm() {
+    const {currentUser, setCurrentUser, roles, wastes, wasteTypes} = useGlobalUIStore((state) => state);
+
+    const [isFetching, setIsFetching] = useState(false);
     const {errMessage, hasError} = useErrors();
+    const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
+
     const {isFetchingOGRN, ogrnUserName, ogrnUserAddress, debounceCheck} = useDebounce(hasError);
     const {signUpForm, signUpFormDispatch, checkStep7, checkFormData,
         getFormObjectWithPassword} = useSignUpForm(hasError);
-
-    const [isFetching, setIsFetching] = useState(false);
-    const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
 
     useEffect(() => {
         if (currentUser) setCurrentUser(null);
@@ -79,8 +78,7 @@ export default function SignUpForm({citiesAPI, rolesAPI, wastesApi, wasteTypesAp
                                                  isFetchingOGRN={isFetchingOGRN}
                                                  ogrnUserAddress={ogrnUserAddress}
                                                  ogrnUserName={ogrnUserName}/>}
-            {signUpForm.step === 2 && <FormStep2 citiesAPI={citiesAPI}
-                                                 backHandler={signUpFormDispatch}/>}
+            {signUpForm.step === 2 && <FormStep2 backHandler={signUpFormDispatch}/>}
             {signUpForm.step === 3 && <FormStep3 roles={roles}
                                                  backHandler={signUpFormDispatch}/>}
             {signUpForm.step === 4 && <FormState4 wastes={wastes}
@@ -153,8 +151,8 @@ function FormStep1({debounceCheck, ogrnUserName, ogrnUserAddress, isFetchingOGRN
         </>
     );
 }
-function FormStep2({citiesAPI, backHandler}){
-    const {currentCity, cities} = useCities(citiesAPI, false);
+function FormStep2({backHandler}){
+    const {currentCity, cities} = useCities();
     const [latitude, setLatitude] = useState( 0);
     const [longitude, setLongitude] = useState( 0);
     const [chosenCity, setChosenCity] = useState(0);
