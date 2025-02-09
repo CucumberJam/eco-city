@@ -21,7 +21,7 @@ function ResponsesProvider({children}) {
     const [responses, setResponses] = useState(null);
     const userData = useRef(null);
 
-    const [userAdvertsIds, setUserAdvertsIds] = useState(null);
+    const userAdvertsIds = useRef(null);
 
     const [paginationResponsesUser, setPaginationResponsesUser] = useState({...initialPagination});
     const [paginationResponses, setPaginationResponses] = useState({...initialPagination});
@@ -36,6 +36,7 @@ function ResponsesProvider({children}) {
                                           limit = initialPagination.limit,
                                           currentPage = initialPagination.currentPage){
         const res = await getResponsesOfUser(userData.current.id, userData.current.token, offset, limit);
+        console.log(res)
         if(res?.status === 'success' && res?.data){
             setResponsesUser(prev => res.data); //{count: 2, rows: []}
             // updatePagination:
@@ -55,10 +56,11 @@ function ResponsesProvider({children}) {
     async function fetchAndSetOthersResponses(offset = initialPagination.offset,
                                             limit = initialPagination.limit,
                                             currentPage = initialPagination.currentPage){
-        const res = await getOtherResponses(userData.current.token, offset, limit, userAdvertsIds);
+        const res = await getOtherResponses(userData.current.token, offset, limit, userAdvertsIds.current);
+        console.log(res);
         if(res.status === 'success'){
             setResponses(prev => res.data);
-            if(!userAdvertsIds && res.advertsIds) setUserAdvertsIds(prev => res.advertsIds);
+            if(!userAdvertsIds?.current && res.advertsIds) userAdvertsIds.current = res.advertsIds;
             // updatePagination:
             const totalPages = Math.ceil((res.data?.count || res.data?.rows?.length || 1) / limit);
             setPaginationResponses((prev) => ({

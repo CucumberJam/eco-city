@@ -12,10 +12,7 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
     let adverts = req?.query?.adverts;
     if(!adverts || adverts?.length === 0){
         adverts = await advert.findAll({
-            attributes: {
-                exclude: ['deletedAt'],
-                include: ['id']
-            },
+            attributes: ['id'],
             where: { // только id своих актуальных объявлений (в работе):
                 userId: userId,
                 status: {
@@ -26,12 +23,15 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
                 ['updatedAt', 'DESC'],
             ],
         });
+        if(!adverts) return next(new AppError("Failed to get adverts", 400));
+        adverts = adverts?.map(el => +el.dataValues.id);
     }
-    if(!adverts) return next(new AppError("Failed to get adverts", 400));
-
     const responsesByAdverts = await response.findAndCountAll({
         where: {
-            advertId: [adverts] // get advertId
+            advertId: adverts, // get advertId
+            userId: {
+                [Op.ne]: userId
+            },
         },
         attributes: {
             exclude: ['deletedAt']
@@ -41,7 +41,9 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
         ],
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
+        include: advert,
     });
+
     if(!responsesByAdverts) return next(new AppError("Failed to get other responses by user's adverts", 400));
 
     const responseObj = {

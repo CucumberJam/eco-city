@@ -12,6 +12,8 @@ import {TrashIcon} from "@heroicons/react/24/outline";
 import {ChartBarIcon} from "@heroicons/react/24/outline";
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
 import {useMemo} from "react";
+import {HiUserCircle} from "react-icons/hi2";
+import {HiClipboardList} from "react-icons/hi";
 const statusTitle = {
     producer: 'Производитель отходов',
     recycler: 'Переработчик отходов',
@@ -301,10 +303,12 @@ const accountTabs = [
 ]
 const widthInputAdvertForm = 220;
 const internalTabOptionStates = {
-    'Свои': 0,
+    'Мои': 0,
     'участников': 1
 }
 const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено'];
+const tabsTitles = ["Мои публикации", "Публикации других участников"];
+const tabsIcons = [HiUserCircle, HiClipboardList];
 const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
     return {
         wastes: userData.wastes,
@@ -316,7 +320,13 @@ const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
 }
 
 const advertTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость (руб)"];
-
+const responseTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость заявки (руб)", "Стоимость отклика (руб)", "Статус"];
+const statusColors = {
+    0: '#FFC833',
+    1: '#DB4646',
+    2: '#7ea542',
+    3: '#3C546C'
+}
 const showUserAdverts = (userRole)=>  ['RECEIVER', 'PRODUCER'].includes(userRole);
 const showOthersAdverts = (userRole)=> ['RECEIVER', 'RECYCLER'].includes(userRole);
 const showUserResponses = (userRole)=>  ['RECEIVER', 'RECYCLER'].includes(userRole);
@@ -325,7 +335,10 @@ const paginationOptions = [5,10,20];
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, widthInputAdvertForm,
-    getParamsToFetchAdverts, advertTableHeaders, paginationOptions,
+    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, statusColors,
+    widthInputAdvertForm,
+    getParamsToFetchAdverts, advertTableHeaders, responseTableHeaders,
+    paginationOptions,
     showUserAdverts, showOthersAdverts, showUserResponses, showOthersResponses,
+    tabsTitles, tabsIcons,
 }

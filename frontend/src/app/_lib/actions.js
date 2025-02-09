@@ -120,7 +120,11 @@ export async function getOtherResponses(token, offset = 0, limit = 10, adverts =
             if(checkToken(data.message)) throw Error(data.message)
             else throw Error(data.message)
         }
-        return {status: 'success', data: data.data};
+        const response = {
+            status: 'success', data: data.data
+        }
+        if(!adverts) response.advertsIds = data.advertsIds;
+        return response;
     }catch (e) {
         console.log(e);
         return {status: 'error', message: e.message};

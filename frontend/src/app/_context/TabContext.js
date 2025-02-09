@@ -11,7 +11,7 @@ function TabProvider({children}){
 
     const [mode, setMode] = useState('all');
     const [tabOptions, setTabOptions] = useState([]);
-    const [selectedInternTabOpt, selectInternTabOpt] = useState(internalTabOptionStates['Свои']);
+    const [selectedInternTabOpt, selectInternTabOpt] = useState(internalTabOptionStates['Мои']);
 
     useEffect(()=>{
         if(mode === 'all' || pathName === '/account' || !pathName.startsWith('/account')) return;

@@ -11,6 +11,7 @@ import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
 import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
+import AccountTabs from "@/app/_ui/account/AccountTabs";
 
 export default function AdvertsContainer({userData, userId, userToken}){
     const {currentCity} = useGlobalUIStore((state) => state);
@@ -43,19 +44,9 @@ export default function AdvertsContainer({userData, userId, userToken}){
     return (
         <>
             {userRole === 'RECEIVER' && (
-                <div className="w-[98%] my-2 mx-3">
-                    <Tabs variant="default"
-                          className="space-x-2"
-                          ref={tabsRef}
-                          onActiveTabChange={(tab) => selectInternTabOpt(tab)}>
-                        <Tabs.Item title="Мои публикации"
-                                   className="font-medium text-gray-800 dark:text-white"
-                                   icon={HiUserCircle}/>
-                        <Tabs.Item title="Публикации других участников"
-                                   className="font-medium text-gray-800 dark:text-white"
-                                   icon={HiClipboardList}/>
-                    </Tabs>
-                </div>
+                <AccountTabs tabsRef={tabsRef}
+                             defaultValue={selectedInternTabOpt}
+                             setTabHandler={selectInternTabOpt}/>
             )}
             {(showOthersAdverts(userRole) && adverts && selectedInternTabOpt === 1) && (
                 <AdvertList adverts={adverts}
