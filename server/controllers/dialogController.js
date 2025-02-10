@@ -24,16 +24,52 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
 const createDialog = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const { secondUserId } = req.body;
+    if(!secondUserId) return next(new AppError('Не был передан параметр второго участника диалога', 400));
+
+    let result;
+
+    const existDialog = await dialog.findOne({
+        where: {
+            firstUserId: userId,
+            secondUserId: +secondUserId
+        },
+        attributes: {exclude: ['createdAt', 'deletedAt']},
+    });
+    if(existDialog){
+        return res.status(200).json({
+            status: 'success',
+            data: existDialog
+        });
+    }
     const newDialog = await dialog.create({
         firstUserId: userId,
         secondUserId
     });
     if(!newDialog) return next(new AppError('Failed to create new dialog', 400));
-    const result = removeCreatedFields(newDialog);
+    result = removeCreatedFields(newDialog);
     return res.status(200).json({
         status: 'success',
         data: result
     });
 });
+const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const dialogId = +req?.params?.dialogId;
+    if(!dialogId) return next(new AppError("Не представлено id диалога", 400));
+    const found = await dialog.findOne({
+        where: {
+            id: dialogId,
+            [Op.or]: [{ firstUserId: userId }, { secondUserId: userId }]
+        },
+        attributes: {exclude: ['deletedAt', 'updatedAt']},
+        include: user
+    });
+    if(!found) return next(new AppError(`Ошибка получения диалога №${dialogId}`, 400));
 
-module.exports = {getDialogs, createDialog}
+    return res.status(200).json({
+        status: 'success',
+        data: found
+    });
+});
+
+module.exports = {getDialogs, createDialog, getDialogById}

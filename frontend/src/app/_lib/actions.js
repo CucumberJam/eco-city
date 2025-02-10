@@ -36,6 +36,23 @@ export async function signInAction(formData) {
         return {success: false, message: error.message};
     }
 }
+export async function createDialog(token, secondUserId){
+    if(!secondUserId) return;
+    try{
+        const options = getOptions(token, 'POST');
+        options.body = JSON.stringify({secondUserId: +secondUserId});
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, data: e.message};
+    }
+}
 export async function getDialogs(id, token){
     if(!id) return;
     try{
@@ -50,6 +67,22 @@ export async function getDialogs(id, token){
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
+    }
+}
+export async function getDialogById(token, dialogId){
+    if(!dialogId || !token) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs/${dialogId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
     }
 }
 export async function getAdvertsOfUser(userId, token, offset = 0, limit = 10){

@@ -58,7 +58,6 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
             [Op.or]: req.query?.wasteTypes.split(',').map(el => +el)
         }
     }
-    console.log(options)
     const adverts = await advert.findAndCountAll({
         where: options,
         include: user,

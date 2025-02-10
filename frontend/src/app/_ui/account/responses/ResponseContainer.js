@@ -8,6 +8,7 @@ import AccountTabs from "@/app/_ui/account/AccountTabs";
 import {showOthersResponses, showUserResponses} from "@/app/_store/constants";
 import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import {ModalView} from "@/app/_ui/general/ModalView";
+import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 
 export default function ResponseContainer({userData, userId, userToken}){
     const {currentCity} = useGlobalUIStore((state) => state);
@@ -69,12 +70,14 @@ export default function ResponseContainer({userData, userId, userToken}){
                                pickUpAdvertHandler={(avert)=>pickUpResponseHandler(avert, true)}/>
             )}
             <ModalView isOpen={currentOpen === activeResponse?.id}
-                       title="Сведения о заявке"
+                       title="Публикация на сбыт отходов"
                        handleClose={()=> {
                            setActiveResponse?.(null);
                            close();
                        }}>
-                <div>RESPONSE CONTENT</div>
+                <ResponseDescription response={activeResponse}
+                                     userToken={userToken}
+                                     isUser={false}/>
             </ModalView>
         </>
     );
