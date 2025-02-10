@@ -4,6 +4,7 @@ import {Spinner} from "flowbite-react";
 export default function FormStatus({
                                        errMessage,
                                        isRegisterSucceeded,
+                                       successMessage = 'Отклик на заявку направлен',
                                        isFetching,
                                        children
 }){
@@ -11,7 +12,7 @@ export default function FormStatus({
         <>
             {errMessage && <FormAnnounce message={errMessage}/>}
 
-            {isRegisterSucceeded && <FormAnnounce message="Отклик на заявку направлен"
+            {isRegisterSucceeded && <FormAnnounce message={successMessage}
                                                   type='success'/>}
             {isFetching && <Spinner size={"xl"}/>}
             {(!isFetching && !isRegisterSucceeded) && (

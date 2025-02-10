@@ -36,7 +36,6 @@ export async function signInAction(formData) {
         return {success: false, message: error.message};
     }
 }
-
 export async function getDialogs(id, token){
     if(!id) return;
     try{
@@ -88,7 +87,6 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
         return {status: 'error', message: e.message};
     }
 }
-
 export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
     if(!userId) return;
     const paramsObj = {offset: offset, limit: limit};
@@ -107,7 +105,6 @@ export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
         return {status: 'error', message: e.message};
     }
 }
-
 export async function getOtherResponses(token, offset = 0, limit = 10, adverts = null){
     const paramsObj = {offset: offset, limit: limit};
     if(adverts) paramsObj.adverts = adverts;
@@ -128,6 +125,38 @@ export async function getOtherResponses(token, offset = 0, limit = 10, adverts =
     }catch (e) {
         console.log(e);
         return {status: 'error', message: e.message};
+    }
+}
+export async function getResponseById(token, responseId){
+    if(!responseId || !token) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/response/${responseId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
+export async function removeResponse(responseId, token){
+    if(!responseId) return {success: false, message: 'Параметр id отклика не был передан'};
+    try{
+        const options = getOptions(token, 'DELETE');
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${responseId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
     }
 }
 export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
@@ -187,7 +216,6 @@ export async function signUpAction(params){
         return {success: false, message: e.message};
     }
 }
-
 export async function createAdvertAction(formData, token){
     const options = getOptions(token, 'POST');
     options.body = JSON.stringify({
@@ -210,7 +238,6 @@ export async function createAdvertAction(formData, token){
         return {status: 'error', message: e.message};
     }
 }
-
 export async function createResponseAction(formData, token){
     const options = getOptions(token, 'POST');
     options.body = JSON.stringify({
@@ -233,7 +260,6 @@ export async function createResponseAction(formData, token){
         return {status: 'error', message: e.message === 'Failed to fetch' ? 'Ошибка сети' : e.message};
     }
 }
-
 function checkToken(errorMessage){
     if(errorMessage === 'Invalid token') {
         redirect(authRoutes[0]);

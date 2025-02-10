@@ -17,7 +17,7 @@ export default function ResponseContainer({userData, userId, userToken}){
         paginationResponses, responses, fetchAndSetOthersResponses,
         changePaginationPage} = useResponses();
 
-    const {selectedInternTabOpt, selectInternTabOpt} = useTab(); // 'Свои' -> 0, 'участников' -> 1
+    const {selectedInternTabOpt, selectInternTabOpt, router} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
     const {currentOpen, close, open} = useModal();
     const [activeResponse, setActiveResponse] = useState(null);
@@ -36,7 +36,7 @@ export default function ResponseContainer({userData, userId, userToken}){
 
     const pickUpResponseHandler = (response, isUser = false) => {
         if(isUser){ // need to go to its page
-
+            router.push(`/account/messages/responses/${response.id}`);
         }else{ //show on modal
             open(response.id);
             setActiveResponse(prev => response);
@@ -47,7 +47,8 @@ export default function ResponseContainer({userData, userId, userToken}){
         <>
             {userRole === 'RECEIVER' && (
                 <AccountTabs tabsRef={tabsRef}
-                             tabs={["Свои отклики", "Отклики других участников"]}
+                             defaultValue={selectedInternTabOpt}
+                             tabs={["Мои отклики", "Отклики других участников"]}
                              setTabHandler={selectInternTabOpt}/>
             )}
             {(showOthersResponses(userRole) && responses && selectedInternTabOpt === 1) && (

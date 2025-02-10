@@ -23,7 +23,7 @@ function TabProvider({children}){
                 let firstShownOption;
                 if(hrefSlugs.length === 2){
                     firstShownOption = foundTab.menu.find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode));
-                }else if(hrefSlugs.length === 3){
+                }else if(hrefSlugs.length > 2){
                     const internalTab = hrefSlugs[2]; //responses
                     firstShownOption = foundTab.menu.find(el => {
                         const lastHref =  el.href.split('/')[2];

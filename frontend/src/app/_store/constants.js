@@ -327,18 +327,28 @@ const statusColors = {
     2: '#7ea542',
     3: '#3C546C'
 }
+const statusColorsFlowBite = {
+    0: 'warning',
+    1: 'failure',
+    2: 'success',
+    3: 'gray'
+}
 const showUserAdverts = (userRole)=>  ['RECEIVER', 'PRODUCER'].includes(userRole);
 const showOthersAdverts = (userRole)=> ['RECEIVER', 'RECYCLER'].includes(userRole);
 const showUserResponses = (userRole)=>  ['RECEIVER', 'RECYCLER'].includes(userRole);
 const showOthersResponses = (userRole)=> ['RECEIVER', 'PRODUCER'].includes(userRole);
 const paginationOptions = [5,10,20];
+const modalName = {
+    response: 'WARN_BEFORE_REMOVE_RESPONSE',
+};
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
-    workingDaysDB, accountTabs, internalTabOptionStates, advertStatuses, statusColors,
+    workingDaysDB, accountTabs, internalTabOptionStates,
+    advertStatuses, statusColors, statusColorsFlowBite,
     widthInputAdvertForm,
     getParamsToFetchAdverts, advertTableHeaders, responseTableHeaders,
     paginationOptions,
     showUserAdverts, showOthersAdverts, showUserResponses, showOthersResponses,
-    tabsTitles, tabsIcons,
+    tabsTitles, tabsIcons, modalName
 }

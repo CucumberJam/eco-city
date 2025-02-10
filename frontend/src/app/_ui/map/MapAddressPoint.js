@@ -11,7 +11,8 @@ export default function MapAddressPoint({
                                             scrollWheelZoom = false,
                                             address = '',
                                         width = 'w-[70%]',
-                                        height = 'h-[400px]'}){
+                                        height = 'h-[400px]',
+                                        zIndex = ''}){
     const isInitialized = useRef(false);
     useEffect(() => {
         isInitialized.current = true;
@@ -23,7 +24,7 @@ export default function MapAddressPoint({
     }, []);
     if (!isInitialized) return null;
     return (
-        <div className={`g-white mx-auto my5 ${width} ${height}`}>
+        <div className={`g-white mx-auto my5 ${width} ${height} ${zIndex}`}>
             <MapContainer ref={isInitialized}
                           center={position}
                           zoom={zoom}

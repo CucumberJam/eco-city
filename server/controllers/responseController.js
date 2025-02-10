@@ -155,6 +155,9 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
 const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const responseId = +req?.params?.responseId;
+
+    if(!responseId) return next(new AppError("Параметр id отклика не был передан", 400));
+
     const deletedResponse = await response.destroy({
         where: {
             id: responseId,
@@ -169,10 +172,29 @@ const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
+const getResponseById = catchAsyncErrorHandler(async (req, res, next)=>{
+    const responseId = +req?.params?.responseId;
+    if(!responseId) return next(new AppError("No response id presented", 400));
+
+    const found = await response.findOne({
+        where: {
+            id: responseId
+        },
+        attributes: {exclude: ['deletedAt', 'updatedAt']},
+        include: advert
+    });
+    if(!found) return next(new AppError(`Failed to get response №${responseId}`, 400));
+
+    return res.status(200).json({
+        status: 'success',
+        data: found
+    });
+});
 module.exports = {
     getOtherResponses,
     getResponsesByUserId,
     createResponse,
     updateResponseByAdvertId,
     deleteResponse,
+    getResponseById,
 }

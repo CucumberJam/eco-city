@@ -21,7 +21,7 @@ export default function ResponseList({
                             pagination={pagination}
                             options={paginationOptions}
                             changePagePagination={changePagePagination}>
-                <ResponseTableBody responses={responses}
+                <ResponseTableBody responses={responses} isUser={title.startsWith('Мои')}
                                    pickUpAdvertHandler={pickUpAdvertHandler}/>
             </PaginatedTable>
         </div>
