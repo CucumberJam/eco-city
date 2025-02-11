@@ -7,7 +7,8 @@ import {Spinner} from "flowbite-react";
 export const metadata = {
     title: 'Отклик'
 }
-export default async function Page({params}){
+export default async function Page(props) {
+    const params = await props.params;
     const session = await auth();
     const {status, data} = await getResponseById(session?.accessToken, params.responseId);
 
@@ -18,5 +19,4 @@ export default async function Page({params}){
                                  userToken={session?.accessToken}/>
         </Suspense>
     );
-
 }

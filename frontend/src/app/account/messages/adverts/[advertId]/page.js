@@ -7,10 +7,10 @@ import {getAdvertById} from "@/app/_lib/actions";
 export const metadata = {
     title: 'Публикация'
 }
-export default async function Page({params}){
-    const { id } = await params
+export default async function Page(props){
+    const params = await props.params;
     const session = await auth();
-    const {status, data} = await getAdvertById(session?.accessToken, id);
+    const {status, data} = await getAdvertById(session?.accessToken, params.advertId);
 
     return (
         <Suspense fallback={<Spinner/>}

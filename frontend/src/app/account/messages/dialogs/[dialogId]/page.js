@@ -6,7 +6,8 @@ import {Suspense} from "react";
 export const metadata = {
     title: 'Чат'
 }
-export default async function Page({params}){
+export default async function Page(props) {
+    const params = await props.params;
     const session = await auth();
     const {status, data} = await getDialogById(session?.accessToken, params.dialogId);
     return (
@@ -17,5 +18,4 @@ export default async function Page({params}){
                 </div>
             </Suspense>
     );
-
 }
