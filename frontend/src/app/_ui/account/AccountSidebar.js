@@ -34,7 +34,7 @@ export default function AccountSidebar(){
                     <SidebarItem key={el.name}
                                  item={el}
                                  mode={mode}
-                                 active={pathName === el.href}
+                                 active={pathName === el.href || pathName.startsWith(el.href)}
                                  clickHandler={() => router.push(el.href)}
                                  selectInternalOption={selectInternTabOpt}/>
                 ))}
