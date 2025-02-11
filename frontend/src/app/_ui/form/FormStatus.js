@@ -15,7 +15,7 @@ export default function FormStatus({
             {isRegisterSucceeded && <FormAnnounce message={successMessage}
                                                   type='success'/>}
             {isFetching && <Spinner size={"xl"}/>}
-            {(!isFetching && !isRegisterSucceeded) && (
+            {(!isFetching && !isRegisterSucceeded && !errMessage) && (
                 <>
                     {children}
                 </>

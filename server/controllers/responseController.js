@@ -25,6 +25,8 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
         });
         if(!adverts) return next(new AppError("Failed to get adverts", 400));
         adverts = adverts?.map(el => +el.dataValues.id);
+    }else {
+        adverts = adverts?.split(',')?.map(el => +el);
     }
     const responsesByAdverts = await response.findAndCountAll({
         where: {
@@ -120,16 +122,59 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
             userId
         }
     });
-    if(!foundAdvert) return next(new AppError("Advert doesn't belong to user", 400));
+    if(!foundAdvert) return next(new AppError("Публикация не принадлежит Пользователю", 400));
+
+    // если у объявления статус "Исполнено", то отмена
+    if(foundAdvert?.dataValues?.status === 'Исполнено'){
+        return res.status(400).send({
+            success: false,
+            error: {
+                message: 'Заявка уже исполнена'
+            }
+        });
+    }
+    if(foundAdvert?.dataValues?.status !== 'На рассмотрении'){
+        //  найти отклик со статусом аналогичным как у объявления,
+        const oldResponse = await response.findOne({
+            where: {
+                advertId: +advertId,
+                status: ['Отклонено', 'Принято']
+            }
+        });
+        if(oldResponse){
+            //  проверить id старого и нового откликов,
+            if(+oldResponse.dataValues?.id === +id){ // это один и тот же отклик
+                //  если статус один и тот же то ничего
+                if(oldResponse.dataValues?.status === status){
+                    return res.status(400).send({
+                        success: false,
+                        error: {
+                            message: 'У данного отклика уже установлен такой статус'
+                        }
+                    });
+                }
+            }else{ //  если id у старого и нового отклика разные
+                //  изменить статус старого отклика на "Отклонено" - если статус старого и нового отклика "Принято"
+                if(oldResponse.dataValues?.status === 'Принято' && status === 'Принято'){
+                    const updatedOldResponse = await response.update({status: 'Отклонено'}, {
+                        where: {
+                            id: +oldResponse.dataValues?.id,
+                        }
+                    });
+                    if(!updatedOldResponse) return next(new AppError('Ошибка при обновлении чужого отклика на данную публикацию', 400));
+                }
+            }
+        }
+    }
 
     //изменить отклик, поменяв его статус ('Отклонено', 'Принято', 'Исполнено'):
     const updatedResponse = await response.update({status}, {
         where: {
-            id: id,
-            advertId: advertId,
+            id: +id,
+            advertId: +advertId,
         }
     });
-    if(!updatedResponse) return next(new AppError('Failed to update response to advert by id', 400));
+    if(!updatedResponse) return next(new AppError('Ошибка при обновлении отклика', 400));
 
     //изменить объявление, поменяв его статус ('Принято', 'Исполнено'):
     if(status === 'Отклонено'){
@@ -143,7 +188,8 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
             id: advertId
         }
     });
-    if(!updatedAdvert) return next(new AppError('Failed to update advert by advert id', 400));
+
+    if(!updatedAdvert) return next(new AppError('Ошибка при обновлении публикации по отклику', 400));
 
     return res.status(204).json({
         status: 'success',

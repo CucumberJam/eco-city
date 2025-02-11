@@ -1,7 +1,7 @@
 "use client";
 import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import TableCompanyName from "@/app/_ui/general/table/TableCompanyName";
-import {Badge, Button, Spinner} from "flowbite-react";
+import {Badge, Button} from "flowbite-react";
 import {advertStatuses, modalName, statusColorsFlowBite} from "@/app/_store/constants";
 import TableCompanyWastes from "@/app/_ui/general/table/TableCompanyWastes";
 import MapAddressPoint from "@/app/_ui/map/MapAddressPoint";
@@ -11,11 +11,11 @@ import {ModalView} from "@/app/_ui/general/ModalView";
 import DeliveryStatus from "@/app/_ui/general/DeliveryStatus";
 import {useState} from "react";
 import FormStatus from "@/app/_ui/form/FormStatus";
-import {createDialog, removeResponse} from "@/app/_lib/actions";
+import {createDialog, removeResponse, updateResponseByAdvertId} from "@/app/_lib/actions";
 import useErrors from "@/app/_hooks/useErrors";
 import {useRouter} from "next/navigation";
 
-export default function ResponseDescription({response, userToken, isUser = true}){
+export default function ResponseDescription({response, userToken, isUser = true, revalidateData = null}){
     const router = useRouter()
     const {currentOpen, close, open} = useModal();
     const {errMessage, hasError} = useErrors();
@@ -44,7 +44,6 @@ export default function ResponseDescription({response, userToken, isUser = true}
             close();
         }
     }
-
     async function sendLetter(){
         setLoading(prev => true);
         try{
@@ -65,11 +64,26 @@ export default function ResponseDescription({response, userToken, isUser = true}
             close();
         }
     }
-    async function acceptResponse(){
-        //create dialog
-        //push dialogs/dialogId
+    async function updateResponse(isAccepted = true){
+        const status = (isAccepted) ? advertStatuses[2] : advertStatuses[1];
+        setLoading(prev => true);
+        try{
+            const res = await updateResponseByAdvertId(userToken, response.advert.id, response.id, status);
+            if(!res?.success){
+                throw new Error(res?.message || 'Ошибка при согласовании отклика')
+            }else{
+                await revalidateData?.(false);
+                setLoading(prev => false);
+                setSuccess(true);
+                setTimeout(async ()=>{
+                    close();
+                }, 1000);
+            }
+        }catch (e) {
+            setLoading(prev => false);
+            hasError?.('default', e.message);
+        }
     }
-
     return (
             <ResponseColumn width="w-full pb-2 px-4 ">
                 <ResponseColumn width="w-full ">
@@ -88,8 +102,8 @@ export default function ResponseDescription({response, userToken, isUser = true}
                         <ResponseColumn space="space-y-6">
                             <ResponseColumn style={{position: 'relative'}}>
                                 {!isUser && <Badge color={statusColorsFlowBite[colorIndex]}
-                                                   className='absolute top-[20px] right-20
-                                                   w-32 py-2 px-3 font-bold self-end'>
+                                                   className=' absolute top-[20px] right-20
+                                                   w-32 py-2 px-3 font-bold self-end flex justify-center text-center'>
                                     {response.status}
                                 </Badge>}
                                 <ResponseRow style=" w-fit space-x-2">
@@ -116,8 +130,10 @@ export default function ResponseDescription({response, userToken, isUser = true}
                                                    nameFontSize="text-[16px]" roleFontSize="text-[14px]"/>}
                                 <ResponseSubTitle label="Дата подачи: " subTitle={new Date(response.createdAt).toLocaleDateString()}/>
                                 <ResponseSubTitle label="Комментарий: " subTitle={response.comment}/>
-                                <ResponseSubTitle label="Цена (руб/шт): " subTitle={response.price}/>
-                                <ResponseSubTitle label="Стоимость (руб): " subTitle={response.totalPrice}/>
+                                <ResponseSubTitle label="Цена (руб/шт): " subTitle={response.price}
+                                                                            advertPrice={response.advert.price}/>
+                                <ResponseSubTitle label="Стоимость (руб): " subTitle={response.totalPrice}
+                                                  advertPrice={response.advert.totalPrice}/>
                             </ResponseColumn>
                         </ResponseColumn>
                         <ResponseColumn width="w-[60%] ">
@@ -143,16 +159,23 @@ export default function ResponseDescription({response, userToken, isUser = true}
                                                 errMessage={errMessage}
                                                 isRegisterSucceeded={success}
                                                 successMessage="Успешно">
-                                        <Button color='gray' size="sm"
-                                                style={{marginTop: '40px'}}
-                                                onClick={sendLetter}>
-                                            Написать сообщение
-                                        </Button>
-                                        <Button size="sm"
-                                                style={{marginTop: '40px'}}
-                                                onClick={acceptResponse}>
-                                            Принять отклик на заявку
-                                        </Button>
+                                        <ResponseColumn width="w-full space-y-6 ">
+                                            <Button color='green' size="sm"
+                                                    style={{marginTop: '40px'}}
+                                                    onClick={sendLetter}>
+                                                Написать сообщение
+                                            </Button>
+                                            <ResponseRow style="justify-between space-x-3">
+                                                <Button color='gray' className='w-36'
+                                                        onClick={()=> updateResponse(false)}>
+                                                    Отклонить
+                                                </Button>
+                                                <Button className='w-36'
+                                                        onClick={updateResponse}>
+                                                    Принять
+                                                </Button>
+                                            </ResponseRow>
+                                        </ResponseColumn>
                                     </FormStatus>
                                 </ResponseRow>
                                 )}
@@ -183,8 +206,15 @@ function ResponseTitle({title = 'Мое предложение:'}){
     return <h2 className="font-bold text-2xl mb-3">{title}</h2>
 }
 function ResponseSubTitle({label = 'Комментарий: ', labelStyle = '',
-                              subTitle = null, Tag = null}){
-    return (
+                              subTitle = null, Tag = null, advertPrice = null, }){
+
+    return (advertPrice) ? (
+        <div className='flex items-center w-full justify-start space-x-3'>
+            <p className={`font-bold ${labelStyle}`}>{label}</p>
+            <ResponsePrice fontSize="text-base" advertTotalPrice={advertPrice}
+                           responseTotalPrice={+subTitle}/>
+        </div>
+    ) : (
         <p className={`font-bold ${labelStyle}`}>
             {label}
             {Tag && (
@@ -194,6 +224,15 @@ function ResponseSubTitle({label = 'Комментарий: ', labelStyle = '',
                 {subTitle}
             </span>}
         </p>
+    );
+}
+export function ResponsePrice({responseTotalPrice, advertTotalPrice, fontSize = 'text-sm'}){
+    return (
+        <Badge className={`w-fit my-0 mx-auto py-1 px-2 text-center ${fontSize}`}
+               color={responseTotalPrice > advertTotalPrice ? 'success' :
+                   (advertTotalPrice === responseTotalPrice ? 'indigo' : 'failure')}>
+            {responseTotalPrice}
+        </Badge>
     );
 }
 function ResponseColumn({children, space = 'space-y-2', width = 'w-fit '}){

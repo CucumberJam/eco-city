@@ -4,6 +4,7 @@ import { AuthError } from 'next-auth';
 import {authRoutes, DEFAULT_LOGIN_REDIRECT} from "@/routes";
 import {FNS_URL} from "@/app/_lib/URLS";
 import { redirect } from 'next/navigation'
+import {revalidatePath} from "next/cache";
 const getOptions = (token, method = 'GET')=>{
     return {
         method: method,
@@ -176,6 +177,22 @@ export async function getResponseById(token, responseId){
         return {status: 'error', message: e.message};
     }
 }
+export async function updateResponseByAdvertId(token, advertId, responseId, status){
+    if(!responseId || !token || !advertId || !status) return;
+    try{
+        const searchParams = new URLSearchParams({id: responseId, status});
+        const options = getOptions(token, 'PUT');
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${advertId}?${searchParams.toString()}`, options);
+        if(!res.ok || res.status === 400){
+            const data = await res.json();
+            return {success: false, message: data?.error.message ? data?.error.message : (status === 'Отклонено' ? 'Ошибка при отклонении отклика' : 'Ошибка при согласовании отклика')};
+        }
+        return {success: true};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
+    }
+}
 export async function removeResponse(responseId, token){
     if(!responseId) return {success: false, message: 'Параметр id отклика не был передан'};
     try{
@@ -299,4 +316,13 @@ function checkToken(errorMessage){
         return true;
     }
     return false
+}
+
+export async function revalidateServerData(urlPath = '/account/messages/responses', type = 'page', redirectPath){
+    try {
+        revalidatePath(urlPath, type);
+        redirect(redirectPath);
+    }catch (e) {
+        console.log(e.message)
+    }
 }

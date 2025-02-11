@@ -36,7 +36,6 @@ function ResponsesProvider({children}) {
                                           limit = initialPagination.limit,
                                           currentPage = initialPagination.currentPage){
         const res = await getResponsesOfUser(userData.current.id, userData.current.token, offset, limit);
-        console.log(res)
         if(res?.status === 'success' && res?.data){
             setResponsesUser(prev => res.data); //{count: 2, rows: []}
             // updatePagination:
@@ -57,7 +56,6 @@ function ResponsesProvider({children}) {
                                             limit = initialPagination.limit,
                                             currentPage = initialPagination.currentPage){
         const res = await getOtherResponses(userData.current.token, offset, limit, userAdvertsIds.current);
-        console.log(res);
         if(res.status === 'success'){
             setResponses(prev => res.data);
             if(!userAdvertsIds?.current && res.advertsIds) userAdvertsIds.current = res.advertsIds;
@@ -78,14 +76,14 @@ function ResponsesProvider({children}) {
         setUserData({data: userData, token: userToken, id: userId, cityId: cityId});
         const result = {success: true, message: []}
         if(!responsesUser && showUserResponses(userData.role)) {
-            const res = fetchAndSetUserResponses();
+            const res = await fetchAndSetUserResponses();
             if(!res?.success) {
                 result.success = false;
                 result.message.push(res?.message || 'Ошибка получения данных об откликах!')
             }
         }
         if(!responses && showOthersResponses(userData.role)){
-            const res = fetchAndSetOthersResponses();
+            const res = await fetchAndSetOthersResponses();
             if(!res?.success) {
                 result.success = false;
                 result.message.push(res?.message || 'Ошибка получения данных об откликах!')
@@ -94,6 +92,20 @@ function ResponsesProvider({children}) {
         return result;
     }
 
+    async function revalidateData(isUser = true){
+        if(isUser){
+            const res = await fetchAndSetUserResponses();
+            if(!res?.success) {
+                return {success: false, message: res?.message || 'Ошибка получения данных об откликах!'}
+            }
+        }else{
+            const res = await fetchAndSetOthersResponses();
+            if(!res?.success) {
+                return {success: false, message: res?.message || 'Ошибка получения данных об откликах!'}
+            }
+        }
+        return {success: true};
+    }
     async function changePaginationPage(pageNumber,
                                         offset = initialPagination.offset,
                                         limit = initialPagination.limit,
@@ -110,7 +122,7 @@ function ResponsesProvider({children}) {
     return (
         <ResponsesContext.Provider value={{
             setUserData,
-            initResponsesContext,
+            initResponsesContext, revalidateData,
             paginationResponsesUser, responsesUser, setResponsesUser, fetchAndSetUserResponses,
             paginationResponses, responses, setResponses, fetchAndSetOthersResponses,
             changePaginationPage

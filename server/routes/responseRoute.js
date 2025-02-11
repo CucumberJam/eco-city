@@ -23,7 +23,8 @@ router.route('/:responseId').delete(authentication,
 router.route('/:userId')
     .get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
     getResponsesByUserId) // получить только свои отклики
-    .put(authentication,
+
+router.route('/:advertId').put(authentication,
     restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
     updateResponseByAdvertId); // изменить отклик только владелец объявления
 

@@ -14,9 +14,9 @@ export default function ResponseContainer({userData, userId, userToken}){
     const {currentCity} = useGlobalUIStore((state) => state);
 
     const {initResponsesContext,
-        paginationResponsesUser, responsesUser, fetchAndSetUserResponses,
-        paginationResponses, responses, fetchAndSetOthersResponses,
-        changePaginationPage} = useResponses();
+        paginationResponsesUser, responsesUser,
+        paginationResponses, responses,
+        changePaginationPage, revalidateData} = useResponses();
 
     const {selectedInternTabOpt, selectInternTabOpt, router} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
@@ -76,6 +76,7 @@ export default function ResponseContainer({userData, userId, userToken}){
                            close();
                        }}>
                 <ResponseDescription response={activeResponse}
+                                     revalidateData={revalidateData}
                                      userToken={userToken}
                                      isUser={false}/>
             </ModalView>
