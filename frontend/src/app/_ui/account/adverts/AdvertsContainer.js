@@ -3,9 +3,6 @@ import AdvertList from "@/app/_ui/account/adverts/AdvertList";
 import {useAdverts} from "@/app/_context/AdvertsProvider";
 import {useEffect, useRef, useState} from "react";
 import {showOthersAdverts, showUserAdverts} from "@/app/_store/constants";
-import {Tabs} from "flowbite-react";
-import {HiUserCircle} from "react-icons/hi2";
-import {HiClipboardList} from "react-icons/hi";
 import {useTab} from "@/app/_context/TabContext";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
@@ -20,7 +17,7 @@ export default function AdvertsContainer({userData, userId, userToken}){
         paginationAdvertsUser, paginationAdverts, changePaginationPage} = useAdverts();
 
     const tabsRef = useRef(null);
-    const {selectedInternTabOpt, selectInternTabOpt} = useTab(); // 'Свои' -> 0, 'участников' -> 1
+    const {selectedInternTabOpt, selectInternTabOpt, router} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
     const {currentOpen, close, open} = useModal();
     const [activeAdvert, setActiveAdvert] = useState(null);
@@ -33,9 +30,9 @@ export default function AdvertsContainer({userData, userId, userToken}){
     }, [currentCity?.id]);
 
     const pickUpAdvertHandler = (advert, isUser = false) => {
-        if(isUser){ // need to go to its page
-
-        }else{ //show on modal
+        if(isUser){
+            router.push(`/account/messages/adverts/${advert.id}`);
+        }else{
             open(advert.id);
             setActiveAdvert(prev => advert);
         }

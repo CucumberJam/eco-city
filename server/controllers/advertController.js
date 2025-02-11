@@ -4,6 +4,7 @@ const user = require("../db/models/user");
 const {Op} = require("sequelize");
 const AppError = require("../utils/appError");
 const {removeCreatedFields} = require("./authController");
+const response = require("../db/models/response");
 function queryMaker(queryObject, notAdmin = true){
     const obj = {};
     //userName includes
@@ -37,7 +38,7 @@ function queryMaker(queryObject, notAdmin = true){
     return obj;
 }
 
-// получить  заявки других участников:
+// получить заявки других участников:
 const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const options = {
@@ -149,4 +150,34 @@ const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
-module.exports = {getAdvertsByUserId, getAdverts, createAdvert, updateAdvertById}
+const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const advertId = +req?.params?.advertId;
+    if(!advertId) return next(new AppError("Не представлено id публикации", 400));
+    const found = await advert.findByPk(advertId);
+    if(!found) return next(new AppError(`Нет данных о публикации с таким id`, 400));
+    const resObj = {
+        status: 'success',
+        data: found
+    }
+    const responsesOfAdvert = await response.findAndCountAll({
+        where: {
+            advertId: advertId, // get advertId
+            userId: {
+                [Op.ne]: userId
+            },
+        },
+        attributes: {
+            exclude: ['deletedAt']
+        },
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+    });
+    if(responsesOfAdvert) resObj.responses = responsesOfAdvert;
+    return res.status(200).json(resObj);
+});
+
+module.exports = {getAdvertsByUserId, getAdverts, createAdvert, updateAdvertById, getAdvertById}

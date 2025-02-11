@@ -121,6 +121,27 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
         return {status: 'error', message: e.message};
     }
 }
+
+export async function getAdvertById(token, advertId){
+    if(!advertId || !token) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/advert/${advertId}`, options);
+        if(!res.ok || res.status === 400){
+            const data = await res.json();
+            return {success: 'error', message: data?.error.message ? data?.error.message : 'Ошибка при получении публикации'};
+        }
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
 export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
     if(!userId) return;
     const paramsObj = {offset: offset, limit: limit};
@@ -316,13 +337,4 @@ function checkToken(errorMessage){
         return true;
     }
     return false
-}
-
-export async function revalidateServerData(urlPath = '/account/messages/responses', type = 'page', redirectPath){
-    try {
-        revalidatePath(urlPath, type);
-        redirect(redirectPath);
-    }catch (e) {
-        console.log(e.message)
-    }
 }
