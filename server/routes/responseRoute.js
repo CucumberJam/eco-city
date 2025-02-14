@@ -6,6 +6,7 @@ const {getOtherResponses,
     updateResponseByAdvertId,
     deleteResponse,
     getResponseById,
+    getResponsesByAdvertId,
 } = require("../controllers/responseController");
 
 router.route('/')
@@ -29,5 +30,6 @@ router.route('/:advertId').put(authentication,
     updateResponseByAdvertId); // изменить отклик только владелец объявления
 
 router.route('/response/:responseId').get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), getResponseById);
+router.route('/advert/:advertId').get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), getResponsesByAdvertId);
 
 module.exports = router;

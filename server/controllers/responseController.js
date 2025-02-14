@@ -177,18 +177,13 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
     if(!updatedResponse) return next(new AppError('Ошибка при обновлении отклика', 400));
 
     //изменить объявление, поменяв его статус ('Принято', 'Исполнено'):
-    if(status === 'Отклонено'){
-        return res.status(204).json({
-            status: 'success',
-            data: updatedResponse
-        });
-    }
-    const updatedAdvert = await advert.update({status}, {
+    const updatedAdvert = await advert.update(
+        {status: status === 'Отклонено' ? 'На рассмотрении' : status},
+        {
         where: {
             id: advertId
         }
     });
-
     if(!updatedAdvert) return next(new AppError('Ошибка при обновлении публикации по отклику', 400));
 
     return res.status(204).json({
@@ -236,6 +231,36 @@ const getResponseById = catchAsyncErrorHandler(async (req, res, next)=>{
         data: found
     });
 });
+
+const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const advertId = +req?.params?.advertId;
+    if(!advertId) return next(new AppError("Не представлено id публикации", 400));
+    const responsesByAdvertId = await response.findAndCountAll({
+        where: {
+            advertId: advertId, // get advertId
+            userId: {
+                [Op.ne]: userId
+            },
+        },
+        attributes: {
+            exclude: ['deletedAt']
+        },
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+        include: advert
+    });
+    if(!responsesByAdvertId) return next(new AppError("Ошибка получения откликов по Id публикации", 400));
+
+    return res.status(200).json({
+        status: 'success',
+        data: responsesByAdvertId // {count, rows}
+    });
+});
+
 module.exports = {
     getOtherResponses,
     getResponsesByUserId,
@@ -243,4 +268,5 @@ module.exports = {
     updateResponseByAdvertId,
     deleteResponse,
     getResponseById,
+    getResponsesByAdvertId,
 }

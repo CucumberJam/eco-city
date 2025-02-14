@@ -1,10 +1,11 @@
 'use server';
-import { signIn } from '@/auth';
+import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
 import {authRoutes, DEFAULT_LOGIN_REDIRECT} from "@/routes";
 import {FNS_URL} from "@/app/_lib/URLS";
 import { redirect } from 'next/navigation'
 import {revalidatePath} from "next/cache";
+
 const getOptions = (token, method = 'GET')=>{
     return {
         method: method,
@@ -204,11 +205,13 @@ export async function updateResponseByAdvertId(token, advertId, responseId, stat
         const searchParams = new URLSearchParams({id: responseId, status});
         const options = getOptions(token, 'PUT');
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${advertId}?${searchParams.toString()}`, options);
-        if(!res.ok || res.status === 400){
-            const data = await res.json();
-            return {success: false, message: data?.error.message ? data?.error.message : (status === 'Отклонено' ? 'Ошибка при отклонении отклика' : 'Ошибка при согласовании отклика')};
+        if(res.status === 204){
+            return {success: true};
         }
-        return {success: true};
+        if(!res?.ok || res.status === 400){
+            const data = await res.json();
+            return {success: false, message: data?.error?.message ? data?.error?.message : (status === 'Отклонено' ? 'Ошибка при отклонении отклика' : 'Ошибка при согласовании отклика')};
+        }
     }catch (e) {
         console.log(e);
         return {success: false, message: e.message};
@@ -219,6 +222,32 @@ export async function removeResponse(responseId, token){
     try{
         const options = getOptions(token, 'DELETE');
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${responseId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
+    }
+}
+export async function getResponsesByAdvertId(offset = 0, limit = 10, additionalObj){
+    const {advertId, token} = additionalObj;
+    if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
+    const paramsObj = {offset: offset, limit: limit};
+    const searchParams = new URLSearchParams(paramsObj);
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/advert/${advertId}?${searchParams.toString()}`, options);
+        if(!res.ok && res.status === 401){
+            redirect(authRoutes[0]);
+        }
+        if(!res.ok || res.status === 400){
+            const data = await res.json();
+            return {success: false, message: data?.error?.message ? data?.error.message : 'Ошибка при получении откликов по публикации'};
+        }
         const data = await res.json();
         if(data.status !== 'success'){
             if(checkToken(data.message)) throw Error(data.message)

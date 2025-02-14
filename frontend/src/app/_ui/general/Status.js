@@ -5,7 +5,7 @@ export default function Status({status, style = ''}){
     const colorIndex = advertStatuses.findIndex(state => state === status);
     return (
         <Badge color={statusColorsFlowBite[colorIndex]}
-               className={`w-32 py-2 px-3 font-bold ${style}`}>
+               className={`flex justify-center text-center w-32 py-2 px-3 font-bold ${style}`}>
             {status}
         </Badge>
     );

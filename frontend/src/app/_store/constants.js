@@ -341,6 +341,13 @@ const paginationOptions = [5,10,20];
 const modalName = {
     response: 'WARN_BEFORE_REMOVE_RESPONSE',
 };
+const initialPagination = {
+    currentPage: 1,
+    count: 0,
+    limit: paginationOptions[1],
+    offset: 0,
+    totalPages: 1
+};
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
@@ -350,5 +357,6 @@ export {
     getParamsToFetchAdverts, advertTableHeaders, responseTableHeaders,
     paginationOptions,
     showUserAdverts, showOthersAdverts, showUserResponses, showOthersResponses,
-    tabsTitles, tabsIcons, modalName
+    tabsTitles, tabsIcons, modalName,
+    initialPagination,
 }

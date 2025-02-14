@@ -3,19 +3,12 @@ import {createContext, useContext, useRef, useState} from "react";
 import {getOtherResponses, getResponsesOfUser} from "@/app/_lib/actions";
 import {preparePagination} from "@/app/_lib/helpers";
 import {
-    paginationOptions,
+    initialPagination,
     showOthersResponses,
     showUserResponses
 } from "@/app/_store/constants";
 
 const ResponsesContext = createContext();
-const initialPagination = {
-    currentPage: 1,
-    count: 0,
-    limit: paginationOptions[1],
-    offset: 0,
-    totalPages: 1
-};
 function ResponsesProvider({children}) {
     const [responsesUser, setResponsesUser] = useState(null);
     const [responses, setResponses] = useState(null);

@@ -16,7 +16,7 @@ import ResponseInfo from "@/app/_ui/account/responses/ResponseInfo";
 import Status from "@/app/_ui/general/Status";
 import ResponseActions from "@/app/_ui/account/responses/ResponseActions";
 
-export default function ResponseDescription({response, userToken, isUser = true, revalidateData = null}){
+export default function ResponseDescription({response, userToken, isUser = true, revalidateData = ()=> null}){
     const router = useRouter()
     const {currentOpen, close, open} = useModal();
     const {errMessage, hasError} = useErrors();
@@ -72,7 +72,7 @@ export default function ResponseDescription({response, userToken, isUser = true,
             if(!res?.success){
                 throw new Error(res?.message || 'Ошибка при согласовании отклика')
             }else{
-                await revalidateData?.(false);
+                await revalidateData(false, status);
                 setLoading(prev => false);
                 setSuccess(true);
                 setTimeout(async ()=>{

@@ -36,7 +36,7 @@ export default function ResponseActions({
                                     Отклонить
                                 </Button>
                                 <Button className='w-36'
-                                        onClick={handleUpdate}>
+                                        onClick={()=>  handleUpdate(true)}>
                                     Принять
                                 </Button>
                             </Row>
