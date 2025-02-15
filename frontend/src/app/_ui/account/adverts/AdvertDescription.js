@@ -1,17 +1,21 @@
-"use client"
+"use client";
+import {useState} from "react";
+import { useRouter } from 'next/navigation';
+import {useModal} from "@/app/_context/ModalContext";
+import usePaginatedItems from "@/app/_hooks/usePaginatedItems";
+import useErrors from "@/app/_hooks/useErrors";
+
+import {getResponsesByAdvertId, removeAdvertById} from "@/app/_lib/actions";
+
 import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import AdvertInfoLarge from "@/app/_ui/account/adverts/AdvertInfoLarge";
 import AdvertActions from "@/app/_ui/account/adverts/AdvertActions";
-import useErrors from "@/app/_hooks/useErrors";
-import {useState} from "react";
 import ResponseList from "@/app/_ui/account/responses/ResponseList";
-import {getResponsesByAdvertId} from "@/app/_lib/actions";
-import {useModal} from "@/app/_context/ModalContext";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 import {ModalView} from "@/app/_ui/general/ModalView";
-import usePaginatedItems from "@/app/_hooks/usePaginatedItems";
 
 export default function AdvertDescription({advert, responses, userToken}){
+    const router = useRouter();
     const {errMessage, hasError} = useErrors();
     const [success, setSuccess] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -38,6 +42,20 @@ export default function AdvertDescription({advert, responses, userToken}){
     if(!advert) return <NoDataBanner title={`Нет данных о публикации`}/>
 
     async function deleteAdvert(){
+        setLoading(prev =>true);
+        const res = await removeAdvertById(advert.id, userToken);
+
+        setLoading(prev => false);
+        if(res.success){
+            setSuccess(prev => true);
+
+            setTimeout(()=>{
+                setSuccess(prev => false);
+                router.push('/account/messages/adverts')
+            }, 1000);
+        }else{
+            hasError('default', res?.message || 'Ошибка при удалении публикации')
+        }
 
     }
     async function saveAdvert(){
@@ -61,19 +79,25 @@ export default function AdvertDescription({advert, responses, userToken}){
             </> : (
                 <form>
                     ADVERT IS EDIT HERE
+                    <AdvertActions loading={loading}
+                                   success={success}
+                                   errMessage={errMessage}
+                                   rightLabel= 'Сохранить'
+                                   handleRight={saveAdvert}
+                                   leftLabel='Отменить'
+                                   handleLeft={()=> setIsEdit(false)}/>
                 </form>
             )}
-            <ActionsBtnsBox>
+            {(!isEdit && advert.status === 'На рассмотрении') && <ActionsBtnsBox>
                 <AdvertActions loading={loading}
                                success={success}
                                errMessage={errMessage}
-                               rightLabel={isEdit ? 'Сохранить' : 'Удалить'}
-                               handleRight={isEdit ?  saveAdvert : deleteAdvert}
-                               leftLabel={isEdit ? 'Отменить' : 'Редактировать'}
-                               handleLeft={isEdit ? ()=> setIsEdit(false) :
-                                   ()=> setIsEdit(true)}/>
-            </ActionsBtnsBox>
-            <div className='h-fit'>
+                               rightLabel='Удалить'
+                               handleRight={deleteAdvert}
+                               leftLabel='Редактировать'
+                               handleLeft={() => setIsEdit(true)}/>
+            </ActionsBtnsBox>}
+            <div className='h-fit mt-8'>
                 <ResponseList responses={items}
                               title="Отклики на публикацию"
                               pagination={pagination}

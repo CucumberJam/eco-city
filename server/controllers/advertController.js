@@ -149,6 +149,24 @@ const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
         data: updatedAdvert
     });
 });
+const deleteAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const advertId = +req?.params.advertId;
+    if(! advertId) return next(new AppError('Не представлено Id публикации для удаления', 400));
+    const deletedAdvert = await advert.destroy({
+        where: {
+            id: advertId,
+            userId: userId,
+            status: ['На рассмотрении'], // Shorthand syntax for Op.in: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#shorthand-syntax-for-opin
+        },
+    });
+    if(!deletedAdvert) return next(new AppError('Ошибка при удалении публикации', 400));
+
+    return res.status(200).json({
+        status: 'success',
+        data: deletedAdvert
+    });
+});
 
 const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
@@ -180,4 +198,11 @@ const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     return res.status(200).json(resObj);
 });
 
-module.exports = {getAdvertsByUserId, getAdverts, createAdvert, updateAdvertById, getAdvertById}
+module.exports = {
+    getAdvertsByUserId,
+    getAdverts,
+    createAdvert,
+    updateAdvertById,
+    getAdvertById,
+    deleteAdvertById
+}

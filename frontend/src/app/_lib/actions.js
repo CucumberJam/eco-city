@@ -122,7 +122,22 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
         return {status: 'error', message: e.message};
     }
 }
-
+export async function removeAdvertById(advertId, token){
+    if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
+    try{
+        const options = getOptions(token, 'DELETE');
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${advertId}`, options);
+        const data = await res.json(); //{ status: 'success', data: 1 }
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
+    }
+}
 export async function getAdvertById(token, advertId){
     if(!advertId || !token) return;
     try{
