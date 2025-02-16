@@ -28,12 +28,15 @@ export function FormSelectUnique({label = 'Город:',
         }
     }
     const showedOptions = useMemo(()=>{
-        if(!defaultVal || !withLabel) return options;
+        if(!defaultVal) return options;
         return options.filter(option => option.id !== defaultVal.id);
-    }, [])
+    }, [defaultVal?.id]);
+    const prepare =(item)=>{
+        return item?.label ? prepareName(item.label) : (item.name ? prepareName(item.name): prepareName(item?.fullName || item?.shortName))
+    }
     return (
         <div className="m-auto w-full flex justify-start items-center">
-            {hiddenValue.length > 0 && <FormHiddenInput name={htmlName} value={hiddenValue} changeHandler={changeValue}/>}
+            {hiddenValue && <FormHiddenInput name={htmlName} value={hiddenValue} changeHandler={changeValue}/>}
             {withLabel && <div className="block">
                 <label htmlFor={htmlName} className={` ${styles.label} mr-2`}>
                     {label}
@@ -44,12 +47,30 @@ export function FormSelectUnique({label = 'Город:',
                     style={styleBlock}
                     required
                     onChange={changeValue}>
-                {!withLabel && <option key={label} disabled={true}>{label}</option>}
-                {(withLabel && defaultVal) && <option key={defaultVal.id}>{defaultVal?.label ? prepareName(defaultVal.label) : (defaultVal.name ? prepareName(defaultVal.name): prepareName(defaultVal?.fullName || defaultVal?.shortName))}</option>}
-                {showedOptions.map(item => (
-                    <option key={item.id}>{item?.label ? prepareName(item.label) : (item.name ? prepareName(item.name): prepareName(item?.fullName || item?.shortName))}
-                    </option>
-                ))}
+
+                {(!withLabel && !defaultVal) &&
+                    <>
+                        <option key={label} disabled={true}>{label}</option>
+                        {showedOptions.map(item => (
+                            <option key={item.id}>{prepare(item)}</option>
+                        ))}
+                    </>
+                }
+                {(!withLabel && defaultVal) &&
+                    <>
+                        <option key={defaultVal.id}>{prepare(defaultVal)}</option>
+                        {showedOptions.map(item => (
+                            <option key={item.id}>{prepare(item)}</option>
+                        ))}
+                    </>
+                }
+                {(!withLabel && !defaultVal) &&
+                    <>
+                        {showedOptions.map(item => (
+                            <option key={item.id}>{prepare(item)}</option>
+                        ))}
+                    </>
+                }
             </Select>
             {checkRightPosition && <CheckIcon style={{width: '25px', color: 'green', marginLeft: '8px', opacity: isChecked ? '100%' : '', display: checkRightPosition ? 'block' : 'none'}}/>}
         </div>

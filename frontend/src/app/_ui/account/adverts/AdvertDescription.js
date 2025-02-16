@@ -13,6 +13,7 @@ import AdvertActions from "@/app/_ui/account/adverts/AdvertActions";
 import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 import {ModalView} from "@/app/_ui/general/ModalView";
+import FormAdvert from "@/app/_ui/form/FormAdvert";
 
 export default function AdvertDescription({advert, responses, userToken}){
     const router = useRouter();
@@ -58,9 +59,6 @@ export default function AdvertDescription({advert, responses, userToken}){
         }
 
     }
-    async function saveAdvert(){
-
-    }
 
     async function revalidate(payload, status = 'Отклонено' || 'Принято'){
         const res = await fetchAndSetItems();
@@ -77,37 +75,39 @@ export default function AdvertDescription({advert, responses, userToken}){
                 <AdvertInfoLarge advert={items?.length > 0 ? items[0].advert : advert}
                                  isUser={true}/>
             </> : (
-                <form>
-                    ADVERT IS EDIT HERE
-                    <AdvertActions loading={loading}
-                                   success={success}
-                                   errMessage={errMessage}
-                                   rightLabel= 'Сохранить'
-                                   handleRight={saveAdvert}
-                                   leftLabel='Отменить'
-                                   handleLeft={()=> setIsEdit(false)}/>
-                </form>
+                <div className='flex flex-col items-center space-y-4 mt-4'>
+                    <h2 className="text-3xl font-semibold">Ваша публикация на сбыт отходов</h2>
+                    <FormAdvert     dataObject={advert}
+                                    isEdit={true}
+                                    userToken={userToken}
+                                    btnLeftLabel='Отменить'
+                                    btnRightLabel='Сохранить'
+                                    successMessage='Заявка изменена'/>
+                </div>
             )}
-            {(!isEdit && advert.status === 'На рассмотрении') && <ActionsBtnsBox>
-                <AdvertActions loading={loading}
-                               success={success}
-                               errMessage={errMessage}
-                               rightLabel='Удалить'
-                               handleRight={deleteAdvert}
-                               leftLabel='Редактировать'
-                               handleLeft={() => setIsEdit(true)}/>
-            </ActionsBtnsBox>}
-            <div className='h-fit mt-8'>
-                <ResponseList responses={items}
-                              title="Отклики на публикацию"
-                              pagination={pagination}
-                              changePagePagination={changePagination}
-                              pickUpAdvertHandler={(response)=> {
-                                  open(response.id);
-                                  setActiveResponse(prev => response);
-                              }}/>
-            </div>
-
+            {(!isEdit && advert.status === 'На рассмотрении') &&
+                <>
+                    <ActionsBtnsBox>
+                        <AdvertActions loading={loading}
+                                       success={success}
+                                       errMessage={errMessage}
+                                       rightLabel='Удалить'
+                                       handleRight={deleteAdvert}
+                                       leftLabel='Редактировать'
+                                       handleLeft={() => setIsEdit(true)}/>
+                    </ActionsBtnsBox>
+                    <div className='h-fit mt-8'>
+                        <ResponseList responses={items}
+                                      title="Отклики на публикацию"
+                                      pagination={pagination}
+                                      changePagePagination={changePagination}
+                                      pickUpAdvertHandler={(response)=> {
+                                          open(response.id);
+                                          setActiveResponse(prev => response);
+                                      }}/>
+                    </div>
+                </>
+            }
             <ModalView isOpen={currentOpen === activeResponse?.id}
                        title="Отклик на сбыт отходов"
                        handleClose={()=> {

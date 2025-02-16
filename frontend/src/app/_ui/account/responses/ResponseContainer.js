@@ -36,6 +36,7 @@ export default function ResponseContainer({userData, userId, userToken}){
     }, [currentCity?.id]);
 
     const pickUpResponseHandler = (response, isUser = false) => {
+        if(!response.advert) return;
         if(isUser){ // need to go to its page
             router.push(`/account/messages/responses/${response.id}`);
         }else{ //show on modal

@@ -9,7 +9,7 @@ export default function TableCompanyName({role, name,
                                              roleFontSize = "text-[11px]",
 }){
     const {roles} = useGlobalUIStore((state) => state);
-    const roleName = prepareName(roles.find(el => el.name === role).label)
+    const roleName = prepareName(roles?.find(el => el?.name === role)?.label || '')
     return (
         <div className='flex items-center space-x-2'>
             <UserRoleCircle role={role} width={width} height={height}/>

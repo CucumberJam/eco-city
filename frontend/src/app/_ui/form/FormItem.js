@@ -22,10 +22,11 @@ export default function FormItem({
                              isLoading = false,
                              isChecked = true,
                              styles = {},
+                             width = 'w-full',
                              changeHandler = ()=> null,
                          }){
     return (
-        <InputWrapper styleWide={styleWide}>
+        <InputWrapper styleWide={styleWide} width={width}>
             {label.length > 0 && <FormInputLabel label={label} htmlName={htmlName} styleWide={styleWide}/>}
             {isLoading && <Spinner aria-label="Default status example"/>}
             {type === 'password' ?
@@ -58,9 +59,9 @@ export default function FormItem({
         </InputWrapper>
     );
 }
-function InputWrapper({styleWide, children}){
+function InputWrapper({styleWide, width = 'w-full', children}){
     return (
-        <div className={styleWide ? 'm-auto w-full flex justify-start items-center space-x-2' :
+        <div className={styleWide ? `m-auto ${width} flex justify-start items-center space-x-2` :
             'flex justify-end items-center space-x-3'}>
             {children}
         </div>

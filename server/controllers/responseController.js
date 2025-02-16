@@ -45,7 +45,6 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
         limit: req.query?.limit || 10,
         include: advert,
     });
-
     if(!responsesByAdverts) return next(new AppError("Failed to get other responses by user's adverts", 400));
 
     const responseObj = {
@@ -69,13 +68,13 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         where: {
             userId: userId,
         },
-        include: advert,
         attributes: {exclude: ['deletedAt']},
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
         order: [
             ['updatedAt', 'DESC'],
         ],
+        include: advert,
     });
     if(!responses) return next(new AppError("Failed to get user's responses", 400));
     return res.status(200).json({

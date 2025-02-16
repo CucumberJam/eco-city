@@ -166,6 +166,7 @@ export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
         const options = getOptions(token);
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${userId}?${searchParams.toString()}`, options);
         const data = await res.json();
+        console.log(data)
         if(data.status !== 'success'){
             if(checkToken(data.message)) throw Error(data.message)
             else throw Error(data.message)
@@ -351,6 +352,27 @@ export async function createAdvertAction(formData, token){
     }catch (e) {
         console.log(e);
         return {status: 'error', message: e.message};
+    }
+}
+
+export async function updateAdvertAction(formData, advertId, token){
+    if(!token || !advertId) return;
+    const options = getOptions(token, 'POST');
+    try{
+        options.body = JSON.stringify(formData);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${advertId}`, options);
+        const data = await res.json();
+        if(data?.status === 'success' && data?.data[0] === 1){
+            return {status: 'success'};
+        }
+        if(data?.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'error', message: 'Ошибка во время обновления публикации' };
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message || 'Ошибка во время обновления публикации'};
     }
 }
 export async function createResponseAction(formData, token){

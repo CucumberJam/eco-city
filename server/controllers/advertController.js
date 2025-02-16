@@ -104,7 +104,6 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
 const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
     const formData = req?.body?.formData;
     if(!formData) return next(new AppError('Failed to create new advert: no body in request', 400));
-    console.log(req?.user);
     const newAdvert = await advert.create({
         userId: +req?.user?.id,
         userName: req?.user?.name,
@@ -125,7 +124,6 @@ const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
         finishDate: new Date(Date.parse(formData.finishDate)),
         priceWithDelivery: formData?.priceWithDelivery,
     });
-    console.log(newAdvert);
     if(!newAdvert) return next(new AppError('Failed to create new advert', 400));
     const result = removeCreatedFields(newAdvert, null, false);
     return res.status(200).json({
@@ -137,14 +135,16 @@ const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
 const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
+    console.log(req.body);
     const updatedAdvert = await advert.update({...req.body}, {
         where: {
             id: advertId,
             userId: userId,
         }
     });
+    console.log(updatedAdvert);
     if(!updatedAdvert) return next(new AppError('Failed to update advert', 400));
-    return res.status(204).json({
+    return res.status(400).json({
         status: 'success',
         data: updatedAdvert
     });

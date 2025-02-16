@@ -13,7 +13,7 @@ router.route('/').get(authentication, restrictTo('ADMIN', 'RECYCLER', 'RECEIVER'
 router.route('/').post(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), createAdvert);
 
 router.route('/:userId').get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), getAdvertsByUserId); // получить только свои заявки
-router.route('/:advertId').put(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), updateAdvertById);
+router.route('/:advertId').post(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), updateAdvertById);
 router.route('/:advertId').delete(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), deleteAdvertById);
 
 router.route('/advert/:advertId').get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), getAdvertById);

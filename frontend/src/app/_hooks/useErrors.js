@@ -180,19 +180,20 @@ export default function useErrors(){
                         }
                         break;
                     case 'waste':
-                        if(!payload?.waste || payload?.waste?.length === 0){
+                        console.log(payload)
+                        if(!payload?.value || (typeof(payload?.value === 'string') && payload?.value?.length === 0)){
                             showError('Выберите вид отходов');
                             return true;
                         }
                         break;
                     case 'dimension':
-                        if(!payload?.dimension){
+                        if(!payload?.value){
                             showError('Укажите единицу измерения');
                             return true;
                         }
                         break;
                     case 'finishDate':
-                        const formDate = new Date(Date.parse(payload.finishDate));
+                        const formDate = new Date(Date.parse(payload.value));
                         const today = new Date();
                         const formDateYear = formDate.getFullYear();
                         const todayYear = today.getFullYear();
