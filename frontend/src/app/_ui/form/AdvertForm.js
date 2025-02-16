@@ -1,15 +1,16 @@
 'use client';
 import {useRouter} from "next/navigation";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import useDimensions from "@/app/_hooks/useDimensions";
 import useErrors from "@/app/_hooks/useErrors";
-import {createAdvertAction} from "@/app/_lib/actions";
+import {createAdvertAction, updateAdvertAction} from "@/app/_lib/actions";
 import {hasAdvertCreateFormErrors} from "@/app/_lib/data-service";
+import {prepareName} from "@/app/_lib/helpers";
 
 import {CheckIcon} from "@heroicons/react/24/outline";
 import {widthInputAdvertForm} from "@/app/_store/constants";
-import {Checkbox, Datepicker, Button, Textarea, ToggleSwitch,Spinner} from "flowbite-react";
+import {Checkbox, Datepicker, Button, Textarea, ToggleSwitch} from "flowbite-react";
 
 import FormButton from "@/app/_ui/form/FormButton";
 import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
@@ -19,34 +20,45 @@ import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 import FormItemMap from "@/app/_ui/form/FormItemMap";
 import FormStatus from "@/app/_ui/form/FormStatus";
 
-export default function FormCreateAdvert({userData, userToken}){
+export default function AdvertForm({
+                                       isEdit = false,
+                                       dataObject,
+                                       btnLeftLabel = 'Очистить',
+                                       btnRightLabel = 'Опубликовать',
+                                       userToken,
+                                       successMessage = 'Отклик на заявку направлен'
+
+}){
     const router = useRouter();
     const {wastes, wasteTypes, currentCity, dimensions} = useGlobalUIStore((state) => state);
-
     const {errMessage, hasError} = useErrors();
     const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
 
     const [changeAddress, setChangeAddress] = useState(false);
-    const [latitude, setLatitude] = useState(Number.parseFloat(userData.latitude));
-    const [longitude, setLongitude] = useState( Number.parseFloat(userData.longitude));
 
+    const [latitude, setLatitude] = useState(Number.parseFloat(dataObject.latitude));
+    const [longitude, setLongitude] = useState( Number.parseFloat(dataObject.longitude));
+
+    const currentWasteLabel = dataObject?.waste ? prepareName(wastes.find(el => el.id === dataObject.waste).name) : null;
+    const currentWasteTypeLabel = dataObject?.wasteType ? prepareName(wasteTypes.find(el => el.id === dataObject.wasteType).name) : null;
     async function handleForm(event) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const check = hasAdvertCreateFormErrors(formData, currentCity, userData, wasteTypes, hasError);
+        const check = hasAdvertCreateFormErrors(formData, currentCity, dataObject, wasteTypes, hasError);
         if(check.hasErrors || !check?.data) return;
         try{
             setIsFetching(true);
-            const response = await createAdvertAction(check.data, userToken);
-            if (response?.status !== 'success' && response.message !== "NEXT_REDIRECT") {
-                throw new Error(response.message);
-            } else {
+            const response = isEdit ? await updateAdvertAction(check.data, dataObject.id, userToken) : await createAdvertAction(check.data, userToken);
+            if(response?.status === 'success'){
                 setIsFetching(false);
                 setIsRegisterSucceeded(true);
                 setTimeout(()=>{
                     router.push('/account/messages/adverts');
-                }, 500);
+                }, 1000);
+            }
+            else if (response?.status !== 'success' && response.message !== "NEXT_REDIRECT") {
+                throw new Error(response.message);
             }
         }catch (e) {
             console.log(e);
@@ -57,59 +69,80 @@ export default function FormCreateAdvert({userData, userToken}){
 
     return (
         <>
-        <FormStatus isRegisterSucceeded={isRegisterSucceeded}
-                    errMessage={errMessage}
-                    isFetching={isFetching}>
-            <form className='w-[700px] flex flex-col space-y-4 items-end'
-                  onSubmit={handleForm}>
-                <FormRowBlock>
-                    <FormColumnBlock>
-                        <FormWasteBlock wastes={wastes}
-                                        wasteTypes={wasteTypes}
-                                        userDataWastes={userData.wastes}
-                                        userDataWasteTypes={userData.wasteTypes}
-                                        widthBlock={widthInputAdvertForm}/>
-                        <FormDimensionBlock dimensionFromApi={dimensions}
-                                            widthBlock={widthInputAdvertForm}/>
-                        <FormPriceCountBlock errorHandler={hasError}/>
-                        <FormCommentBlock/>
-                        <FormFileLoader/>
-                    </FormColumnBlock>
-                    <FormColumnBlock>
-                        <FormDateBlock/>
-                        <FormAddressBlock userAddress={userData.address}
-                                          needsChangeAddress={changeAddress}
-                                          changeAddressHandler={() => setChangeAddress(!changeAddress)}/>
-                        <FormHiddenInput name='longitude'
-                                         id='longitude'
-                                         value={longitude}
-                                         changeHandler={setLongitude}/>
-                        <FormHiddenInput name='latitude'
-                                         id='latitude'
-                                         value={latitude}
-                                         changeHandler={setLatitude}/>
-                    </FormColumnBlock>
-                </FormRowBlock>
-                {changeAddress && (
+            <FormStatus isRegisterSucceeded={isRegisterSucceeded}
+                        errMessage={errMessage}
+                        successMessage={successMessage}
+                        isFetching={isFetching}>
+                <form className='w-[700px] flex flex-col space-y-4 items-end'
+                      onSubmit={handleForm}>
                     <FormRowBlock>
-                        <FormMapBlock latitude={latitude}
-                                      latitudeHandler={setLatitude}
-                                      longitude={longitude}
-                                      longitudeHandler={setLongitude}/>
+                        <FormColumnBlock>
+                            {!isEdit ? <FormWasteBlock wastes={wastes}
+                                             wasteTypes={wasteTypes}
+                                             userDataWastes={dataObject.wastes}
+                                             userDataWasteTypes={dataObject.wasteTypes}
+                                             widthBlock={widthInputAdvertForm}/> :
+                            <>
+                                <FormItem label='Отходы:'
+                                          width='w-[220px]'
+                                          htmlName='waste'
+                                          value={+dataObject?.waste}
+                                          defaultVal={currentWasteLabel}
+                                          isDisabled={true}/>
+                                {dataObject?.wasteType && <FormItem label='Вид отходов:'
+                                           width='w-[220px]'
+                                           htmlName='wasteType'
+                                           value={+dataObject?.wasteType}
+                                           defaultVal={currentWasteTypeLabel}
+                                           isDisabled={true}/>}
+                            </>}
+                            <FormDimensionBlock dimensionFromApi={dimensions}
+                                                widthBlock={widthInputAdvertForm}
+                                                currentDimensionId={dataObject?.dimension}/>
+                            <FormPriceCountBlock currentPrice={parseFloat(dataObject?.price) || null}
+                                                 currentAmount={parseInt(dataObject?.amount) || null}
+                                                 currentTotalPrice={parseFloat(dataObject?.totalPrice) || null}
+                                                 errorHandler={hasError}/>
+                            <FormCommentBlock currentComment={dataObject?.comment}/>
+                            <FormFileLoader/>
+                        </FormColumnBlock>
+                        <FormColumnBlock>
+                            <FormDateBlock currentDate={dataObject?.finishDate}/>
+                            <FormAddressBlock userAddress={dataObject.address}
+                                              currentPickedUp={dataObject?.isPickedUp}
+                                              currentPriceWithDelivery={dataObject?.priceWithDelivery}
+                                              needsChangeAddress={changeAddress}
+                                              changeAddressHandler={() => setChangeAddress(!changeAddress)}/>
+                            <FormHiddenInput name='longitude'
+                                             id='longitude'
+                                             value={longitude}
+                                             changeHandler={setLongitude}/>
+                            <FormHiddenInput name='latitude'
+                                             id='latitude'
+                                             value={latitude}
+                                             changeHandler={setLatitude}/>
+                        </FormColumnBlock>
                     </FormRowBlock>
-                )}
-                <FormRowBlock>
-                    <FormColumnBlock>
-                        <FormButton title='Очистить'
-                                    typeBtn="reset"/>
-                    </FormColumnBlock>
-                    <FormColumnBlock>
-                        <FormButton title='Опубликовать'
-                                    typeBtn="submit"/>
-                    </FormColumnBlock>
-                </FormRowBlock>
-            </form>
-        </FormStatus>
+                    {changeAddress && (
+                        <FormRowBlock>
+                            <FormMapBlock latitude={latitude}
+                                          latitudeHandler={setLatitude}
+                                          longitude={longitude}
+                                          longitudeHandler={setLongitude}/>
+                        </FormRowBlock>
+                    )}
+                    <FormRowBlock>
+                        <FormColumnBlock>
+                            <FormButton title={btnLeftLabel}
+                                        typeBtn="reset"/>
+                        </FormColumnBlock>
+                        <FormColumnBlock>
+                            <FormButton title={btnRightLabel}
+                                        typeBtn="submit"/>
+                        </FormColumnBlock>
+                    </FormRowBlock>
+                </form>
+            </FormStatus>
         </>
     );
 }
@@ -160,41 +193,46 @@ function FormWasteBlock({userDataWastes, userDataWasteTypes, wastes, wasteTypes,
 
             {(+chosenWaste?.id === userWasteTypes?.[0]?.typeId) && (
                 <FormSelectUnique label='Тип отходов:'
-                               withLabel={false}
-                               styleBlock={styles}
-                               checkRightPosition={false}
-                               htmlName='wasteType'
-                               key={chosenWaste.id}
-                               defaultVal={userWasteTypes[0]}
-                               options={userWasteTypes}
-                               hiddenValue={chosenWasteType?.id + ''}
-                               changeHandler={(chosenWasteType) => setChosenWasteType(chosenWasteType)}/>)}
+                                  withLabel={false}
+                                  styleBlock={styles}
+                                  checkRightPosition={false}
+                                  htmlName='wasteType'
+                                  key={chosenWaste.id}
+                                  defaultVal={userWasteTypes[0]}
+                                  options={userWasteTypes}
+                                  hiddenValue={chosenWasteType?.id + ''}
+                                  changeHandler={(chosenWasteType) => setChosenWasteType(chosenWasteType)}/>)}
         </>
     );
 }
-function FormDimensionBlock({dimensionFromApi, widthBlock}){
-    const {dimensions, formDimension, setFormDimension} = useDimensions(dimensionFromApi);
+function FormDimensionBlock({dimensionFromApi, widthBlock, currentDimensionId = null}){
+    const {dimensions, formDimension, setFormDimension} = useDimensions(dimensionFromApi, currentDimensionId);
     if(dimensions.length === 0) return null;
     const styles = {width: `${widthBlock}px`, height: "35px", paddingTop: "0.2rem", borderRadius: "0.3rem"}
     return (
         <>
             <FormSelectUnique label='Мера измерения:'
                               withLabel={false} styleBlock={styles}
-                               checkRightPosition={false}
-                               htmlName='dimension'
-                               key='dimension-opt'
-                               defaultVal={dimensions[0]}
-                               options={dimensions}
-                               hiddenValue={formDimension}
-                               changeHandler={(chosenDimension)=> setFormDimension(chosenDimension?.id + '')}/>
+                              checkRightPosition={false}
+                              htmlName='dimension'
+                              key='dimension-opt'
+                              defaultVal={dimensionFromApi.find(el => el.id === +formDimension)}
+                              options={dimensions}
+                              hiddenValue={currentDimensionId ? currentDimensionId : formDimension}
+                              changeHandler={(chosenDimension)=> setFormDimension(chosenDimension?.id + '')}/>
 
         </>
     );
 }
-function FormPriceCountBlock({errorHandler = null}){
-    const [amount, setAmount] = useState(1);
-    const [price, setPrice] = useState(0.0);
-    const [totalPrice, setTotalPrice] = useState(0.0);
+function FormPriceCountBlock({
+                                 errorHandler = null,
+                                 currentAmount = null,
+                                 currentPrice = null,
+                                 currentTotalPrice = null
+}){
+    const [amount, setAmount] = useState(currentAmount ? currentAmount : 1);
+    const [price, setPrice] = useState(currentPrice ? currentPrice : 0.0);
+    const [totalPrice, setTotalPrice] = useState(currentTotalPrice ? currentTotalPrice : 0.0);
     const [isChecked, setIsChecked] = useState(false);
     function changeCalculation(value, type){
         if(errorHandler?.('advert', {type, value: +value})) {
@@ -218,7 +256,7 @@ function FormPriceCountBlock({errorHandler = null}){
                 <FormItem
                     label='Кол-во:'
                     htmlName='amount'
-                    defaultVal={1}
+                    defaultVal={amount}
                     type='number'
                     changeHandler={event => changeCalculation(event.target.value, 'amount')}/>
             </div>
@@ -226,18 +264,18 @@ function FormPriceCountBlock({errorHandler = null}){
                 <CheckIcon style={{width: '25px', color: 'green', marginRight: '8px', opacity: isChecked ? '100%' : '0'}}/>
                 <FormItem label='Цена (шт.):'
                           htmlName='price'
-                          defaultVal={0}
+                          defaultVal={price}
                           type='number' addType="decimal"
                           changeHandler={event => changeCalculation(event.target.value, 'price')}/>
             </div>
             <div className={style}>
                 <CheckIcon style={{width: '25px', color: 'green', marginRight: '8px', opacity: isChecked ? '100%' : '0'}}/>
                 <FormItem label='Стоимость(руб.):'
-                      htmlName='totalPrice'
-                      isControlled={true}
-                      value={totalPrice}
-                      type='number' addType="decimal"
-                      isDisabled={true}/>
+                          htmlName='totalPrice'
+                          isControlled={true}
+                          value={totalPrice}
+                          type='number' addType="decimal"
+                          isDisabled={true}/>
             </div>
         </>
     );
@@ -257,7 +295,10 @@ function FormFileLoader(){
         </div>
     );
 }
-function FormAddressBlock({userAddress = '',
+function FormAddressBlock({
+                              userAddress = '',
+                              currentPickedUp = null,
+                              currentPriceWithDelivery = null,
                               width = ' w-[220px] ',
                               needsChangeAddress,
                               changeAddressHandler}){
@@ -268,6 +309,18 @@ function FormAddressBlock({userAddress = '',
 
     const [address, setAddress] = useState(userAddress);
 
+    useEffect(()=>{
+        if(currentPickedUp === true || currentPickedUp === false){
+            setPickedUp(currentPickedUp);
+            setNotPickedUp(!currentPickedUp);
+        }
+    }, [currentPickedUp]);
+
+    useEffect(() => {
+        if(currentPriceWithDelivery === true || currentPriceWithDelivery === false){
+            setPriceWithDelivery(currentPriceWithDelivery);
+        }
+    }, [currentPriceWithDelivery]);
     const styles = `flex flex-col space-y-2 ${width}`;
     function onChange(value, type = 'pickUp'){
         if(type === 'pickUp'){
@@ -282,7 +335,7 @@ function FormAddressBlock({userAddress = '',
     return (
         <div className={styles}>
             <div className='flex flex-col space-y-2'>
-               <FormHiddenInput name='isPickedUp'
+                <FormHiddenInput name='isPickedUp'
                                  id='isPickedUp'
                                  value={pickedUp} changeHandler={setPickedUp}/>
                 <ToggleSwitch checked={pickedUp} label="Самовывоз"
@@ -316,7 +369,7 @@ function FormAddressBlock({userAddress = '',
                              changeHandler={setPriceWithDelivery}/>
             {!pickedUp && <div className='flex items-center'>
                 <Checkbox id="priceWithDelivery"
-                          defaultChecked
+                          defaultChecked={priceWithDelivery}
                           className="mr-2"
                           onChange={(event)=> setPriceWithDelivery(event.target.checked)}/>
                 <FormInputLabel label='Доставка включена в стоимость'
@@ -326,9 +379,11 @@ function FormAddressBlock({userAddress = '',
         </div>
     );
 }
-function FormDateBlock({width = ' w-[220px]'}){
+function FormDateBlock({width = ' w-[220px]', currentDate = null}){
+    const today = new Date();
+
     const styles = `space-y-2 ${width}`
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(currentDate ? new Date(Date.parse(currentDate)) : today);
     function changeDate(dateType){
         setDate(dateType);
     }
@@ -338,9 +393,12 @@ function FormDateBlock({width = ' w-[220px]'}){
                             htmlName='finishDate'
                             styleWide={true}/>
             <FormHiddenInput name='finishDate'
-                             value={date}
+                             type='date'
+                             value={today > date ? today : date}
                              changeHandler={e=> setDate(e.target.value)}/>
             <Datepicker  language={'ru'}
+                         minDate={today}
+                         value={today > date ? today : date}
                          labelTodayButton="Сегодня"
                          labelClearButton="Отменить"
                          weekStart={1}
@@ -348,8 +406,8 @@ function FormDateBlock({width = ' w-[220px]'}){
         </div>
     );
 }
-function FormCommentBlock({width = ' w-[253px]'}){
-    const [comment, setComment] = useState('');
+function FormCommentBlock({width = ' w-[253px]', currentComment = null}){
+    const [comment, setComment] = useState(currentComment ? currentComment : '');
     const styles = `pl-[30px] self-start flex flex-col space-y-2 ${width}`
     return (
         <div className={styles}>

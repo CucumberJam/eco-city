@@ -13,7 +13,7 @@ import AdvertActions from "@/app/_ui/account/adverts/AdvertActions";
 import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 import {ModalView} from "@/app/_ui/general/ModalView";
-import FormAdvert from "@/app/_ui/form/FormAdvert";
+import AdvertForm from "@/app/_ui/form/AdvertForm";
 
 export default function AdvertDescription({advert, responses, userToken}){
     const router = useRouter();
@@ -77,12 +77,12 @@ export default function AdvertDescription({advert, responses, userToken}){
             </> : (
                 <div className='flex flex-col items-center space-y-4 mt-4'>
                     <h2 className="text-3xl font-semibold">Ваша публикация на сбыт отходов</h2>
-                    <FormAdvert     dataObject={advert}
-                                    isEdit={true}
-                                    userToken={userToken}
-                                    btnLeftLabel='Отменить'
-                                    btnRightLabel='Сохранить'
-                                    successMessage='Заявка изменена'/>
+                    <AdvertForm dataObject={advert}
+                                isEdit={true}
+                                userToken={userToken}
+                                btnLeftLabel='Отменить'
+                                btnRightLabel='Сохранить'
+                                successMessage='Заявка изменена'/>
                 </div>
             )}
             {(!isEdit && advert.status === 'На рассмотрении') &&
