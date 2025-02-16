@@ -1,6 +1,6 @@
 import Price from "@/app/_ui/general/Price";
 
-export default function Subtitle({label = 'Комментарий: ',
+export default function Subtitle({  label = null,
                                      labelStyle = '',
                                      subTitle = null,
                                      Tag = null,
@@ -8,7 +8,7 @@ export default function Subtitle({label = 'Комментарий: ',
                                  }){
     return (advertPrice) ? (
         <div className='flex items-center w-full justify-start space-x-3'>
-            <p className={`font-bold ${labelStyle}`}>{label}</p>
+            {label && <p className={`font-bold ${labelStyle}`}>{label}</p>}
             <Price fontSize="text-base" advertTotalPrice={advertPrice}
                    responseTotalPrice={+subTitle}/>
         </div>

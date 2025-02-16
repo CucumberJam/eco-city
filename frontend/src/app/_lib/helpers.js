@@ -1,3 +1,8 @@
+import {redirect} from "next/navigation";
+import {apiServerRoutes, authRoutes} from "@/routes";
+import {auth} from "@/auth";
+import {revalidatePath} from "next/cache";
+
 export function debounce(func, timeout = 300){
     let timer;
     return (...args) => {
@@ -94,3 +99,58 @@ export function preparePagination(oldPagination, newPagination){
     }
     return {updatedOffset, updatedLimit, updatedPage};
 }
+export async function getRequestOptions(token = null, method = 'GET'){
+    token = token ? token : await getToken();
+    return {
+        method: method,
+        headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        }
+    }
+}
+export function checkToken(errorMessage){
+    if(errorMessage === 'Invalid token') {
+        redirect(authRoutes[0]);
+        return true;
+    }
+    return false
+}
+export async function getToken(){
+    const session = await auth();
+    return session?.accessToken;
+}
+export async function getUserId(){
+    const session = await auth();
+    return session?.user?.id;
+}
+export async function requestWrap({options, route}){
+    try{
+        const res = await fetch(route, options);
+        if(res.status === 401 && !res.ok){
+            throw Error('Please login to get access')
+        }
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        let redirect = null
+        if(e.message === 'Please login to get access'){
+            redirect = {
+                revalidatePath: '/',
+                revalidateForm: 'layout',
+                redirect: true,
+                redirectPath: '/login'
+            }
+        }
+        return {success: false, message: e.message, redirect};
+    }
+}
+
+/* if(!res?.success && res?.redirect){
+     revalidatePath(res.redirect.revalidatePath, res.redirect.form);
+     if(res.redirect.redirect) redirect(res.redirect.redirectPath);
+ }else return res;*/

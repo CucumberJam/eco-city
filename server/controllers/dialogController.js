@@ -13,9 +13,12 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
             [Op.or]: [{ firstUserId: userId }, { secondUserId: userId }],
         },
         include: user,
-        attributes: {exclude: ['updatedAt', 'deletedAt']},
+        attributes: {exclude: ['deletedAt']},
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
     });
-    if(!dialogs) return next(new AppError('Failed to get all dialogs', 400));
+    if(!dialogs) return next(new AppError('Ошибка при получении диалогов', 400));
     return res.status(200).json({
         status: 'success',
         data: dialogs
@@ -61,7 +64,7 @@ const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
             id: dialogId,
             [Op.or]: [{ firstUserId: userId }, { secondUserId: userId }]
         },
-        attributes: {exclude: ['deletedAt', 'updatedAt']},
+        attributes: {exclude: ['deletedAt']},
         include: user
     });
     if(!found) return next(new AppError(`Ошибка получения диалога №${dialogId}`, 400));
@@ -72,4 +75,22 @@ const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
-module.exports = {getDialogs, createDialog, getDialogById}
+const updateDialogById = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const dialogId = +req?.params?.dialogId;
+    const {isRead} = req.query;
+    const updatedDialog = await dialog.update({isRead}, {
+        where: {
+            id: dialogId,
+            [Op.or]: [{ firstUserId: userId }, { secondUserId: userId }]
+        }
+    });
+    if(!updatedDialog) return next(new AppError(`Ошибка при изменении статуса диалога на ${isRead ? 'прочитанный' : 'не прочитанный' }`, 400));
+
+    return res.status(204).json({
+        status: 'success',
+        data: updatedDialog
+    });
+})
+
+module.exports = {getDialogs, createDialog, getDialogById, updateDialogById}

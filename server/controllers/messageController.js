@@ -17,9 +17,13 @@ const getMessages = catchAsyncErrorHandler(async (req, res, next) => {
         },
         include: user,
         attributes: {exclude: ['deletedAt']},
-        offset: 10,
-        limit: 0,
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+        order: [
+            ['createdAt', 'DESC'],
+        ],
     });
+
     if(!messages) return next(new AppError('Failed to get all dialogs', 400));
     return res.status(200).json({
         status: 'success',
@@ -33,11 +37,12 @@ const postMessage = catchAsyncErrorHandler(async (req, res, next)=>{
         dialogId: +dialogId, text, userId, toUserId: +toUserId
     });
     if(!newMessage) return next(new AppError('Failed to create new message', 400));
+    console.log(newMessage);
     const result = removeCreatedFields(newMessage, null, false);
 
     // we need to update dialog - set isRead = false:
-    const updatedDialog = await dialog.update({isRead: false}, {where: {dialogId}});
-    if(!updatedDialog) return next(new AppError('Failed to update dialog bc of new message', 400));
+    //const updatedDialog = await dialog.update({isRead: false}, {where: {dialogId}});
+    //if(!updatedDialog) return next(new AppError('Failed to update dialog bc of new message', 400));
 
     return res.status(200).json({
         status: 'success',
