@@ -3,23 +3,15 @@ import {TabProvider} from "@/app/_context/TabContext";
 import AccountSidebar from "@/app/_ui/account/AccountSidebar";
 import AccountMode from "@/app/_ui/account/AccountMode";
 import {auth} from "@/auth";
-import {getRoles, getWastes, getWasteTypes} from "@/app/_lib/data-service";
-
 export default async function Layout({children}){
     const session = await auth();
-    const [roles, wastes, wasteTypes] = await Promise.all([
-        getRoles(), getWastes(), getWasteTypes()]);
-
     return (
         <StyledLayout>
             <TabProvider>
                 <AccountHeader/>
-                <AccountMode userRole={session?.user?.role || 'all'}
-                             rolesAPI={roles}
-                             wastesApi={wastes}
-                             wasteTypesApi={wasteTypes}>
-                    <AccountSidebar/>
-                    <StyledMain>{children}</StyledMain>
+                <AccountMode userData={session?.user}>
+                        <AccountSidebar/>
+                        <StyledMain>{children}</StyledMain>
                 </AccountMode>
             </TabProvider>
         </StyledLayout>

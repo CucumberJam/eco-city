@@ -12,6 +12,7 @@ import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 import FormButton from "@/app/_ui/form/FormButton";
 import MapAddressPoint from "@/app/_ui/map/MapAddressPoint";
 import FormStatus from "@/app/_ui/form/FormStatus";
+import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 
 const wrapStyles = `space-y-6 text-base
                         leading-relaxed
@@ -22,18 +23,14 @@ const col = 'flex flex-col';
 const rowSpace = "flex items-center justify-center space-x-2";
 const cardBlockStyles = 'flex items-center justify-between';
 
-export default function AdvertInfo({
-                                       advert,
-                                       wastesAPI, wasteTypesAPI,
-                                       dimensionsAPI, rolesAPI,
-                                       token,
-                                   }){
+export default function AdvertInfo({advert, token }){
     const router = useRouter();
+    const {roles, wastes, wasteTypes, dimensions} = useGlobalUIStore((state) => state);
 
-    const wasteName = prepareName(wastesAPI?.find(el => +el.id === +advert.waste)?.name || '');
-    const wasteTypeName = prepareName(wasteTypesAPI.find(el => +el.id === +advert?.wasteType)?.name || '');
-    const userDimensionLabel = dimensionsAPI.find(el => +el.id === +advert.dimension).shortName;
-    const roleName = prepareName(rolesAPI.find(el => el.name === advert.userRole).label)
+    const wasteName = prepareName(wastes?.find(el => +el.id === +advert.waste)?.name || '');
+    const wasteTypeName = prepareName(wasteTypes.find(el => +el.id === +advert?.wasteType)?.name || '');
+    const userDimensionLabel = dimensions.find(el => +el.id === +advert.dimension).shortName;
+    const roleName = prepareName(roles.find(el => el.name === advert.userRole).label)
 
     const {errMessage, hasError} = useErrors();
     const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);

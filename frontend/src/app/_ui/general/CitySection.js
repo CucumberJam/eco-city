@@ -3,8 +3,8 @@ import { Dropdown, DropdownItem } from "flowbite-react";
 import { useGlobalUIStore } from '@/app/_context/GlobalUIContext'
 import {getUsers} from "@/app/_lib/data-service";
 import useCities from "@/app/_hooks/useCities";
-export default function CitySection({citiesAPI}){
-    const {currentCity, cities, setCurrentCity}  = useCities(citiesAPI, true);
+export default function CitySection(){
+    const {currentCity, cities, setCurrentCity}  = useCities(null, true);
     const { setUsers } = useGlobalUIStore((state) => state);
     async function selectCity(city){
         setCurrentCity(city);

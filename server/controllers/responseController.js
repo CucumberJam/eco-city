@@ -3,73 +3,78 @@ const response = require("../db/models/response");
 const AppError = require("../utils/appError");
 const advert = require("../db/models/advert");
 const {removeCreatedFields} = require("./authController");
+const {Op} = require("sequelize");
 
-// Получить отклики других участников на свои заявки (PRODUCER, ADMIN, RECEIVER):
-/* на фронте сделать логику:
-- получить Ids своих объявлений
-- получить все отклики, где есть Ids
-const getResponses = catchAsyncErrorHandler(async (req, res, next) => {
+// Получить отклики других участников на свои заявки
+// (PRODUCER, ADMIN, RECEIVER):
+const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-
-    // получить Ids своих объявлений
-    const adverts = await advert.findAll({
-        where: {
-            userId: userId,
-        },
-        attributes: ['id', 'finishDate'],
-    });
-    if(!adverts) return next(new AppError("Failed to get adverts of user", 400));
-
-    // получить все отклики, где есть Ids
-    let responses = [];
-    const advertsObjs = JSON.parse(adverts)?.data; // adverts = {status,data :[{}, {}, {}]}
-    for await(const advertsObj of advertsObjs){
-        const responsesByAdvertId = await response.findAll({
-            where: {
-                advertId: advertsObj?.id
+    let adverts = req?.query?.adverts;
+    if(!adverts || adverts?.length === 0){
+        adverts = await advert.findAll({
+            attributes: ['id'],
+            where: { // только id своих актуальных объявлений (в работе):
+                userId: userId,
+                status: {
+                    [Op.ne]: 'Исполнено'
+                },
             },
-            attributes: {
-                exclude: ['deletedAt']
-            }
+            order: [
+                ['updatedAt', 'DESC'],
+            ],
         });
-        if(responsesByAdvertId){
-            responses = responses.concat(responsesByAdvertId);
-        }
+        if(!adverts) return next(new AppError("Failed to get adverts", 400));
+        adverts = adverts?.map(el => +el.dataValues.id);
+    }else {
+        adverts = adverts?.split(',')?.map(el => +el);
     }
-    return res.status(200).json({
-        status: 'success',
-        data: responses
-    });
-});*/
-const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
-    const responsesByAdvertId = await response.findAll({
+    const responsesByAdverts = await response.findAndCountAll({
         where: {
-            advertId: +req.params?.advertId // get advertId
+            advertId: adverts, // get advertId
+            userId: {
+                [Op.ne]: userId
+            },
         },
         attributes: {
             exclude: ['deletedAt']
-        }
+        },
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+        include: advert,
     });
-    if(!responsesByAdvertId) return next(new AppError("Failed to get responses of user by advert id", 400));
+    if(!responsesByAdverts) return next(new AppError("Failed to get other responses by user's adverts", 400));
 
-    return res.status(200).json({
+    const responseObj = {
         status: 'success',
-        data: responsesByAdvertId
-    });
-
-
+        data: {
+            count: responsesByAdverts.count,
+            rows: responsesByAdverts.rows,
+        },
+    }
+    if(!req?.query?.adverts || req?.query?.adverts?.length === 0){
+        responseObj.advertsIds = adverts;
+    }
+    return res.status(200).json(responseObj);
 });
 // Получить только свои отклики (ADMIN, RECYCLER, RECEIVER):
 const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
+    if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+
     const responses = await response.findAndCountAll({
         where: {
             userId: userId,
         },
-        include: advert,
         attributes: {exclude: ['deletedAt']},
-        offset: 10,
-        limit: 0,
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        include: advert,
     });
     if(!responses) return next(new AppError("Failed to get user's responses", 400));
     return res.status(200).json({
@@ -116,30 +121,69 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
             userId
         }
     });
-    if(!foundAdvert) return next(new AppError("Advert doesn't belong to user", 400));
+    if(!foundAdvert) return next(new AppError("Публикация не принадлежит Пользователю", 400));
+
+    // если у объявления статус "Исполнено", то отмена
+    if(foundAdvert?.dataValues?.status === 'Исполнено'){
+        return res.status(400).send({
+            success: false,
+            error: {
+                message: 'Заявка уже исполнена'
+            }
+        });
+    }
+    if(foundAdvert?.dataValues?.status !== 'На рассмотрении'){
+        //  найти отклик со статусом аналогичным как у объявления,
+        const oldResponse = await response.findOne({
+            where: {
+                advertId: +advertId,
+                status: ['Отклонено', 'Принято']
+            }
+        });
+        if(oldResponse){
+            //  проверить id старого и нового откликов,
+            if(+oldResponse.dataValues?.id === +id){ // это один и тот же отклик
+                //  если статус один и тот же то ничего
+                if(oldResponse.dataValues?.status === status){
+                    return res.status(400).send({
+                        success: false,
+                        error: {
+                            message: 'У данного отклика уже установлен такой статус'
+                        }
+                    });
+                }
+            }else{ //  если id у старого и нового отклика разные
+                //  изменить статус старого отклика на "Отклонено" - если статус старого и нового отклика "Принято"
+                if(oldResponse.dataValues?.status === 'Принято' && status === 'Принято'){
+                    const updatedOldResponse = await response.update({status: 'Отклонено'}, {
+                        where: {
+                            id: +oldResponse.dataValues?.id,
+                        }
+                    });
+                    if(!updatedOldResponse) return next(new AppError('Ошибка при обновлении чужого отклика на данную публикацию', 400));
+                }
+            }
+        }
+    }
 
     //изменить отклик, поменяв его статус ('Отклонено', 'Принято', 'Исполнено'):
     const updatedResponse = await response.update({status}, {
         where: {
-            id: id,
-            advertId: advertId,
+            id: +id,
+            advertId: +advertId,
         }
     });
-    if(!updatedResponse) return next(new AppError('Failed to update response to advert by id', 400));
+    if(!updatedResponse) return next(new AppError('Ошибка при обновлении отклика', 400));
 
     //изменить объявление, поменяв его статус ('Принято', 'Исполнено'):
-    if(status === 'Отклонено'){
-        return res.status(204).json({
-            status: 'success',
-            data: updatedResponse
-        });
-    }
-    const updatedAdvert = await advert.update({status}, {
+    const updatedAdvert = await advert.update(
+        {status: status === 'Отклонено' ? 'На рассмотрении' : status},
+        {
         where: {
             id: advertId
         }
     });
-    if(!updatedAdvert) return next(new AppError('Failed to update advert by advert id', 400));
+    if(!updatedAdvert) return next(new AppError('Ошибка при обновлении публикации по отклику', 400));
 
     return res.status(204).json({
         status: 'success',
@@ -151,6 +195,9 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
 const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const responseId = +req?.params?.responseId;
+
+    if(!responseId) return next(new AppError("Параметр id отклика не был передан", 400));
+
     const deletedResponse = await response.destroy({
         where: {
             id: responseId,
@@ -165,10 +212,60 @@ const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
+const getResponseById = catchAsyncErrorHandler(async (req, res, next)=>{
+    const responseId = +req?.params?.responseId;
+    if(!responseId) return next(new AppError("No response id presented", 400));
+
+    const found = await response.findOne({
+        where: {
+            id: responseId
+        },
+        attributes: {exclude: ['deletedAt', 'updatedAt']},
+        include: advert
+    });
+    if(!found) return next(new AppError(`Failed to get response №${responseId}`, 400));
+
+    return res.status(200).json({
+        status: 'success',
+        data: found
+    });
+});
+
+const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const advertId = +req?.params?.advertId;
+    if(!advertId) return next(new AppError("Не представлено id публикации", 400));
+    const responsesByAdvertId = await response.findAndCountAll({
+        where: {
+            advertId: advertId, // get advertId
+            userId: {
+                [Op.ne]: userId
+            },
+        },
+        attributes: {
+            exclude: ['deletedAt']
+        },
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
+        include: advert
+    });
+    if(!responsesByAdvertId) return next(new AppError("Ошибка получения откликов по Id публикации", 400));
+
+    return res.status(200).json({
+        status: 'success',
+        data: responsesByAdvertId // {count, rows}
+    });
+});
+
 module.exports = {
-    getResponsesByAdvertId,
+    getOtherResponses,
     getResponsesByUserId,
     createResponse,
     updateResponseByAdvertId,
     deleteResponse,
+    getResponseById,
+    getResponsesByAdvertId,
 }

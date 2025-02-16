@@ -11,7 +11,7 @@ function TabProvider({children}){
 
     const [mode, setMode] = useState('all');
     const [tabOptions, setTabOptions] = useState([]);
-    const [selectedInternTabOpt, selectInternTabOpt] = useState(internalTabOptionStates['Свои']);
+    const [selectedInternTabOpt, selectInternTabOpt] = useState(internalTabOptionStates['Мои']);
 
     useEffect(()=>{
         if(mode === 'all' || pathName === '/account' || !pathName.startsWith('/account')) return;
@@ -19,25 +19,31 @@ function TabProvider({children}){
         const foundTab = accountTabs.slice(1).find(el => el.href === `/${hrefSlugs[0]}/${hrefSlugs[1]}`);
         if(foundTab && foundTab.menu){
             setTabOptions(foundTab.menu);
-            if(hrefSlugs.length === 2){
-                const firstShownOption = foundTab.menu.find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode));
-                router.replace(firstShownOption.href);
+            if(hrefSlugs.length >= 2){
+                let firstShownOption;
+                if(hrefSlugs.length === 2){
+                    firstShownOption = foundTab.menu.find(el => !el.hasOwnProperty('permits') || el.permits.includes(mode));
+                }else if(hrefSlugs.length > 2){
+                    const internalTab = hrefSlugs[2]; //responses
+                    firstShownOption = foundTab.menu.find(el => {
+                        const lastHref =  el.href.split('/')[2];
+                        if(lastHref === internalTab) return el;
+                    });
+                }
+                if(firstShownOption){
+                    selectInternTabOpt(firstShownOption?.personalRights?.[mode]?.[0]|| 0);
+                    router.replace(firstShownOption.href);
+                }
+
             }
         }
     }, [pathName, mode]);
-    function setInternalTabOption(action){
-        const str = action.split(' ');
-        if(str[0] === Object.keys(internalTabOptionStates)[0]){
-            selectInternTabOpt(internalTabOptionStates[str[0]]); // 'Свои' -> 0
-        }else selectInternTabOpt(internalTabOptionStates[str[1]]) // 'участников' -> 1
-    }
 
     return (
         <TabContext.Provider value={{
             tabOptions,
             mode, setMode,
             selectedInternTabOpt, selectInternTabOpt,
-            setInternalTabOption,
             router, pathName}}>
             {children}
         </TabContext.Provider>

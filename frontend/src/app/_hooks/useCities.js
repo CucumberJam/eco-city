@@ -1,19 +1,28 @@
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {useEffect, useState} from "react";
 import {fetchAddress} from "@/app/_lib/geo-api";
-import {getUsers} from "@/app/_lib/data-service";
+import {getCities, getUsers} from "@/app/_lib/data-service";
 
-export default function useCities(citiesAPI, withUsers = false){
+export default function useCities(citiesAPI = null, withUsers = false){
 
     const { currentCity, cities, setCities, setCurrentCity, setUsers} =
         useGlobalUIStore((state) => state);
     const [error, setError] = useState('');
 
     useEffect(() => {
+        const errors = [];
         async function getCity(){
             if(cities.length > 0 && currentCity) return;
-
-            setCities(citiesAPI);
+            if(citiesAPI) setCities(citiesAPI);
+            else{
+                try{
+                    const res = await getCities();
+                    if(res.status === 'success' && res.data) setCities(res.data);
+                    else throw new Error(res?.message || 'Ошибка получения городов');
+                }catch (e) {
+                    errors.push(e.message);
+                }
+            }
             try{
                 const { address} = await fetchAddress();
                 const currentCityName = address?.city;
@@ -25,12 +34,16 @@ export default function useCities(citiesAPI, withUsers = false){
                     if(statusUsers === 'success') setUsers(users);
                 }
             }catch (e) {
+                errors.push(e.message)
                 setCurrentCity(citiesAPI[0]);
             }
         }
         getCity().catch(e => {
             console.log(e);
-            setError(prev => e.message)
+            setError(errors.length > 0 ? errors.join('; '): e.message);
+            setTimeout(()=>{
+                setError('');
+            }, 3000)
         });
     }, []);
 

@@ -35,7 +35,7 @@ export default function FormAnnounce({message, type = 'error', href = null, link
         </div>
     )
     else return (
-        <div className={`${styles.block.common} ${styles.block.error}`}>
+        <div className={`${styles.block.common} ${styles.block.error} text-center`}>
             <ExclamationCircleIcon className={`${styles.icon.common} ${styles.icon.error}`}/>
             <div className={`${styles.message.common} ${styles.message.error}`}>
                 {message}

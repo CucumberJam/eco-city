@@ -2,7 +2,7 @@
 const {Deferrable, DataTypes} = require('sequelize');
 const sequelize = require("../../config/database");
 const AppError = require("../../utils/appError");
-//const response = require("../../db/models/response");
+const response = require("../../db/models/response");
 
 const advert = sequelize.define('advert',
     {
@@ -258,11 +258,11 @@ const advert = sequelize.define('advert',
     }
 );
 
-/*advert.hasMany(response, {
+advert.hasMany(response, {
   foreignKey: 'advertId'
 });
 response.belongsTo(advert, {
   foreignKey: 'advertId'
-});*/
+});
 
 module.exports = advert;

@@ -1,9 +1,11 @@
 'use server';
-import { signIn } from '@/auth';
+import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
 import {authRoutes, DEFAULT_LOGIN_REDIRECT} from "@/routes";
 import {FNS_URL} from "@/app/_lib/URLS";
 import { redirect } from 'next/navigation'
+import {revalidatePath} from "next/cache";
+
 const getOptions = (token, method = 'GET')=>{
     return {
         method: method,
@@ -36,7 +38,23 @@ export async function signInAction(formData) {
         return {success: false, message: error.message};
     }
 }
-
+export async function createDialog(token, secondUserId){
+    if(!secondUserId) return;
+    try{
+        const options = getOptions(token, 'POST');
+        options.body = JSON.stringify({secondUserId: +secondUserId});
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, data: e.message};
+    }
+}
 export async function getDialogs(id, token){
     if(!id) return;
     try{
@@ -51,6 +69,22 @@ export async function getDialogs(id, token){
     }catch (e) {
         console.log(e);
         return {status: 'error', data: e.message};
+    }
+}
+export async function getDialogById(token, dialogId){
+    if(!dialogId || !token) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs/${dialogId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
     }
 }
 export async function getAdvertsOfUser(userId, token, offset = 0, limit = 10){
@@ -86,6 +120,159 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
     }catch (e) {
         console.log(e);
         return {status: 'error', message: e.message};
+    }
+}
+export async function removeAdvertById(advertId, token){
+    if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
+    try{
+        const options = getOptions(token, 'DELETE');
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${advertId}`, options);
+        const data = await res.json(); //{ status: 'success', data: 1 }
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
+    }
+}
+export async function getAdvertById(token, advertId){
+    if(!advertId || !token) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/advert/${advertId}`, options);
+        if(!res.ok || res.status === 400){
+            const data = await res.json();
+            return {success: 'error', message: data?.error.message ? data?.error.message : 'Ошибка при получении публикации'};
+        }
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
+export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
+    if(!userId) return;
+    const paramsObj = {offset: offset, limit: limit};
+    const searchParams = new URLSearchParams(paramsObj);
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${userId}?${searchParams.toString()}`, options);
+        const data = await res.json();
+        console.log(data)
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
+export async function getOtherResponses(token, offset = 0, limit = 10, adverts = null){
+    const paramsObj = {offset: offset, limit: limit};
+    if(adverts) paramsObj.adverts = adverts;
+    const searchParams = new URLSearchParams(paramsObj);
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/?${searchParams.toString()}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        const response = {
+            status: 'success', data: data.data
+        }
+        if(!adverts) response.advertsIds = data.advertsIds;
+        return response;
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
+export async function getResponseById(token, responseId){
+    if(!responseId || !token) return;
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/response/${responseId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'success', data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message};
+    }
+}
+export async function updateResponseByAdvertId(token, advertId, responseId, status){
+    if(!responseId || !token || !advertId || !status) return;
+    try{
+        const searchParams = new URLSearchParams({id: responseId, status});
+        const options = getOptions(token, 'PUT');
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${advertId}?${searchParams.toString()}`, options);
+        if(res.status === 204){
+            return {success: true};
+        }
+        if(!res?.ok || res.status === 400){
+            const data = await res.json();
+            return {success: false, message: data?.error?.message ? data?.error?.message : (status === 'Отклонено' ? 'Ошибка при отклонении отклика' : 'Ошибка при согласовании отклика')};
+        }
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
+    }
+}
+export async function removeResponse(responseId, token){
+    if(!responseId) return {success: false, message: 'Параметр id отклика не был передан'};
+    try{
+        const options = getOptions(token, 'DELETE');
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${responseId}`, options);
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
+    }
+}
+export async function getResponsesByAdvertId(offset = 0, limit = 10, additionalObj){
+    const {advertId, token} = additionalObj;
+    if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
+    const paramsObj = {offset: offset, limit: limit};
+    const searchParams = new URLSearchParams(paramsObj);
+    try{
+        const options = getOptions(token);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/advert/${advertId}?${searchParams.toString()}`, options);
+        if(!res.ok && res.status === 401){
+            redirect(authRoutes[0]);
+        }
+        if(!res.ok || res.status === 400){
+            const data = await res.json();
+            return {success: false, message: data?.error?.message ? data?.error.message : 'Ошибка при получении откликов по публикации'};
+        }
+        const data = await res.json();
+        if(data.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {success: true, data: data.data};
+    }catch (e) {
+        console.log(e);
+        return {success: false, message: e.message};
     }
 }
 export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
@@ -145,7 +332,6 @@ export async function signUpAction(params){
         return {success: false, message: e.message};
     }
 }
-
 export async function createAdvertAction(formData, token){
     const options = getOptions(token, 'POST');
     options.body = JSON.stringify({
@@ -169,6 +355,26 @@ export async function createAdvertAction(formData, token){
     }
 }
 
+export async function updateAdvertAction(formData, advertId, token){
+    if(!token || !advertId) return;
+    const options = getOptions(token, 'POST');
+    try{
+        options.body = JSON.stringify(formData);
+        const res = await fetch(`${process?.env?.SERVER_URL}api/v1/adverts/${advertId}`, options);
+        const data = await res.json();
+        if(data?.status === 'success' && data?.data[0] === 1){
+            return {status: 'success'};
+        }
+        if(data?.status !== 'success'){
+            if(checkToken(data.message)) throw Error(data.message)
+            else throw Error(data.message)
+        }
+        return {status: 'error', message: 'Ошибка во время обновления публикации' };
+    }catch (e) {
+        console.log(e);
+        return {status: 'error', message: e.message || 'Ошибка во время обновления публикации'};
+    }
+}
 export async function createResponseAction(formData, token){
     const options = getOptions(token, 'POST');
     options.body = JSON.stringify({
@@ -191,7 +397,6 @@ export async function createResponseAction(formData, token){
         return {status: 'error', message: e.message === 'Failed to fetch' ? 'Ошибка сети' : e.message};
     }
 }
-
 function checkToken(errorMessage){
     if(errorMessage === 'Invalid token') {
         redirect(authRoutes[0]);

@@ -6,13 +6,12 @@ import {ArrowLeftIcon} from "@heroicons/react/24/outline";
 import {useOnClickOutside} from "usehooks-ts";
 import {ListGroup} from "flowbite-react";
 export default function AccountSidebar(){
-    const {pathName, router, tabOptions, mode, setInternalTabOption} = useTab();
+    const {pathName, router, tabOptions, mode, selectInternTabOpt} = useTab();
     const [isOpen, setIsOpen] = useState(true);
 
-    const filteredTabOptions = tabOptions.filter(option => !option.hasOwnProperty('permits') || option.permits.includes(mode));
-        useMemo(()=>{
+    const filteredTabOptions = useMemo(()=>{
         return tabOptions.filter(option => !option.hasOwnProperty('permits') || option.permits.includes(mode));
-    }, [mode, tabOptions]);
+    }, [mode, tabOptions]); // tabOptions.filter(option => !option.hasOwnProperty('permits') || option.permits.includes(mode));
 
 
     if(pathName === accountTabs[0].href || mode === 'all') return null;
@@ -35,9 +34,9 @@ export default function AccountSidebar(){
                     <SidebarItem key={el.name}
                                  item={el}
                                  mode={mode}
-                                 active={pathName === el.href}
+                                 active={pathName === el.href || pathName.startsWith(el.href)}
                                  clickHandler={() => router.push(el.href)}
-                                 selectInternalOption={setInternalTabOption}/>
+                                 selectInternalOption={selectInternTabOpt}/>
                 ))}
             </ul>
         </aside>
@@ -57,11 +56,16 @@ function SidebarItem({item, clickHandler, mode, selectInternalOption, active = f
 
     function showOptionsHandler(){
         if(haveOptions) setShowOptions(true);
-        else clickHandler(item);
+        else {
+            if(item?.personalRights?.[mode]){
+                selectInternalOption(item.personalRights[mode][0]);
+            }
+            clickHandler(item);
+        }
     }
 
     function setInternalOption(index){
-        selectInternalOption(item.rights[index]);
+        selectInternalOption(item.personalRights[mode][index]);
         clickHandler(item);
         setTimeout(()=>{
             setShowOptions(false);
