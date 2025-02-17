@@ -12,7 +12,7 @@ export default function DialogContainer({
                                             firstDialogMessages = null,
                                             userId,
 }){
-    const {initMessagesOfCurrentAdvert, getDialog} = useMessages();
+    const {initMessagesOfCurrentAdvert, getDialog, messages} = useMessages();
     const {errMessage, hasErrors}= useErrors();
 
     useEffect(()=>{
@@ -33,7 +33,7 @@ export default function DialogContainer({
             <DialogChatView>
                 {errMessage && <ErrorAnnounceWrap error={errMessage}/>}
                 {(!dialogs || dialogs.length === 0) && <NoDataBanner title='У вас пока нет чатов с другими участниками'/>}
-                {(dialogs?.length > 0 && firstDialogMessages) && <DialogMessages messages={firstDialogMessages}
+                {(dialogs?.length > 0 && messages) && <DialogMessages messages={messages}
                                                                                  showError={hasErrors}
                                                                                  userId={userId}/>}
             </DialogChatView>

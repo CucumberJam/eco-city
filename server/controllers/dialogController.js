@@ -19,6 +19,25 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
         ],
     });
     if(!dialogs) return next(new AppError('Ошибка при получении диалогов', 400));
+    let userData;
+    if(dialogs.length > 0){
+        //check for user
+        //const userOfFirstDialog = dialogs?.[0]?.user;
+        //console.log(userOfFirstDialog?.dataValues);
+        console.log(dialogs?.[0].dataValues.firstUserId) // {firstUserId: '14', secondUserId: '16'}
+        console.log(dialogs?.[0].dataValues.secondUserId)
+        console.log(dialogs?.[0].dataValues.user)
+
+        const userOfFirstDialog = dialogs?.[0].dataValues.user.dataValues
+        if(+userId === +userOfFirstDialog?.id){
+            const oppositeUserId = dialogs?.[0]?.dataValues?.firstUserId === userId ?
+                dialogs?.[0]?.dataValues?.secondUserId : dialogs?.[0]?.dataValues?.firstUserId;
+
+            const found = await user.findByPk(oppositeUserId);
+            if(!found) return next(new AppError('Ошибка при получении собеседника в диалоге', 400));
+            dialogs[0].dataValues.user.dataValues = found;
+        }
+    }
     return res.status(200).json({
         status: 'success',
         data: dialogs
@@ -68,6 +87,15 @@ const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
         include: user
     });
     if(!found) return next(new AppError(`Ошибка получения диалога №${dialogId}`, 400));
+    const userOfDialog = found.dataValues.user.dataValues;
+    if(+userId === +userOfDialog?.id){
+        const oppositeUserId = found.dataValues?.firstUserId === userId ?
+            found.dataValues?.secondUserId : found.dataValues?.firstUserId;
+
+        const foundUser = await user.findByPk(oppositeUserId);
+        if(!foundUser) return next(new AppError('Ошибка при получении собеседника в диалоге', 400));
+        found.dataValues.user.dataValues = foundUser;
+    }
 
     return res.status(200).json({
         status: 'success',

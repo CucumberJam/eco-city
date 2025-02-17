@@ -20,7 +20,7 @@ const getMessages = catchAsyncErrorHandler(async (req, res, next) => {
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
         order: [
-            ['createdAt', 'DESC'],
+            ['createdAt', 'ASC'],
         ],
     });
 

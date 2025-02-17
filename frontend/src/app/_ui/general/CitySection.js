@@ -15,8 +15,8 @@ export default function CitySection(){
     return (
     <Dropdown label={currentCity?.name || "Город: "} inline size="sm"
               dismissOnClick={true}>
-        {cities.map(city => (
-            <DropdownItem key={city.id}
+        {cities.map((city, index) => (
+            <DropdownItem key={city?.id || index}
                           value={city.name}
                           onClick={async() => await selectCity(city)}>
                 {city.name}
