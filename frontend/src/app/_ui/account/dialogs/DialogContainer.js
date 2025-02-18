@@ -44,13 +44,13 @@ export default function DialogContainer({
 }
 function DialogBox({children}){
     return (
-        <main className='relative top-[-9px] right-[-18px] w-full flex h-full'>
+        <main className='relative md:top-[-9px]  md:right-[-18px] w-full flex h-full'>
             {children}
         </main>
     );
 }
 function DialogChatView({children}){
-    return <section className='relative w-full  max-h-[650px]
+    return <section className='relative w-full  max-h-[700px] md:max-h-[650px]
     bg-gray-100 flex flex-col justify-between overflow-hidden'>
         {children}
     </section>
