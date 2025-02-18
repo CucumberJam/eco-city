@@ -30,8 +30,10 @@ export default function ResponseContainer({userData, userId, userToken}){
         if(!currentCity) return;
 
         initResponsesContext?.(userData, userToken, userId, currentCity?.id)
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
+            .then(res => {
+                if(!res.success) console.log(res.message)
+            })
+            .catch(err => console.log(err.message));
 
     }, [currentCity?.id]);
 
