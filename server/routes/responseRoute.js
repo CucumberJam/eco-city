@@ -11,7 +11,7 @@ const {getOtherResponses,
 
 router.route('/')
     .get(authentication,
-    restrictTo('ADMIN', 'RECYCLER', 'RECEIVER'),
+    restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
     getOtherResponses) // получить отклики других участников на свои объявления
     .post(authentication,
     restrictTo('ADMIN', 'RECYCLER', 'RECEIVER'),
@@ -22,14 +22,20 @@ router.route('/:responseId').delete(authentication,
     deleteResponse); // только владелец отклика
 
 router.route('/:userId')
-    .get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
+    .get(authentication, restrictTo('ADMIN', 'RECYCLER', 'RECEIVER'),
     getResponsesByUserId) // получить только свои отклики
 
 router.route('/:advertId').put(authentication,
     restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
     updateResponseByAdvertId); // изменить отклик только владелец объявления
 
-router.route('/response/:responseId').get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), getResponseById);
-router.route('/advert/:advertId').get(authentication, restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'), getResponsesByAdvertId);
+router.route('/response/:responseId')
+    .get(authentication,
+        restrictTo('ADMIN', 'PRODUCER', 'RECYCLER', 'RECEIVER'),
+        getResponseById);
+router.route('/advert/:advertId')
+    .get(authentication,
+        restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
+        getResponsesByAdvertId);
 
 module.exports = router;

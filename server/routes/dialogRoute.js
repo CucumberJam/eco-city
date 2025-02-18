@@ -1,14 +1,24 @@
 const router = require('express').Router();
 const {authentication, restrictTo} = require('../controllers/authController');
-const {getDialogs, createDialog, getDialogById} = require('../controllers/dialogController')
+const {getDialogs,
+    createDialog,
+    getDialogById,
+    updateDialogById} = require('../controllers/dialogController')
 
 router.route('/')
-    .get(authentication, getDialogs)
+    .get(authentication,
+        restrictTo('ADMIN', 'PRODUCER', 'RECEIVER', 'RECYCLER'),
+        getDialogs)
     .post(authentication,
-    restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
-    createDialog);
+        restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
+        createDialog);
 
 router.route('/:dialogId')
-    .get(authentication, getDialogById)
+    .get(authentication,
+        restrictTo('ADMIN', 'PRODUCER', 'RECEIVER', 'RECYCLER'),
+        getDialogById)
+    .post(authentication,
+        restrictTo('ADMIN', 'PRODUCER', 'RECEIVER', 'RECYCLER'),
+        updateDialogById)
 
 module.exports = router;

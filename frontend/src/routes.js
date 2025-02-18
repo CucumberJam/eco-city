@@ -23,6 +23,10 @@ export const authRoutes = [
 * */
 export const apiAuthPrefix = '/api/auth';
 
+export const apiServerRoutes = {
+    dialogs: 'api/v1/dialogs/',
+    messages: 'api/v1/messages/',
+}
 /*
 * The default redirect path after logged in
 * @type {string}

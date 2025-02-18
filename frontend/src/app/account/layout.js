@@ -26,7 +26,9 @@ function StyledLayout({children}){
 }
 function StyledMain({children}){
     return (
-        <main className='w-full flex flex-col mx-auto my-0 py-2 px-3 h-full'>
+        <main className='w-full flex flex-col mx-auto my-0
+        py-0 md:py-2 px-0 md:px-3
+         h-full'>
             {children}
         </main>
     );
