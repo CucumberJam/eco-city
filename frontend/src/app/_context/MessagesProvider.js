@@ -29,9 +29,9 @@ function MessagesProvider({children}) {
         }else return res;
     }
     const getDialog = ()=> dialog.current;
-    async function fetchAndSetMessages(dialogId){
+    async function fetchAndSetMessages(dialogId, offset = 0, limit = 10){
         if(!dialogId) return {success: false, message: 'Id диалога не представлено'}
-        const res = await getMessagesByDialogId(dialogId);
+        const res = await getMessagesByDialogId(dialogId, offset, limit);
         if(res.success) {
             setMessages(prev => res.data);
             return {success: true}
@@ -64,7 +64,8 @@ function MessagesProvider({children}) {
             messages,
             initMessagesOfCurrentAdvert,
             addNewMessage,
-            dialogs
+            dialogs,
+            fetchAndSetMessages
         }}>
             {children}
         </MessagesContext.Provider>
