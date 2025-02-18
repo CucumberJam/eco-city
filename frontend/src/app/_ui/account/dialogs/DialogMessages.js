@@ -70,7 +70,7 @@ function MessageList({userId}){
                                 }
                             </>
                         )}
-                        <ShowDateOfMessage date={el.updatedAt || el?.createdAt}/>
+                        <ShowDateOfMessage date={el?.createdAt}/>
                     </div>
                 </li>
             ))}
@@ -81,17 +81,14 @@ function MessageList({userId}){
 function ShowDateOfMessage({date}){
     const today = new Date();
     const messageDate = new Date(date);
-    if((today.getFullYear() === messageDate.getFullYear())
-        && (today.getMonth() === messageDate.getMonth()) &&
-        (today.getDate() === messageDate.getDate())) return (
-        <span className='text-gray-500 text-sm'>
-            {today.toLocaleTimeString().substring(0, 5)}
-        </span>
-    );
+    const showDateOrTime =  ((today.getFullYear() === messageDate.getFullYear())
+            && (today.getMonth() === messageDate.getMonth()) &&
+            (today.getDate() === messageDate.getDate())) ? today.toLocaleTimeString().substring(0, 5) :
+            messageDate.toLocaleDateString();
 
     return (
         <span className='text-gray-500 text-sm'>
-            {messageDate.toLocaleDateString()}
+            {showDateOrTime}
         </span>
     );
 }
