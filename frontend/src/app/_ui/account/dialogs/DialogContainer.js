@@ -8,34 +8,36 @@ import useErrors from "@/app/_hooks/useErrors";
 import FormAnnounce from "@/app/_ui/form/FormAnnounce";
 
 export default function DialogContainer({
-                                            dialogs = [],
+                                            dialogsAPI = [],
                                             firstDialogMessages = null,
                                             userId,
 }){
-    const {initMessagesOfCurrentAdvert, getDialog, messages} = useMessages();
-    const {errMessage, hasErrors}= useErrors();
+    const {initMessagesOfCurrentAdvert, getDialog, dialogs} = useMessages();
+    const {errMessage, hasError}= useErrors();
 
     useEffect(()=>{
         initMessagesOfCurrentAdvert({
-            dialogData: dialogs[0],
-            messages: firstDialogMessages
-        }).catch(err => hasErrors('default', err.message));
+            dialogData: dialogsAPI[0],
+            messages: firstDialogMessages,
+            dialogs: dialogsAPI
+        }).catch(err => hasError('default', err.message));
     }, []);
     async function pickDialog(dialogId){
         if(dialogId === getDialog?.()?.id) return;
         const res = await initMessagesOfCurrentAdvert({dialogId});
-        if(!res?.success) hasErrors('default', res.message);
+        if(!res?.success) hasErrors('default', res?.message || 'Ошибка при выборе диалога');
     }
+
     return (
         <DialogBox>
             <DialogMenu dialogs={dialogs}
+                        currentOpenDialog={getDialog()?.id}
                         pickDialog={pickDialog}/>
             <DialogChatView>
                 {errMessage && <ErrorAnnounceWrap error={errMessage}/>}
-                {(!dialogs || dialogs.length === 0) && <NoDataBanner title='У вас пока нет чатов с другими участниками'/>}
-                {(dialogs?.length > 0 && messages) && <DialogMessages messages={messages}
-                                                                                 showError={hasErrors}
-                                                                                 userId={userId}/>}
+                {(dialogs.length === 0) && <NoDataBanner title='У вас пока нет чатов с другими участниками'/>}
+                {dialogs?.length > 0 && <DialogMessages showErrorHandler={hasError}
+                                                        userId={userId}/>}
             </DialogChatView>
         </DialogBox>
     );
@@ -48,7 +50,10 @@ function DialogBox({children}){
     );
 }
 function DialogChatView({children}){
-    return <section className='relative w-full bg-gray-100'>{children}</section>
+    return <section className='relative w-full  max-h-[650px]
+    bg-gray-100 flex flex-col justify-between overflow-hidden'>
+        {children}
+    </section>
 }
 function ErrorAnnounceWrap({error}){
     return <div className='absolute top-20 left-[40%] bg-white border-r-2 flex justify-items-center'>

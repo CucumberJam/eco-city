@@ -2,12 +2,13 @@
 import {getRequestOptions, getUserId, requestWrap} from "@/app/_lib/helpers";
 import {apiServerRoutes} from "@/routes";
 
-export async function getMessagesByDialogId(dialogId){
+export async function getMessagesByDialogId(dialogId, offset = 0, limit = 10){
     if(!dialogId) return;
     const options = await getRequestOptions();
+    const searchParams = new URLSearchParams({offset, limit});
     return  await requestWrap({
         options,
-        route: `${process?.env?.SERVER_URL}${apiServerRoutes.messages}${dialogId}`
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.messages}${dialogId}?${searchParams.toString()}`
     });
 }
 export async function createMessageToDialog(dialog, formData){

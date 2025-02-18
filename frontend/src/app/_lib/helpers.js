@@ -150,7 +150,23 @@ export async function requestWrap({options, route}){
     }
 }
 
-/* if(!res?.success && res?.redirect){
-     revalidatePath(res.redirect.revalidatePath, res.redirect.form);
-     if(res.redirect.redirect) redirect(res.redirect.redirectPath);
- }else return res;*/
+export function getLastIndexOfMessageList(heightOfList, heightOfParentBlock, items){
+    // 1 строка 56px высота элемента
+    // 2 строка 80px высота элемента
+    // 3 строка 104px высота элемента
+
+    // 1 строка 24px, остальное пространство 32px
+    // 1 строка 29 символов
+    const oneLine = 29;
+    const messBlockHeight = 32;
+    const oneLineHeight = 24;
+    const marginBottomSpace = 12;
+    let accHeight = 0;
+    for(let i = 0; i < items.length-1; i++){
+        const length = items[i].text.length;
+        const lines = Math.ceil(length / oneLine);
+        const heightOfMessBlock = messBlockHeight + oneLineHeight * lines;
+        accHeight += heightOfMessBlock + marginBottomSpace;
+        if(heightOfList - accHeight <= heightOfParentBlock) return i+1;
+    }
+}

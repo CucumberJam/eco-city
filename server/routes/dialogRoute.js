@@ -17,7 +17,7 @@ router.route('/:dialogId')
     .get(authentication,
         restrictTo('ADMIN', 'PRODUCER', 'RECEIVER', 'RECYCLER'),
         getDialogById)
-    .put(authentication,
+    .post(authentication,
         restrictTo('ADMIN', 'PRODUCER', 'RECEIVER', 'RECYCLER'),
         updateDialogById)
 

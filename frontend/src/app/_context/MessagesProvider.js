@@ -6,6 +6,7 @@ import {getDialogById} from "@/app/_lib/actions/dialogs";
 const MessagesContext = createContext();
 
 function MessagesProvider({children}) {
+    const [dialogs, setDialogs] = useState([]);
     const dialog = useRef(null);
     const [messages, setMessages] = useState([]);
     async function addNewMessage(payload){
@@ -20,7 +21,11 @@ function MessagesProvider({children}) {
                 count: prev.count + 1,
                 rows: [...prev.rows, res.data]
             }));
+            dialog.current.isRead = false;
+            const updatedDialogs = dialogs.map( el => (el.id === dialog.current.id) ? {... dialog.current} : el)
+            setDialogs(prev => [...updatedDialogs]);
             return {success: true};
+
         }else return res;
     }
     const getDialog = ()=> dialog.current;
@@ -35,9 +40,11 @@ function MessagesProvider({children}) {
     async function initMessagesOfCurrentAdvert({
                                                    dialogData = null,
                                                    messages = null,
-                                                   dialogId = null
+                                                   dialogId = null,
+                                                   dialogs = null
                                                }){
         if(dialogData) {
+            if(dialogs) setDialogs(prev => [...dialogs]);
             dialog.current = {...dialogData};
             if(messages){
                 setMessages(prev => messages);
@@ -57,6 +64,7 @@ function MessagesProvider({children}) {
             messages,
             initMessagesOfCurrentAdvert,
             addNewMessage,
+            dialogs
         }}>
             {children}
         </MessagesContext.Provider>

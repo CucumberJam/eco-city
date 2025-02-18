@@ -16,12 +16,11 @@ export async function getDialogById(dialogId){
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.dialogs}${dialogId}`
     });
 }
-export async function makeDialogRead(dialogId, isRead){
-    if(!dialogId || !isRead) return;
-    const options = await getRequestOptions(null, 'PUT');
-    const searchParams = new URLSearchParams({isRead: isRead});
+export async function makeDialogRead(dialogId){
+    if(!dialogId) return;
+    const options = await getRequestOptions(null, 'POST');
     return  await requestWrap({
         options,
-        route: `${process?.env?.SERVER_URL}${apiServerRoutes.dialogs}${dialogId}?${searchParams.toString()}`
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.dialogs}${dialogId}`
     });
 }

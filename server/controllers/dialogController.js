@@ -4,6 +4,7 @@ const AppError = require("../utils/appError");
 const {Op} = require("sequelize");
 const {removeCreatedFields} = require("./authController");
 const user = require("../db/models/user");
+const message = require("../db/models/message");
 
 const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
@@ -21,13 +22,6 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
     if(!dialogs) return next(new AppError('Ошибка при получении диалогов', 400));
     let userData;
     if(dialogs.length > 0){
-        //check for user
-        //const userOfFirstDialog = dialogs?.[0]?.user;
-        //console.log(userOfFirstDialog?.dataValues);
-        console.log(dialogs?.[0].dataValues.firstUserId) // {firstUserId: '14', secondUserId: '16'}
-        console.log(dialogs?.[0].dataValues.secondUserId)
-        console.log(dialogs?.[0].dataValues.user)
-
         const userOfFirstDialog = dialogs?.[0].dataValues.user.dataValues
         if(+userId === +userOfFirstDialog?.id){
             const oppositeUserId = dialogs?.[0]?.dataValues?.firstUserId === userId ?
@@ -106,8 +100,10 @@ const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
 const updateDialogById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const dialogId = +req?.params?.dialogId;
-    const {isRead} = req.query;
-    const updatedDialog = await dialog.update({isRead}, {
+    //const {isRead} = req.query;
+    const updatedDialog = await dialog.update({
+        isRead: true
+    }, {
         where: {
             id: dialogId,
             [Op.or]: [{ firstUserId: userId }, { secondUserId: userId }]
@@ -115,7 +111,15 @@ const updateDialogById = catchAsyncErrorHandler(async (req, res, next) => {
     });
     if(!updatedDialog) return next(new AppError(`Ошибка при изменении статуса диалога на ${isRead ? 'прочитанный' : 'не прочитанный' }`, 400));
 
-    return res.status(204).json({
+    const updatedMessages = await message.update({
+        isRead: true
+    }, {
+        where: {
+            dialogId,
+            toUserId: userId, //messages of interlocutor
+        },
+    });
+    return res.status(200).json({
         status: 'success',
         data: updatedDialog
     });

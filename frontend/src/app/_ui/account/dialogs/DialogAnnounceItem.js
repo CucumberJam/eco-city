@@ -1,9 +1,9 @@
 import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
 import Subtitle from "@/app/_ui/general/Subtitle";
-export default function DialogAnnounceItem({dialog, clickHandler}){
+export default function DialogAnnounceItem({dialog, clickHandler, isOpen}){
     return (
         <article className={`text-center w-full cursor-pointer border-b flex items-center justify-between 
-        py-2 px-1 text-xs ${dialog.isRead ? 'text-gray-500' : 'text-black'} 
+        py-2 px-1 text-xs ${dialog.isRead || isOpen ? 'text-gray-500' : 'text-black'} 
         hover:bg-gray-100 transition-colors`}
             onClick={()=> clickHandler(dialog.id)}>
             <div className='flex space-x-1'>
