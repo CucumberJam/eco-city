@@ -88,7 +88,7 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
         order: [
-            ['createdAt', 'DESC'],
+            ['updatedAt', 'DESC'],
         ],
     });
     if(!adverts) return next(new AppError("Failed to get user's adverts", 400));

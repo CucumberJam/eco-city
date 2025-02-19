@@ -32,7 +32,7 @@ export default function useCities(citiesAPI = null, withUsers = false){
                 setCurrentCity(currentCity);
                 if(withUsers){
                     const {success, data: users} = await getUsersByParams({cityId: currentCity.id});
-                    if(success) setUsers(users);
+                    if(success) setUsers(users.rows);
                 }
             }catch (e) {
                 errors.push(e.message)

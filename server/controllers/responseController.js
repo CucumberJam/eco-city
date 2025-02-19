@@ -2,6 +2,7 @@ const catchAsyncErrorHandler = require("../utils/catchAsync");
 const response = require("../db/models/response");
 const AppError = require("../utils/appError");
 const advert = require("../db/models/advert");
+const user = require("../db/models/user");
 const {removeCreatedFields} = require("./authController");
 const {Op} = require("sequelize");
 
@@ -43,7 +44,7 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
         ],
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
-        include: advert,
+        include: [advert, user]
     });
     if(!responsesByAdverts) return next(new AppError("Failed to get other responses by user's adverts", 400));
 

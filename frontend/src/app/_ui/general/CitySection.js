@@ -9,7 +9,7 @@ export default function CitySection(){
     async function selectCity(city){
         setCurrentCity(city);
         const {success, data: users} = await getUsersByParams({cityId: city.id});
-        if(success) setUsers(users);
+        if(success) setUsers(users.rows);
     }
     if(!cities) return <p>Fetching cities...</p>;
     return (

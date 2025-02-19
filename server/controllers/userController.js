@@ -6,7 +6,7 @@ const AppError = require("../utils/appError");
 function queryMaker(queryObject, notAdmin = true){
     const obj = {};
     const nums = ['id', 'ogrn', 'cityId', 'phone'];
-    const wastes = ['wastes', 'wasteTypes'];
+    const wastes = ['wastes', 'wasteTypes', 'role'];
     const str = ['email']
 
     //foo=bar&foo=qux => { wastes: [ 'стекло', 'пластик' ] }
@@ -29,9 +29,14 @@ function queryMaker(queryObject, notAdmin = true){
 }
 
 const getAllUsers = catchAsyncErrorHandler(async (req, res, next) => {
-    const users = await user.findAll({
+    const users = await user.findAndCountAll({
         where: queryMaker(req.query),
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
+        offset: req.query?.offset || 0,
+        limit: req.query?.limit || 10,
     });
     if(!users) return next(new AppError('Failed to get all users', 400));
     return res.status(200).json({
@@ -70,46 +75,114 @@ const getUserByEmailOrOGRN = catchAsyncErrorHandler(async (req, res, next) => {
         data: found
     });
 });
-const getReceivers = catchAsyncErrorHandler(async (req, res, next) => {
-    const receivers = await user.findAll({
-        where:{
-            role: 'RECEIVER',
-            ...queryMaker(req.query),
+
+const getUsersByReceiver = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const {cityId, wastes, wasteTypes, offset, limit} = req.query;
+    if(!wastes) return next(new AppError('Ошибка получения участников для Приемщика (отсутствуют виды отходов)', 400));
+
+    const options = {
+        userId: {
+            [Op.ne]: userId
         },
+        cityId: +cityId || +req?.user?.cityId,
+        wastes: {
+            [Op.contains]: wastes
+        },
+    };
+    if(wasteTypes){
+        options.wasteTypes = {
+            [Op.contains]: wasteTypes
+        }
+    }
+
+    const partners = await user.findAll({
+        where: options,
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        offset: offset || 0,
+        limit: limit || 10,
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
     });
-    if(!receivers) return next(new AppError('Failed to get receivers', 400));
+    if(!partners) return next(new AppError('Ошибка получения участников для Приемщика', 400));
     return res.status(200).json({
         status: 'success',
-        data: receivers
+        data: partners // {count, rows}
     });
 });
-const getProviders = catchAsyncErrorHandler(async (req, res, next) => {
-    const providers = await user.findAll({
-        where:{
-            role: 'PROVIDER',
-            ...queryMaker(req.query),
+const getUsersByRecycler = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const {cityId, wastes, wasteTypes, offset, limit} = req.query;
+    if(!wastes) return next(new AppError('Ошибка получения участников для Переработчика (отсутствуют виды отходов)', 400));
+    const options = {
+        userId: {
+            [Op.ne]: userId
         },
+        role: {
+            [Op.eq]: ['PRODUCER', 'RECEIVER']
+        },
+        cityId: +cityId || +req?.user?.cityId,
+        wastes: {
+            [Op.contains]: wastes
+        },
+    };
+    if(wasteTypes){
+        options.wasteTypes = {
+            [Op.contains]: wasteTypes
+        }
+    }
+
+    const partners = await user.findAll({
+        where: options,
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        offset: offset || 0,
+        limit: limit || 10,
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
     });
-    if(!providers) next(new AppError('Failed to get providers by city', 400));
+    if(!partners) next(new AppError('Ошибка получения участников для Переработчика', 400));
     return res.status(200).json({
         status: 'success',
-        data: providers
+        data: partners
     });
 });
-const getProducers = catchAsyncErrorHandler(async (req, res, next) => {
-    const producers = await user.findAll({
-        where:{
-            role: 'PRODUCER',
-            ...queryMaker(req.query),
+const getUsersByProducer = catchAsyncErrorHandler(async (req, res, next) => {
+    const userId = +req?.user?.id;
+    const {cityId, wastes, wasteTypes, offset, limit} = req.query;
+    if(!wastes) return next(new AppError('Ошибка получения участников для Производителя (отсутствуют виды отходов)', 400));
+    const options = {
+        userId: {
+            [Op.ne]: userId
         },
+        role: {
+            [Op.eq]: ['RECYCLER', 'RECEIVER']
+        },
+        cityId: +cityId || +req?.user?.cityId,
+        wastes: {
+            [Op.contains]: wastes
+        },
+    };
+    if(wasteTypes){
+        options.wasteTypes = {
+            [Op.contains]: wasteTypes
+        }
+    }
+
+    const partners = await user.findAll({
+        where: options,
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        offset: offset || 0,
+        limit: limit || 10,
+        order: [
+            ['updatedAt', 'DESC'],
+        ],
     });
-    if(!producers) next(new AppError('Failed to get producers by city', 400));
+    if(!partners) next(new AppError('Ошибка получения участников для Производителя', 400));
     return res.status(200).json({
         status: 'success',
-        data: producers
+        data: partners
     });
 });
 
@@ -131,5 +204,5 @@ const getAllAdmins = catchAsyncErrorHandler(async (req, res, next) => {
 });
 
 module.exports = {getAllUsers,
-    getReceivers, getProviders, getProducers,
+    getUsersByReceiver, getUsersByRecycler, getUsersByProducer,
     getAllAdmins, getUserById, getUserByEmailOrOGRN};
