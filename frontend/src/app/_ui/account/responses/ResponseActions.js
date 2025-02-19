@@ -10,12 +10,13 @@ export default function ResponseActions({
                                             loading,
                                             errMessage,
                                             success,
+                                            status,
                                             handleSend,
                                             handleUpdate}){
     const {open} = useModal();
     return (
         <>
-            {isUser ? <Button style={{marginTop: '40px'}}
+            {isUser ? <Button style={{marginTop: '40px'}} disabled={status === 'Отклонено'}
                               onClick={() => open(modalName.response)}>
                 Отменить отклик
             </Button> : (

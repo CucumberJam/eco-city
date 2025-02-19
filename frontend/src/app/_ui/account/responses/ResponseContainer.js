@@ -4,7 +4,7 @@ import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {useTab} from "@/app/_context/TabContext";
 import {useResponses} from "@/app/_context/ResponsesProvider";
 import {useModal} from "@/app/_context/ModalContext";
-import AccountTabs from "@/app/_ui/account/AccountTabs";
+import Tabs from "@/app/_ui/account/AccountTabs";
 import {showOthersResponses, showUserResponses} from "@/app/_store/constants";
 import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import {ModalView} from "@/app/_ui/general/ModalView";
@@ -50,10 +50,10 @@ export default function ResponseContainer({userData, userId, userToken}){
     return (
         <>
             {userRole === 'RECEIVER' && (
-                <AccountTabs tabsRef={tabsRef}
-                             defaultValue={selectedInternTabOpt}
-                             tabs={["Мои отклики", "Отклики других участников"]}
-                             setTabHandler={selectInternTabOpt}/>
+                <Tabs tabsRef={tabsRef}
+                      defaultValue={selectedInternTabOpt}
+                      tabs={["Мои отклики", "Отклики других участников"]}
+                      setTabHandler={selectInternTabOpt}/>
             )}
             {(showOthersResponses(userRole) && responses && selectedInternTabOpt === 1) && (
                 <ResponseList  responses={responses}

@@ -1,7 +1,6 @@
 import {redirect} from "next/navigation";
-import {apiServerRoutes, authRoutes} from "@/routes";
+import {authRoutes} from "@/routes";
 import {auth} from "@/auth";
-import {revalidatePath} from "next/cache";
 
 export function debounce(func, timeout = 300){
     let timer;
@@ -124,9 +123,12 @@ export async function getUserId(){
     const session = await auth();
     return session?.user?.id;
 }
-export async function requestWrap({options, route}){
+export async function requestWrap({options = null, route}){
     try{
-        const res = await fetch(route, options);
+        const res = options ? await fetch(route, options) :  await fetch(route);
+        if(res.status === 204 && res.ok){
+            return {success: true, data: data.data};
+        }
         if(res.status === 401 && !res.ok){
             throw Error('Please login to get access')
         }
@@ -147,5 +149,16 @@ export async function requestWrap({options, route}){
             }
         }
         return {success: false, message: e.message, redirect};
+    }
+}
+
+export function getPublicPostOptions(body, method = 'POST'){
+    return {
+        method: method,
+        headers: {
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(body),
+        redirect: "follow"
     }
 }

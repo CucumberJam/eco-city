@@ -1,7 +1,7 @@
 'use client';
 import {createContext, useContext, useRef, useState} from "react";
 import {getParamsToFetchAdverts, paginationOptions, showOthersAdverts, showUserAdverts} from "@/app/_store/constants";
-import {getAdverts, getAdvertsOfUser} from "@/app/_lib/actions";
+import {getAdverts, getAdvertsOfUser} from "@/app/_lib/actions/adverts";
 import {preparePagination} from "@/app/_lib/helpers";
 
 const AdvertsContext = createContext();
@@ -30,8 +30,8 @@ function AdvertsProvider({children}) {
                                           limit = initialPagination.limit,
                                           currentPage = initialPagination.currentPage){
 
-        const res = await getAdvertsOfUser(userData.current.id, userData.current.token, offset, limit);
-        if(res?.status === 'success' && res?.data){
+        const res = await getAdvertsOfUser(offset, limit);
+        if(res?.success && res?.data){
             setAdvertsUser(prev => res.data); //{count: 2, rows: []}
             // updatePagination:
             const totalPages = Math.ceil((res.data?.count || res.data?.rows?.length || 1) / limit);
@@ -51,8 +51,8 @@ function AdvertsProvider({children}) {
                                             limit = initialPagination.limit,
                                             currentPage = initialPagination.currentPage){
         const params = getParamsToFetchAdverts(userData.current.data, userData.current.cityId, offset, limit);
-        const res = await getAdverts(params, userData.current.token);
-        if(res.status === 'success'){
+        const res = await getAdverts(params);
+        if(res?.success && res?.data){
             setAdverts(prev => res.data);
             // updatePagination:
             const totalPages = Math.ceil((res.data?.count || res.data?.rows?.length || 1) / limit);

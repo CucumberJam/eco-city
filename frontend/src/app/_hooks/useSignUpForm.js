@@ -1,6 +1,6 @@
 import {useReducer} from "react";
-import {getUserByEmailOrOGRN} from "@/app/_lib/data-service";
 import {workingDaysDB} from "@/app/_store/constants";
+import {getUserByEmailPhoneOGRN} from "@/app/_lib/actions/users";
 
 const signUpFormState = {
     step: 1,
@@ -156,8 +156,8 @@ export default function useSignUpForm(errorCallbackFunc){
                     errorCallbackFunc('form', {type: 'address', payload: address})) return;
 
                 try{
-                    const isUserExist = await getUserByEmailOrOGRN({ogrn: ogrn});
-                    if(isUserExist.status === 'success') {
+                    const isUserExist = await getUserByEmailPhoneOGRN({ogrn: ogrn});
+                    if(isUserExist.success) {
                         errorCallbackFunc('default', 'Пользователь с таким ОГРН уже зарегистрирован');
                         return;
                     }
@@ -205,13 +205,13 @@ export default function useSignUpForm(errorCallbackFunc){
 
                 phone = phone.startsWith('+') ? +phone.substring(1) : +phone;
                 try{
-                    const isUserExistWithEmail = await getUserByEmailOrOGRN({email: email});
-                    if(isUserExistWithEmail.status === 'success') {
+                    const isUserExistWithEmail = await getUserByEmailPhoneOGRN({email: email});
+                    if(isUserExistWithEmail.success) {
                         errorCallbackFunc('default', 'Пользователь с таким email уже зарегистрирован');
                         return;
                     }
-                    const isUserExistWithPhone = await getUserByEmailOrOGRN({phone: phone});
-                    if(isUserExistWithPhone.status === 'success') {
+                    const isUserExistWithPhone = await getUserByEmailPhoneOGRN({phone: phone});
+                    if(isUserExistWithPhone.success) {
                         errorCallbackFunc('default', 'Пользователь с таким телефоном уже зарегистрирован');
                         return;
                     }

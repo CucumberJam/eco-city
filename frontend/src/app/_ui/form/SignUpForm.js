@@ -13,7 +13,7 @@ import FormItemMap from "@/app/_ui/form/FormItemMap";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import FormWorkTime from "@/app/_ui/form/FormWorkTime";
 import useWorkTime from "@/app/_hooks/useWorkTime";
-import {signUpAction} from "@/app/_lib/actions";
+import {signUpAction} from "@/app/_lib/actions/auth";
 import FormAnnounce from "@/app/_ui/form/FormAnnounce";
 import {Progress, Spinner} from "flowbite-react";
 import useSignUpForm from "@/app/_hooks/useSignUpForm";

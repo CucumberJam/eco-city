@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from 'next-auth/providers/credentials';
-import {loginAPI} from "@/app/_lib/data-service";
+import {loginAPI} from "@/app/_lib/actions/auth";
 export const {auth, handlers, signIn, signOut} = NextAuth({
     session: {strategy: 'jwt'},
     providers: [

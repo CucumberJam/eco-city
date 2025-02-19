@@ -5,8 +5,8 @@ import {useModal} from "@/app/_context/ModalContext";
 import usePaginatedItems from "@/app/_hooks/usePaginatedItems";
 import useErrors from "@/app/_hooks/useErrors";
 
-import {getResponsesByAdvertId, removeAdvertById} from "@/app/_lib/actions";
-
+import {getResponsesByAdvertId} from "@/app/_lib/actions/responses";
+import {removeAdvertById} from "@/app/_lib/actions/adverts";
 import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import AdvertInfoLarge from "@/app/_ui/account/adverts/AdvertInfoLarge";
 import AdvertActions from "@/app/_ui/account/adverts/AdvertActions";
@@ -44,7 +44,7 @@ export default function AdvertDescription({advert, responses, userToken}){
 
     async function deleteAdvert(){
         setLoading(prev =>true);
-        const res = await removeAdvertById(advert.id, userToken);
+        const res = await removeAdvertById(advert.id);
 
         setLoading(prev => false);
         if(res.success){

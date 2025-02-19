@@ -3,7 +3,7 @@ import {useRouter} from "next/navigation";
 import {useState} from "react";
 import useErrors from "@/app/_hooks/useErrors";
 import {prepareName} from "@/app/_lib/helpers";
-import {createResponseAction} from "@/app/_lib/actions";
+import {createResponse} from "@/app/_lib/actions/responses";
 
 import {Textarea} from "flowbite-react";
 import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
@@ -51,9 +51,9 @@ export default function AdvertInfo({advert, token }){
         }
         try{
             setIsFetching(true);
-            const response = await createResponseAction(data, token);
+            const response = await createResponse(data);
             setIsFetching(false);
-            if (response?.status !== 'success' && response.message !== "NEXT_REDIRECT") {
+            if (response?.success && response.message !== "NEXT_REDIRECT") {
                 throw new Error(response.message);
             } else {
                 setIsRegisterSucceeded(true);

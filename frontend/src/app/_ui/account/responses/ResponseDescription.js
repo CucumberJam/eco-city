@@ -6,7 +6,8 @@ import {useModal} from "@/app/_context/ModalContext";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import {useState} from "react";
 import FormStatus from "@/app/_ui/form/FormStatus";
-import {createDialog, removeResponse, updateResponseByAdvertId} from "@/app/_lib/actions";
+import {removeResponse, updateResponseByAdvertId} from "@/app/_lib/actions/responses";
+import {createDialog} from "@/app/_lib/actions/dialogs";
 import useErrors from "@/app/_hooks/useErrors";
 import {useRouter} from "next/navigation";
 import Column from "@/app/_ui/general/Column";
@@ -27,7 +28,7 @@ export default function ResponseDescription({response, userToken, isUser = true,
     async function deleteResponse(){
         setLoading(prev => true);
         try{
-            const res = await removeResponse(+response.id, userToken);
+            const res = await removeResponse(+response.id);
             if(!res?.success){
                 throw new Error(res?.message || 'Ошибка удаления отклика')
             }else{
@@ -47,7 +48,7 @@ export default function ResponseDescription({response, userToken, isUser = true,
     async function sendLetter(){
         setLoading(prev => true);
         try{
-            const res = await createDialog(userToken, response.userId);
+            const res = await createDialog(response.userId);
             if(!res?.success){
                 throw new Error(res?.message || 'Ошибка при создании диалога')
             }else{
@@ -68,7 +69,7 @@ export default function ResponseDescription({response, userToken, isUser = true,
         const status = (isAccepted) ? advertStatuses[2] : advertStatuses[1];
         setLoading(prev => true);
         try{
-            const res = await updateResponseByAdvertId(userToken, response.advert.id, response.id, status);
+            const res = await updateResponseByAdvertId(response.advert.id, response.id, status);
             if(!res?.success){
                 throw new Error(res?.message || 'Ошибка при согласовании отклика')
             }else{
@@ -92,6 +93,7 @@ export default function ResponseDescription({response, userToken, isUser = true,
                                  responseComponent={<ResponseInfo response={response} isUser={isUser}/>}
                                  responseStatusComponent={isUser ? null : <Status status={response.status} style={' absolute top-[20px] right-20 self-end flex justify-center text-center'}/>}
                                  responseActionsComponent={<ResponseActions isUser={isUser}
+                                                                            status={response.status}
                                                                             errMessage={errMessage}
                                                                             success={success}
                                                                             loading={loading}

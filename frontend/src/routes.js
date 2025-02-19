@@ -26,6 +26,14 @@ export const apiAuthPrefix = '/api/auth';
 export const apiServerRoutes = {
     dialogs: 'api/v1/dialogs/',
     messages: 'api/v1/messages/',
+    adverts: 'api/v1/adverts/',
+    responses: 'api/v1/responses/',
+    users: 'api/v1/users/',
+    cities: 'api/v1/cities/',
+    roles: 'api/v1/roles/',
+    dimensions: 'api/v1/dimensions/',
+    wastes: 'api/v1/wastes/',
+    wasteTypes: 'api/v1/wastes/types/',
 }
 /*
 * The default redirect path after logged in

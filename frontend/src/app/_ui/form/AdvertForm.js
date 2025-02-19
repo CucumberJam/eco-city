@@ -4,7 +4,7 @@ import {useEffect, useMemo, useState} from "react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import useDimensions from "@/app/_hooks/useDimensions";
 import useErrors from "@/app/_hooks/useErrors";
-import {createAdvertAction, updateAdvertAction} from "@/app/_lib/actions";
+import {createAdvert, updateAdvert} from "@/app/_lib/actions/adverts";
 import {hasAdvertCreateFormErrors} from "@/app/_lib/data-service";
 import {prepareName} from "@/app/_lib/helpers";
 
@@ -25,7 +25,6 @@ export default function AdvertForm({
                                        dataObject,
                                        btnLeftLabel = 'Очистить',
                                        btnRightLabel = 'Опубликовать',
-                                       userToken,
                                        successMessage = 'Отклик на заявку направлен'
 
 }){
@@ -49,15 +48,15 @@ export default function AdvertForm({
         if(check.hasErrors || !check?.data) return;
         try{
             setIsFetching(true);
-            const response = isEdit ? await updateAdvertAction(check.data, dataObject.id, userToken) : await createAdvertAction(check.data, userToken);
-            if(response?.status === 'success'){
+            const response = isEdit ? await updateAdvert(check.data, dataObject.id) : await createAdvert(check.data);
+            if(response?.success){
                 setIsFetching(false);
                 setIsRegisterSucceeded(true);
                 setTimeout(()=>{
                     router.push('/account/messages/adverts');
                 }, 1000);
             }
-            else if (response?.status !== 'success' && response.message !== "NEXT_REDIRECT") {
+            else if (!response?.success && response.message !== "NEXT_REDIRECT") {
                 throw new Error(response.message);
             }
         }catch (e) {
