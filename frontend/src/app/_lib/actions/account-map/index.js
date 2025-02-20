@@ -2,7 +2,7 @@
 import {accountMapModes} from "@/app/_store/constants";
 import {getAdverts, getAdvertsOfUser} from "@/app/_lib/actions/adverts";
 import {getOtherResponses} from "@/app/_lib/actions/responses";
-import {requestWrap} from "@/app/_lib/helpers";
+import {getRequestOptions, requestWrap} from "@/app/_lib/helpers";
 import {apiServerRoutes} from "@/routes";
 
 const defaultParams = {
@@ -11,14 +11,14 @@ const defaultParams = {
     cityId: 0,
     wastes: [],
     wasteTypes: [],
-    offset: 0,
-    limit: 10
 }
 
 /**
  * Метод запрашивает коллекцию точек на карте, состоящую из пользователей или заявок или откликов, в зависимости от режима
- *
- * @param {number} params.mode - Определяет текущий режим:
+ * @param {number} offset - количество строк в БД которые нужно пропустить
+ * @param {number} limit - количество строк в БД которые нужно предоставить
+ * @param {object} params - объект данных
+ * @param {number} params.mode - текущий режим:
  * 1) список участников, имеющих отклики на заявки пользователя (PRODUCER, RECEIVER);
  * 2) список участников, имеющих заявки на смежные с пользователем виды отходов (RECYCLER, RECEIVER);
  * 3) список потенциальных партнеров со смежными с пользователем отходами:
@@ -29,23 +29,21 @@ const defaultParams = {
  * @param {number} params.cityId - id города
  * @param {array} params.wastes - отходы пользователя
  * @param {array} params.wasteTypes - подвиды отходов пользователя
- * @param {number} params.offset - количество строк в БД которые нужно пропустить
- * @param {number} params.limit - количество строк в БД которые нужно предоставить
  */
-export async function fetchMapUsers(params = defaultParams){
+export async function fetchMapUsers(offset = 0, limit = 10, params = defaultParams){
     if(!validateRights(params.mode, params.userRole)) return {
         success: false,
         message: `Вам не доступен данный режим ${params.mode} c ролью ${params.userRole}`
     };
     switch (params.mode) {
         case 0: {
-            return await fetchUsersWithResponsesOnUserAdverts(params.offset, params.limit);
+            return await fetchUsersWithResponsesOnUserAdverts(offset, limit);
         }
         case 1: {
-            return await fetchUsersWithAdverts(params.wastes, params.wasteTypes, params.cityId, params.offset, params.limit)
+            return await fetchUsersWithAdverts(params.wastes, params.wasteTypes, params.cityId, offset, limit)
         }
         case 2: {
-            return await fetchPartners(params);
+            return await fetchPartners(offset, limit, params);
         }
     }
 }
@@ -114,9 +112,12 @@ async function fetchUsersWithAdverts(wastes, wasteTypes, cityId, offset, limit){
  * @param {number} offset - количество строк в БД которые нужно пропустить
  * @param {number} limit - количество строк в БД которые нужно предоставить
  */
-async function fetchPartners({ userRole, wastes, wasteTypes, cityId, offset, limit}){
+async function fetchPartners(offset, limit, { userRole, wastes, wasteTypes, cityId}){
+    const options = await getRequestOptions();
     const searchParams = new URLSearchParams({wastes, wasteTypes, cityId, offset, limit});
-    return  await requestWrap({route:
-            `${process?.env?.SERVER_URL}${apiServerRoutes.users}${userRole.toLowerCase()}/?${searchParams.toString()}`
+    const res =  await requestWrap({
+        options,
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}${userRole.toLowerCase()}/?${searchParams.toString()}`
     });
+    return res;
 }

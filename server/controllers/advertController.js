@@ -69,6 +69,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
             ['updatedAt', 'DESC'],
         ],
     });
+    console.log(adverts)
     if(!adverts) return next(new AppError("Failed to get adverts", 400));
     return res.status(200).json({
         status: 'success',

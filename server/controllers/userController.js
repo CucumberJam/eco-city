@@ -87,18 +87,17 @@ const getUsersByReceiver = catchAsyncErrorHandler(async (req, res, next) => {
         },
         cityId: +cityId || +req?.user?.cityId,
         wastes: {
-            [Op.contains]: wastes
+            [Op.contains]: wastes.split(',').map(el => +el)
         },
     };
     if(wasteTypes){
         options.wasteTypes = {
-            [Op.contains]: wasteTypes
+            [Op.contains]: wasteTypes.split(',').map(el => +el)
         }
     }
-
-    const partners = await user.findAll({
+    const partners = await user.findAndCountAll({
         where: options,
-        attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        attributes: {exclude: ['password', 'confirmPassword', 'createdAt', 'updatedAt', 'deletedAt']},
         offset: offset || 0,
         limit: limit || 10,
         order: [
@@ -124,18 +123,18 @@ const getUsersByRecycler = catchAsyncErrorHandler(async (req, res, next) => {
         },
         cityId: +cityId || +req?.user?.cityId,
         wastes: {
-            [Op.contains]: wastes
+            [Op.contains]: wastes.split(',').map(el => +el)
         },
     };
     if(wasteTypes){
         options.wasteTypes = {
-            [Op.contains]: wasteTypes
+            [Op.contains]: wasteTypes.split(',').map(el => +el)
         }
     }
 
-    const partners = await user.findAll({
+    const partners = await user.findAndCountAll({
         where: options,
-        attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        attributes: {exclude: ['password', 'confirmPassword', 'createdAt', 'updatedAt', 'deletedAt']},
         offset: offset || 0,
         limit: limit || 10,
         order: [
@@ -161,18 +160,18 @@ const getUsersByProducer = catchAsyncErrorHandler(async (req, res, next) => {
         },
         cityId: +cityId || +req?.user?.cityId,
         wastes: {
-            [Op.contains]: wastes
+            [Op.contains]: wastes.split(',').map(el => +el)
         },
     };
     if(wasteTypes){
         options.wasteTypes = {
-            [Op.contains]: wasteTypes
+            [Op.contains]: wasteTypes.split(',').map(el => +el)
         }
     }
 
-    const partners = await user.findAll({
+    const partners = await user.findAndCountAll({
         where: options,
-        attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        attributes: {exclude: ['password', 'confirmPassword', 'createdAt', 'updatedAt', 'deletedAt']},
         offset: offset || 0,
         limit: limit || 10,
         order: [

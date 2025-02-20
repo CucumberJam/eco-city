@@ -12,15 +12,17 @@ router.route('/admins').get(authentication, restrictTo('ADMIN'), getAllAdmins);
 
 router.route('/receiver')
     .get(authentication,
-    restrictTo('RECEIVER'),
+    restrictTo('ADMIN', 'RECEIVER'),
     getUsersByReceiver);
+
 router.route('/recycler')
     .get(authentication,
-        restrictTo('RECYCLER'),
+        restrictTo('ADMIN', 'RECYCLER'),
         getUsersByRecycler);
+
 router.route('/producer')
     .get(authentication,
-        restrictTo('PRODUCER'),
+        restrictTo('ADMIN', 'PRODUCER'),
         getUsersByProducer);
 
 router.route('/:id').get(getUserById);

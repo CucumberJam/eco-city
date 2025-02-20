@@ -127,9 +127,10 @@ export async function requestWrap({options = null, route}){
     try{
         const res = options ? await fetch(route, options) :  await fetch(route);
         if(res.status === 204 && res.ok){
-            return {success: true, data: data.data};
+            return {success: true, data: res?.data};
         }
         if(res.status === 401 && !res.ok){
+            console.log(res)
             throw Error('Please login to get access')
         }
         const data = await res.json();
