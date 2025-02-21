@@ -11,6 +11,7 @@ const defaultParams = {
     cityId: 0,
     wastes: [],
     wasteTypes: [],
+    roles: []
 }
 
 /**
@@ -79,7 +80,6 @@ async function fetchUsersWithResponsesOnUserAdverts(offset, limit){
 
     const advertsOfUser = resAdvertsOfUser.data.rows;
     const advertIds = advertsOfUser.map(el => el.id);
-    console.log(advertIds);
 
     //2 вернуть список откликов с самими публикациями и пользователями
     // на публикации пользователя:
@@ -112,12 +112,11 @@ async function fetchUsersWithAdverts(wastes, wasteTypes, cityId, offset, limit){
  * @param {number} offset - количество строк в БД которые нужно пропустить
  * @param {number} limit - количество строк в БД которые нужно предоставить
  */
-async function fetchPartners(offset, limit, { userRole, wastes, wasteTypes, cityId}){
+async function fetchPartners(offset, limit, { userRole, wastes, wasteTypes, cityId, roles}){
     const options = await getRequestOptions();
-    const searchParams = new URLSearchParams({wastes, wasteTypes, cityId, offset, limit});
-    const res =  await requestWrap({
+    const searchParams = new URLSearchParams({wastes, wasteTypes, cityId, offset, limit, roles});
+    return  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}${userRole.toLowerCase()}/?${searchParams.toString()}`
     });
-    return res;
 }

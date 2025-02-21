@@ -45,9 +45,6 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
         userId: { // только чужие объявления
             [Op.ne]: userId
         },
-        waste: {
-            [Op.or]: req.query?.wastes.split(',').map(el => +el)
-        },
         status: 'На рассмотрении',
         cityId: +req.query?.cityId || +req?.user?.cityId,
         finishDate: {
@@ -55,8 +52,17 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
         }
     };
     if(req.query?.wasteTypes){
-        options.wasteType = {
-            [Op.or]: req.query?.wasteTypes.split(',').map(el => +el)
+        options[Op.or] = {
+            waste: {
+                [Op.or]: req.query?.wastes.split(',').map(el => +el)
+            },
+            wasteType: {
+                [Op.or]: req.query?.wasteTypes.split(',').map(el => +el)
+            }
+        }
+    }else{
+        options.waste = {
+            [Op.or]: req.query?.wastes.split(',').map(el => +el)
         }
     }
     const adverts = await advert.findAndCountAll({
@@ -69,7 +75,6 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
             ['updatedAt', 'DESC'],
         ],
     });
-    console.log(adverts)
     if(!adverts) return next(new AppError("Failed to get adverts", 400));
     return res.status(200).json({
         status: 'success',
@@ -136,14 +141,12 @@ const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
 const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
-    console.log(req.body);
     const updatedAdvert = await advert.update({...req.body}, {
         where: {
             id: advertId,
             userId: userId,
         }
     });
-    console.log(updatedAdvert);
     if(!updatedAdvert) return next(new AppError('Failed to update advert', 400));
     return res.status(400).json({
         status: 'success',

@@ -78,7 +78,7 @@ const getUserByEmailOrOGRN = catchAsyncErrorHandler(async (req, res, next) => {
 
 const getUsersByReceiver = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    const {cityId, wastes, wasteTypes, offset, limit} = req.query;
+    const {cityId, wastes, wasteTypes, offset, limit, roles} = req.query;
     if(!wastes) return next(new AppError('Ошибка получения участников для Приемщика (отсутствуют виды отходов)', 400));
 
     const options = {
@@ -88,6 +88,9 @@ const getUsersByReceiver = catchAsyncErrorHandler(async (req, res, next) => {
         cityId: +cityId || +req?.user?.cityId,
         wastes: {
             [Op.contains]: wastes.split(',').map(el => +el)
+        },
+        role: {
+            [Op.eq]: roles
         },
     };
     if(wasteTypes){
@@ -112,14 +115,14 @@ const getUsersByReceiver = catchAsyncErrorHandler(async (req, res, next) => {
 });
 const getUsersByRecycler = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    const {cityId, wastes, wasteTypes, offset, limit} = req.query;
+    const {cityId, wastes, wasteTypes, offset, limit, roles} = req.query;
     if(!wastes) return next(new AppError('Ошибка получения участников для Переработчика (отсутствуют виды отходов)', 400));
     const options = {
         userId: {
             [Op.ne]: userId
         },
         role: {
-            [Op.eq]: ['PRODUCER', 'RECEIVER']
+            [Op.eq]: roles || ['PRODUCER', 'RECEIVER']
         },
         cityId: +cityId || +req?.user?.cityId,
         wastes: {

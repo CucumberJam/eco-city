@@ -1,15 +1,14 @@
 import AccountMapContainer from "@/app/_ui/account/AccountMapContainer";
 import {auth} from "@/auth";
-import MapContainer from "@/app/_ui/map/MapContainer";
-import AccountMainBox from "@/app/_ui/account/main/AccountMainBox";
+import {AccountMapProvider} from "@/app/_context/AccountMapProvider";
 export const metadata = {
     title: 'Личный кабинет'
 }
 export default async function Page(){
     const sessions = await auth();
     return (
-        <AccountMainBox>
+        <AccountMapProvider>
             <AccountMapContainer userData={sessions.user}/>
-        </AccountMainBox>
+        </AccountMapProvider>
     );
 }
