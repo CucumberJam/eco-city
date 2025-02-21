@@ -5,7 +5,7 @@ import {useEffect, useState} from "react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import useSetSearchURL from "@/app/_hooks/useSetSearchURL";
 
-export default function MapSearch(){
+export default function MapSearch({setQueryProps = null}){
     const [inputValue, setInputValue] = useState('');
     const {setParams} = useSetSearchURL();
     const { setQuery } = useGlobalUIStore((state) => state);
@@ -14,7 +14,7 @@ export default function MapSearch(){
     };
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            setQuery(inputValue.trim());
+            setQueryProps ? setQueryProps(inputValue.trim()) : setQuery(inputValue.trim());
             setParams('search', inputValue.trim().length? inputValue.trim().toLowerCase() : 'all');
         }, 500);
         return () => clearTimeout(timeoutId);
