@@ -10,7 +10,7 @@ import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import AccountTabs from "@/app/_ui/account/AccountTabs";
 
-export default function AdvertsContainer({userData, userId, userToken}){
+export default function AdvertsContainer({userData}){
     const {currentCity} = useGlobalUIStore((state) => state);
 
     const {advertsUser, adverts, initAdvertsContext,
@@ -26,7 +26,7 @@ export default function AdvertsContainer({userData, userId, userToken}){
 
     useEffect(() => {
         if(!currentCity) return;
-        initAdvertsContext?.(userData, userToken, userId, currentCity?.id);
+        initAdvertsContext?.(userData, currentCity?.id);
     }, [currentCity?.id]);
 
     const pickUpAdvertHandler = (advert, isUser = false) => {
@@ -68,8 +68,7 @@ export default function AdvertsContainer({userData, userId, userToken}){
                            setActiveAdvert?.(null);
                            close();
                        }}>
-                <AdvertInfo advert={activeAdvert}
-                            token={userToken}/>
+                <AdvertInfo advert={activeAdvert}/>
             </ModalView>
         </>
     );

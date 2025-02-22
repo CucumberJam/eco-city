@@ -12,13 +12,20 @@ const otherAdvertsDefaultParams = {
 
 /**
  * Метод возвращает список публикаций пользователя с учетом пагинации
+ * @param {object} params - параметры для фильтров
  * @param {number} offset - количество строк в коллекции БД для пропуска
  * @param {number} limit - максимальное количество строк в коллекции БД для получения
  **/
-export async function getAdvertsOfUser(offset = 0, limit = 10){
+export async function getAdvertsOfUser(offset = 0, limit = 10, params = null){
     const userId = await getUserId();
     const options = await getRequestOptions();
-    const searchParams = new URLSearchParams({offset, limit});
+    const paramsObj = {offset: offset, limit: limit};
+    if(params){
+        if(params?.cityId) paramsObj.cityId = params.cityId;
+        if(params?.wastes) paramsObj.wastes = params.wastes;
+        if(params?.wasteTypes) paramsObj.wasteTypes = params.wasteTypes;
+    }
+    const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.adverts}${userId}?${searchParams.toString()}`
@@ -61,7 +68,7 @@ export async function removeAdvertById(advertId){
  **/
 export async function getAdvertById(advertId){
     if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
-    const options = await getRequestOptions(null, 'DELETE');
+    const options = await getRequestOptions(null, 'GET');
     return  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.adverts}advert/${advertId}`
@@ -118,7 +125,7 @@ export async function createAdvert(formData){
 export async function updateAdvert(formData, advertId){
     if(!formData) return {success: false, message: 'Данные формы для создания публикации не были переданы'};
     if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
-    const options = await getRequestOptions(null, 'POST');
+    const options = await getRequestOptions(null, 'PATCH');
     options.body = JSON.stringify(formData);
     return  await requestWrap({
         options,

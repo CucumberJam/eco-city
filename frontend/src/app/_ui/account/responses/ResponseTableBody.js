@@ -12,8 +12,8 @@ export default function ResponseTableBody({responses, pickUpAdvertHandler, isUse
                            className="cursor-pointer bg-white dark:border-gray-700 dark:bg-gray-800"
                            onClick={(event)=> pickUpAdvertHandler(el)}>
                     <Table.Cell className="font-medium text-gray-900 dark:text-white">
-                        <TableCompanyName name={isUser ? (el?.advert ? el?.advert?.userName : 'Публикация') : el?.userName}
-                                           role={isUser ? el?.advert?.userRole : el?.userRole}/>
+                        <TableCompanyName name={isUser ? (el?.advert ? el.advert.user?.name : 'Публикация') : el?.user.name}
+                                           role={isUser ? (el?.advert? el.advert.user?.role : 'Роль') : el?.user.role}/>
                     </Table.Cell>
                     <Table.Cell>
                         {el?.advert ? <TableCompanyWastes userWasteId={el?.advert?.waste}

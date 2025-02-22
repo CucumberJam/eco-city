@@ -13,7 +13,12 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
         where: {
             [Op.or]: [{ firstUserId: userId }, { secondUserId: userId }],
         },
-        include: user,
+        include: {
+            model: user,
+            attributes: {
+                exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+            },
+        },
         attributes: {exclude: ['deletedAt']},
         order: [
             ['updatedAt', 'DESC'],
@@ -27,7 +32,14 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
             const oppositeUserId = dialogs?.[0]?.dataValues?.firstUserId === userId ?
                 dialogs?.[0]?.dataValues?.secondUserId : dialogs?.[0]?.dataValues?.firstUserId;
 
-            const found = await user.findByPk(oppositeUserId);
+            const found = await user.findOne({
+                where:{
+                    id: oppositeUserId
+                },
+                attributes: {
+                    exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+                },
+            });
             if(!found) return next(new AppError('Ошибка при получении собеседника в диалоге', 400));
             dialogs[0].dataValues.user.dataValues = found;
         }
@@ -86,7 +98,15 @@ const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
         const oppositeUserId = found.dataValues?.firstUserId === userId ?
             found.dataValues?.secondUserId : found.dataValues?.firstUserId;
 
-        const foundUser = await user.findByPk(oppositeUserId);
+        const foundUser = await user.findOne({
+            where:{
+                id: oppositeUserId
+            },
+            attributes: {
+                exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+            },
+        });
+
         if(!foundUser) return next(new AppError('Ошибка при получении собеседника в диалоге', 400));
         found.dataValues.user.dataValues = foundUser;
     }

@@ -33,13 +33,6 @@ export default function MapFilters({
         }else return wasteTypes.filter(el => el.typeId === currentWaste?.id);
     }, [currentWaste?.id, currentWasteProps?.id]);
 
-    const isWasteTypesDisabled = useMemo(()=> {
-        return (displayedWasteTypes.length <= 0);
-    }, [currentWaste?.hasTypes]);
-
-    const isWasteTypesDisabledProps = useMemo(()=> {
-        return (displayedWasteTypes.length <= 0);
-    }, [currentWasteTypeProps?.hasTypes]);
 
     return (
         <div className="flex w-full px-3 justify-end gap-4 content-center h-fit">
@@ -74,7 +67,7 @@ export default function MapFilters({
                 <Filter data={displayedWasteTypes}
                      alternativeName={filters[2].alternativeName}
                      key={filters[2].urlName}
-                     isDisabled={isWasteTypesDisabled}
+                     isDisabled={(currentWaste && !currentWaste.hasTypes) || !displayedWasteTypes?.length}
                      dataLabel={filters[2].label}
                      dataName={filters[2].urlName}
                      setItem={setCurrentWasteType}
@@ -83,7 +76,7 @@ export default function MapFilters({
                 <Filter data={displayedWasteTypes}
                     alternativeName={filters[2].alternativeName}
                     key={filters[2].urlName}
-                    isDisabled={isWasteTypesDisabledProps}
+                    isDisabled={(currentWasteProps && !currentWasteProps.hasTypes) || !displayedWasteTypes?.length}
                     dataLabel={filters[2].label}
                     dataName={filters[2].urlName}
                     setItem={setCurrentWasteTypeProps}

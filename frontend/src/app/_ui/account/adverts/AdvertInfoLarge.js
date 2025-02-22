@@ -28,8 +28,8 @@ export default function AdvertInfoLarge({
                 <Column space="space-y-6">
                     <Column style={{position: 'relative'}}>
                         {isUser && <>
-                            <TableCompanyName name={advert.userName}
-                                              role={advert.userRole}
+                            <TableCompanyName name={advert.user.name}
+                                              role={advert.user.role}
                                               height="h-[60px]" width="w-[60px]"
                                               nameFontSize="text-[16px]" roleFontSize="text-[14px]"/>
                             {responseStatusComponent}

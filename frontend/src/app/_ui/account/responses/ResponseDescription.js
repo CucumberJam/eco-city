@@ -17,7 +17,7 @@ import ResponseInfo from "@/app/_ui/account/responses/ResponseInfo";
 import Status from "@/app/_ui/general/Status";
 import ResponseActions from "@/app/_ui/account/responses/ResponseActions";
 
-export default function ResponseDescription({response, userToken, isUser = true, revalidateData = ()=> null}){
+export default function ResponseDescription({response, isUser = true, revalidateData = ()=> null}){
     const router = useRouter()
     const {currentOpen, close, open} = useModal();
     const {errMessage, hasError} = useErrors();
@@ -48,7 +48,7 @@ export default function ResponseDescription({response, userToken, isUser = true,
     async function sendLetter(){
         setLoading(prev => true);
         try{
-            const res = await createDialog(response.userId);
+            const res = await createDialog(response.user.id);
             if(!res?.success){
                 throw new Error(res?.message || 'Ошибка при создании диалога')
             }else{

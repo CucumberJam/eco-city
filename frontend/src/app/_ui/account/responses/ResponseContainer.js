@@ -10,7 +10,7 @@ import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 
-export default function ResponseContainer({userData, userId, userToken}){
+export default function ResponseContainer({userData}){
     const {currentCity} = useGlobalUIStore((state) => state);
 
     const {initResponsesContext,
@@ -29,7 +29,7 @@ export default function ResponseContainer({userData, userId, userToken}){
     useEffect(() => {
         if(!currentCity) return;
 
-        initResponsesContext?.(userData, userToken, userId, currentCity?.id)
+        initResponsesContext?.(userData, currentCity?.id)
             .then(res => {
                 if(!res.success) console.log(res.message)
             })
@@ -80,7 +80,6 @@ export default function ResponseContainer({userData, userId, userToken}){
                        }}>
                 <ResponseDescription response={activeResponse}
                                      revalidateData={revalidateData}
-                                     userToken={userToken}
                                      isUser={false}/>
             </ModalView>
         </>

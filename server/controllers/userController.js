@@ -31,7 +31,7 @@ function queryMaker(queryObject, notAdmin = true){
 const getAllUsers = catchAsyncErrorHandler(async (req, res, next) => {
     const users = await user.findAndCountAll({
         where: queryMaker(req.query),
-        attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+        attributes: {exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt']},
         order: [
             ['updatedAt', 'DESC'],
         ],
@@ -46,7 +46,14 @@ const getAllUsers = catchAsyncErrorHandler(async (req, res, next) => {
 });
 const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.params?.id
-    const found = await user.findByPk(userId);
+    const found = await user.findOne({
+        where:{
+            id: userId
+        },
+        attributes: {
+            exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+        },
+    });
     if(!found) return next(new AppError('Failed to get user', 400));
     return res.status(200).json({
         status: 'success',

@@ -9,7 +9,6 @@ export const metadata = {
 }
 export default async function Page(props){
     const params = await props.params;
-    const session = await auth();
     const {status: statusAdvert, data: advert} = await getAdvertById(params.advertId);
     const {status: statusResponses, data: responsesOfAdvert} = await getResponsesByAdvertId(0, 10, {advertId: advert?.id});
 
@@ -17,8 +16,7 @@ export default async function Page(props){
         <Suspense fallback={<Spinner/>}
                   key={statusAdvert}>
             <AdvertDescription advert={advert}
-                               responses={responsesOfAdvert}
-                               userToken={session?.accessToken}/>
+                               responses={responsesOfAdvert}/>
         </Suspense>
     );
 

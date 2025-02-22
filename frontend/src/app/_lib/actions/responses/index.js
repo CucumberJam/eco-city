@@ -19,14 +19,24 @@ export async function getResponsesOfUser(offset = 0, limit = 10){
 
 /**
  * Метод возвращает список откликов других участников с учетом пагинации
+ * @param {object} params - параметры для фильтров
  * @param {number} offset - количество строк в коллекции БД для пропуска
  * @param {number} limit - максимальное количество строк в коллекции БД для получения
  * @param {null} adverts - коллекция публикаций пользователя
  **/
-export async function getOtherResponses(offset = 0, limit = 10, adverts = null){
+export async function getOtherResponses(offset = 0, limit = 10, adverts = null, params = null){
     const options = await getRequestOptions();
     const paramsObj = {offset: offset, limit: limit};
-    if(adverts) paramsObj.adverts = adverts;
+    if(adverts) {
+        paramsObj.adverts = adverts;
+        if(params.query) paramsObj.query = params.query;
+    }else{
+        if(params){
+            if(params?.cityId) paramsObj.cityId = params.cityId;
+            if(params?.wastes) paramsObj.wastes = params.wastes;
+            if(params?.wasteTypes) paramsObj.wasteTypes = params.wasteTypes;
+        }
+    }
     const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
         options,
@@ -57,7 +67,7 @@ export async function updateResponseByAdvertId(advertId, responseId, status){
     if(!responseId) return {success: false, message: 'id отклика не представлено'};
     if(!advertId) return {success: false, message: 'id публикации отклика не представлено'};
     if(!status) return {success: false, message: 'статуса отклика не представлено'};
-    const options = await getRequestOptions(null, 'PUT');
+    const options = await getRequestOptions(null, 'PATCH');
     const searchParams = new URLSearchParams({id: responseId, status});
     return  await requestWrap({
         options,

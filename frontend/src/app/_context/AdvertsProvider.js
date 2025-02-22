@@ -19,11 +19,9 @@ function AdvertsProvider({children}) {
 
     const [paginationAdvertsUser, setPaginationAdvertsUser] = useState({...initialPagination});
     const [paginationAdverts, setPaginationAdverts] = useState({...initialPagination});
-    function setUserData({data, token, id, cityId}){
+    function setUserData({data, cityId}){
         userData.current = {}
         userData.current.data = data;
-        userData.current.id = +id;
-        userData.current.token = token;
         userData.current.cityId = +cityId;
     }
     async function fetchAndSetUserAdverts(offset = initialPagination.offset,
@@ -67,8 +65,8 @@ function AdvertsProvider({children}) {
             return {success: true};
         }else return {success: false, message: res.message};
     }
-    async function initAdvertsContext(userData, userToken, userId, cityId){
-        setUserData({data: userData, token: userToken, id: userId, cityId: cityId});
+    async function initAdvertsContext(userData, cityId){
+        setUserData({data: userData, cityId: cityId});
         const result = {success: true, message: []}
         if(!advertsUser && showUserAdverts(userData.role)) {
             const res = fetchAndSetUserAdverts();

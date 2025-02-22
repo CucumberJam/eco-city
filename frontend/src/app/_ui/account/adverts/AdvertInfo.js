@@ -23,14 +23,14 @@ const col = 'flex flex-col';
 const rowSpace = "flex items-center justify-center space-x-2";
 const cardBlockStyles = 'flex items-center justify-between';
 
-export default function AdvertInfo({advert, token }){
+export default function AdvertInfo({advert}){
     const router = useRouter();
     const {roles, wastes, wasteTypes, dimensions} = useGlobalUIStore((state) => state);
 
     const wasteName = prepareName(wastes?.find(el => +el.id === +advert.waste)?.name || '');
     const wasteTypeName = prepareName(wasteTypes.find(el => +el.id === +advert?.wasteType)?.name || '');
     const userDimensionLabel = dimensions.find(el => +el.id === +advert.dimension).shortName;
-    const roleName = prepareName(roles.find(el => el.name === advert.userRole).label)
+    const roleName = prepareName(roles.find(el => el.name === advert.user.role).label)
 
     const {errMessage, hasError} = useErrors();
     const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
@@ -74,7 +74,7 @@ export default function AdvertInfo({advert, token }){
             <FormStatus isRegisterSucceeded={isRegisterSucceeded}
                         errMessage={errMessage}
                         isFetching={isFetching}>
-                    <AdvertCard name={advert.userName}
+                    <AdvertCard name={advert.user.name}
                                 role={roleName}
                                 address={advert.address}
                                 waste={wasteName} wasteType={wasteTypeName}

@@ -10,9 +10,7 @@ export default async function Page(){
     return (
         <div className="w-full h-fit overflow-auto">
             <AdvertsProvider>
-                <AdvertsContainer userData={session?.user}
-                                  userToken={session?.accessToken}
-                                  userId={session?.user.id}/>
+                <AdvertsContainer userData={session?.user}/>
             </AdvertsProvider>
         </div>
     );

@@ -7,8 +7,8 @@ export default function ResponseInfo({response, isUser}){
     return (
         <Column>
             <Title title={isUser ? 'Мое предложение:' : 'Предложение участника'}/>
-            {!isUser && <TableCompanyName name={response.userName}
-                                          role={response.userRole}
+            {!isUser && <TableCompanyName name={response.user.name}
+                                          role={response.user.role}
                                           height="h-[60px]" width="w-[60px]"
                                           nameFontSize="text-[16px]" roleFontSize="text-[14px]"/>}
             <Subtitle label="Дата подачи: " subTitle={new Date(response.createdAt).toLocaleDateString()}/>

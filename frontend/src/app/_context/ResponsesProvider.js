@@ -18,11 +18,9 @@ function ResponsesProvider({children}) {
 
     const [paginationResponsesUser, setPaginationResponsesUser] = useState({...initialPagination});
     const [paginationResponses, setPaginationResponses] = useState({...initialPagination});
-    function setUserData({data, token, id, cityId}){
+    function setUserData({data, cityId}){
         userData.current = {}
         userData.current.data = data;
-        userData.current.id = +id;
-        userData.current.token = token;
         userData.current.cityId = +cityId;
     }
     async function fetchAndSetUserResponses(offset = initialPagination.offset,
@@ -65,8 +63,8 @@ function ResponsesProvider({children}) {
             return {success: true};
         }else return {success: false, message: res.message};
     }
-    async function initResponsesContext(userData, userToken, userId, cityId){
-        setUserData({data: userData, token: userToken, id: userId, cityId: cityId});
+    async function initResponsesContext(userData, cityId){
+        setUserData({data: userData, cityId: cityId});
         const result = {success: true, message: []}
         if(!responsesUser && showUserResponses(userData.role)) {
             const res = await fetchAndSetUserResponses();

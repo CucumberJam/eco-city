@@ -15,7 +15,7 @@ import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription
 import {ModalView} from "@/app/_ui/general/ModalView";
 import AdvertForm from "@/app/_ui/form/AdvertForm";
 
-export default function AdvertDescription({advert, responses, userToken}){
+export default function AdvertDescription({advert, responses}){
     const router = useRouter();
     const {errMessage, hasError} = useErrors();
     const [success, setSuccess] = useState(false);
@@ -36,7 +36,6 @@ export default function AdvertDescription({advert, responses, userToken}){
         fetchFunc: getResponsesByAdvertId,
         additionalArgs: {
             advertId: advert.id,
-            token: userToken
         }
     });
 
@@ -79,7 +78,6 @@ export default function AdvertDescription({advert, responses, userToken}){
                     <h2 className="text-3xl font-semibold">Ваша публикация на сбыт отходов</h2>
                     <AdvertForm dataObject={advert}
                                 isEdit={true}
-                                userToken={userToken}
                                 btnLeftLabel='Отменить'
                                 btnRightLabel='Сохранить'
                                 successMessage='Заявка изменена'/>
@@ -116,7 +114,6 @@ export default function AdvertDescription({advert, responses, userToken}){
                        }}>
                 <ResponseDescription response={activeResponse}
                                      revalidateData={revalidate}
-                                     userToken={userToken}
                                      isUser={false}/>
             </ModalView>
 

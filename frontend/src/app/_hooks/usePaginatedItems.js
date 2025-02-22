@@ -40,9 +40,9 @@ export default function usePaginatedItems({
     async function fetchAndSetItems(    offset = initialPagination.offset,
                                         limit = initialPagination.limit,
                                         currentPage = initialPagination.currentPage,
-                                        addArgs = additional){
-
-        const res = await fetchFunc(offset, limit, addArgs);
+                                        addArgs = null){
+        if(addArgs) setAdditional(addArgs);
+        const res = await fetchFunc(offset, limit, addArgs ? addArgs : additional);
         if(res.success === true){
             setItems(prev => res.data);
 

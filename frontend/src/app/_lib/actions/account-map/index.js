@@ -11,7 +11,8 @@ const defaultParams = {
     cityId: 0,
     wastes: [],
     wasteTypes: [],
-    roles: []
+    roles: [],
+    query: ''
 }
 
 /**
@@ -29,7 +30,8 @@ const defaultParams = {
  * @param {string} params.userRole - роль пользователя
  * @param {number} params.cityId - id города
  * @param {array} params.wastes - отходы пользователя
- * @param {array} params.wasteTypes - подвиды отходов пользователя
+ * @param {array || null} params.wasteTypes - подвиды отходов пользователя
+ * @param {string} params.query - запрос поисковой строки
  */
 export async function fetchMapUsers(offset = 0, limit = 10, params = defaultParams){
     if(!validateRights(params.mode, params.userRole)) return {
@@ -38,7 +40,7 @@ export async function fetchMapUsers(offset = 0, limit = 10, params = defaultPara
     };
     switch (params.mode) {
         case 0: {
-            return await fetchUsersWithResponsesOnUserAdverts(offset, limit);
+            return await fetchUsersWithResponsesOnUserAdverts(offset, limit, params);
         }
         case 1: {
             return await fetchUsersWithAdverts(params.wastes, params.wasteTypes, params.cityId, offset, limit)
@@ -66,15 +68,16 @@ function validateRights(mode, role){
 }
 
 /**
- * Метод возвращает список участников, имеющих отклики на заявки пользователя
+ * Метод возвращает список откликов, имеющих отклики на заявки пользователя
  * mode = 0
  * Доступен только для ролей PRODUCER и RECEIVER
+ * @param {object} params - параметры для фильтров
  * @param {number} offset - количество строк в коллекции БД для пропуска
  * @param {number} limit - максимальное количество строк в коллекции БД для получения
  */
-async function fetchUsersWithResponsesOnUserAdverts(offset, limit){
+async function fetchUsersWithResponsesOnUserAdverts(offset, limit, params = null){
     //1 получить список Id актуальных публикаций пользователя:
-    const resAdvertsOfUser = await getAdvertsOfUser(0, 100);
+    const resAdvertsOfUser = await getAdvertsOfUser(0, 10, params);
     if(!resAdvertsOfUser?.success || !resAdvertsOfUser?.data) return resAdvertsOfUser;
     else if(resAdvertsOfUser.data.count === 0) return {success: false, message: 'У пользователя нет своих публикаций'}
 
@@ -83,7 +86,7 @@ async function fetchUsersWithResponsesOnUserAdverts(offset, limit){
 
     //2 вернуть список откликов с самими публикациями и пользователями
     // на публикации пользователя:
-    return await getOtherResponses(offset, limit, advertIds);
+    return await getOtherResponses(offset, limit, advertIds, params);
 }
 
 /**

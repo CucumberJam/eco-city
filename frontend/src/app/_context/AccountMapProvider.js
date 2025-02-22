@@ -23,16 +23,16 @@ function AccountMapProvider({children}) {
     const [currentRole, setCurrentRole] = useState(null);
     const [query, setQuery] = useState('');
 
+    const [activeItem, setActiveItem] = useState(null);
+
     const {items: paginatedItems, fetchAndSetItems,
         setAdditional, pagination, changePagination} = usePaginatedItems({
         fetchFunc: fetchMapUsers,
-        additionalArgs: {}
         });
 
     useEffect(() => {
         // fetch new items if cityId changed
         if(!userDataInitialized.current) return;
-
         const args = getArgs();
         setAdditional(prev => args);
         fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1,  args)
@@ -51,19 +51,30 @@ function AccountMapProvider({children}) {
             userRole.current = userData.role;
             filterRoles.current = userData.role === 'RECEIVER' ? roles : roles.filter(el => el.name !== userData.role);
         }
+        const args = getArgs();
+        console.log(args)
         const res =  await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs());
         setIsFetching(prev => false);
         userDataInitialized.current = true;
         return res;
     }
     function getArgs(){
+        let wasteTypes;
+        if(currentWasteType) wasteTypes = [currentWasteType.id];
+        else {
+            if(!currentWaste) wasteTypes = userWasteTypes.current.map(el => el.id) || null;
+            else{
+                wasteTypes = userWasteTypes.current?.filter(el => el.typeId === currentWaste.id).map(el => el.id)
+            }
+        }
         return {
             mode: mode,
             userRole: userRole.current,
             cityId: currentCity?.id,
             wastes: currentWaste ? [currentWaste.id] : userWastes.current?.map(el => el.id) || [],
-            wasteTypes: currentWasteType ? [currentWasteType.id] : userWasteTypes.current?.map(el => el.id) || [],
+            wasteTypes: wasteTypes,
             roles: currentRole ? [currentRole.id] : filterRoles.current || [],
+            query: query,
         }
     }
 
@@ -77,7 +88,11 @@ function AccountMapProvider({children}) {
             filterRoles, currentRole, setCurrentRole,
             setQuery,
             currentCityId: currentCity?.id,
-            paginatedItems, pagination, changePagination,
+            currentCityLong: currentCity?.longitude,
+            currentCityLat: currentCity?.latitude,
+            paginatedItems,
+            pagination, changePagination,
+            activeItem, setActiveItem
         }}>
             <main>
                 {currentCity && children}
