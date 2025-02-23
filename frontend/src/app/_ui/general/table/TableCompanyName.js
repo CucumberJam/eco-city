@@ -14,7 +14,7 @@ export default function TableCompanyName({role, name,
         <div className='flex items-center space-x-2'>
             <UserRoleCircle role={role} width={width} height={height}/>
             <div>
-                <h4 className={`text-center font-bold ${nameFontSize}`}>{name}</h4>
+                <h4 className={`text-wrap text-center font-bold ${nameFontSize}`}>{name}</h4>
                 <p className={`text-center italic ${roleFontSize}`}>{roleName}</p>
             </div>
         </div>

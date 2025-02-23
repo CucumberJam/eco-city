@@ -14,14 +14,15 @@ import MapSearch from "@/app/_ui/map/MapSearch";
 import LazyMapNew from "@/app/_ui/map/LazyMapNew";
 import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import CardLayout from "@/app/_ui/general/CardLayout";
-import CardResponse from "@/app/_ui/general/CardResponse";
+import ItemCard from "@/app/_ui/account/ItemCard";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
+
 export default function AccountMapContainer({userData}){
     const tabsRef = useRef(null);
 
-    const {mode, setActiveMode, isFetching,
+    const {mode, changeMode, isFetching,
         currentCityId, currentCityLong, currentCityLat,
         setQuery,
         filterRoles, currentRole, setCurrentRole,
@@ -42,7 +43,7 @@ export default function AccountMapContainer({userData}){
                   tabs={accountMapTabsTitles.filter((el,inx)=> accountMapModes[userData.role].includes(inx))}
                   icons={accountMapTabsIcons.filter((el,inx)=> accountMapModes[userData.role].includes(inx))}
                   defaultValue={mode}
-                  setTabHandler={setActiveMode}/>
+                  setTabHandler={changeMode}/>
             {isFetching ? <Spinner/> :
                 (<>
                     <div className="w-full h-auto">
@@ -69,11 +70,11 @@ export default function AccountMapContainer({userData}){
                                             setCurrentUser={setActiveItem}
                                             currentUser={activeItem}
                                 />
-                                <CardLayout>
-                                    {paginatedItems.rows.map(el => (
-                                        <CardResponse key={el.id}
-                                              item={el}
-                                              clickHandler={()=> {
+                                <CardLayout key={mode}>
+                                    {(mode === 0 || mode === 1) && paginatedItems.rows.map(el => (
+                                        <ItemCard key={el.id}
+                                                  item={el} mode={mode}
+                                                  clickHandler={()=> {
                                                   open(el.id);
                                                   setActiveItem(el)
                                               }}/>

@@ -38,7 +38,7 @@ function AccountMapProvider({children}) {
         fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1,  args)
             .catch(res => console.log(res));
 
-    }, [currentCity?.id, mode, currentWaste?.id, currentWasteType?.id, currentRole?.id, query]);
+    }, [currentCity?.id, currentWaste?.id, currentWasteType?.id, currentRole?.id, query]);
     async function initUserData(userData){
         setIsFetching(prev => true);
         if(userData?.wastes && !userWastes.current && wastes.length > 0){
@@ -78,10 +78,17 @@ function AccountMapProvider({children}) {
         }
     }
 
+    async function changeMode(value){
+        const args = getArgs();
+        args.mode = value;
+        setAdditional(prev => args);
+        const res = await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1,  args);
+        setActiveMode(value);
+    }
     return (
         <AccountMapContext.Provider value={{
             isFetching,
-            mode, setActiveMode,
+            mode, changeMode,
             initUserData,
             userWastes, currentWaste, setCurrentWaste,
             userWasteTypes, currentWasteType, setCurrentWasteType,
