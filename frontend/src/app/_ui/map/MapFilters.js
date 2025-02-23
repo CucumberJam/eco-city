@@ -42,7 +42,7 @@ export default function MapFilters({
                      dataLabel={filters[0].label}
                      dataName={filters[0].urlName}
                      setItem={setCurrentRoleProps? setCurrentRoleProps: setCurrentRole}
-                     itemValue={currentRole?.label || ''}/>}
+                     itemValue={currentRoleProps ? currentRoleProps.label || '' : currentRole?.label || ''}/>}
 
             {(!setCurrentWasteProps || !wastesProps)  ?(
                 <Filter data={wastes}
@@ -52,7 +52,7 @@ export default function MapFilters({
                      dataName={filters[1].urlName}
                      setItem={setCurrentWaste}
                      setAddItem={setCurrentWasteType}
-                     itemValue={currentRoleProps ? currentRoleProps?.name || '' : currentWaste?.name || ''}/>
+                     itemValue={currentRoleProps ? currentRoleProps?.name || currentRoleProps?.label || '' : currentWaste?.name || currentWaste?.label || ''}/>
                 ) : (
                 <Filter data={wastesProps}
                         key={filters[1].urlName}

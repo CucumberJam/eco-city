@@ -14,6 +14,7 @@ const response = require("../db/models/response");
  * @param {[number]} req.query.wasteTypes - id подвидов отходов (не обязателен)
  * @param {number} req.query.offset - количество строк в БД для отступа
  * @param {number} req.query.limit - количество строк в БД для получения
+ * @param {string} req.query.query - запрос в поисковой строке (не обязателен)
  * @desc Get other participants adverts
  * @route GET/api/v1/adverts/
  * @access Private
@@ -30,24 +31,31 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
             [Op.gt]: new Date(), // актуальные
         }
     };
-    if(req.query?.wasteTypes){
+    if(req.query?.wasteTypes && req.query?.wastes){
         options[Op.or] = {
             waste: req.query?.wastes.split(',').map(el => +el),
             wasteType: req.query?.wasteTypes.split(',').map(el => +el)
         }
-    }else{
-        options.waste = {
-            [Op.or]: req.query?.wastes.split(',').map(el => +el)
+    }else if(req.query?.wastes){
+        options.waste = req.query?.wastes.split(',').map(el => +el)
+    }
+
+    const includesCreature = {
+        model: user,
+        attributes: {
+            exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+        },
+    }
+    if(req.query?.query) {
+        includesCreature.where = {
+            name: {
+                [Op.iLike]: `%${req.query?.query}%`
+            }
         }
     }
     const adverts = await advert.findAndCountAll({
         where: options,
-        include: {
-            model: user,
-            attributes: {
-                exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
-            },
-        },
+        include: includesCreature,
         attributes: {
             exclude: ['userName', 'userRole','deletedAt']
         },

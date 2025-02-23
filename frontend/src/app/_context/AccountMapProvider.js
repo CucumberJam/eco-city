@@ -31,13 +31,11 @@ function AccountMapProvider({children}) {
         });
 
     useEffect(() => {
-        // fetch new items if cityId changed
         if(!userDataInitialized.current) return;
         const args = getArgs();
         setAdditional(prev => args);
         fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1,  args)
             .catch(res => console.log(res));
-
     }, [currentCity?.id, currentWaste?.id, currentWasteType?.id, currentRole?.id, query]);
     async function initUserData(userData){
         setIsFetching(prev => true);
@@ -52,7 +50,6 @@ function AccountMapProvider({children}) {
             filterRoles.current = userData.role === 'RECEIVER' ? roles : roles.filter(el => el.name !== userData.role);
         }
         const args = getArgs();
-        console.log(args)
         const res =  await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs());
         setIsFetching(prev => false);
         userDataInitialized.current = true;
@@ -73,7 +70,7 @@ function AccountMapProvider({children}) {
             cityId: currentCity?.id,
             wastes: currentWaste ? [currentWaste.id] : userWastes.current?.map(el => el.id) || [],
             wasteTypes: wasteTypes,
-            roles: currentRole ? [currentRole.id] : filterRoles.current || [],
+            roles: currentRole ? [currentRole.name] : filterRoles.current?.map(el => el.name) || [],
             query: query,
         }
     }

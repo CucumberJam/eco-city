@@ -15,7 +15,6 @@ const Map = ({
                 withUsers = true,
                 zoom = withUsers ? 11 : 13,
                 scrollWheelZoom = false,
-                activeUser = null,
                 setActiveUser,
                 needDefineLocation = false,
                 pickedUpPos = [],
@@ -31,10 +30,6 @@ const Map = ({
             isInitialized.current = false;
         };
     }, []);
-    useEffect(() => {
-        if(activeUser?.id) open(activeUser.id);
-        else close();
-    }, [activeUser?.id]);
 
     if (!isInitialized) return null;
 

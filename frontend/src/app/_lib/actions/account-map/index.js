@@ -2,8 +2,8 @@
 import {accountMapModes} from "@/app/_store/constants";
 import {getAdverts, getAdvertsOfUser} from "@/app/_lib/actions/adverts";
 import {getOtherResponses} from "@/app/_lib/actions/responses";
-import {getRequestOptions, requestWrap} from "@/app/_lib/helpers";
-import {apiServerRoutes} from "@/routes";
+import {getUserId} from "@/app/_lib/helpers";
+import {getUsersByParams} from "@/app/_lib/actions/users";
 
 const defaultParams = {
     mode: 0,
@@ -108,18 +108,17 @@ async function fetchUsersWithAdverts(wastes, wasteTypes, cityId, offset, limit){
  * Метод возвращает список участников со смежными с пользователем отходами
  * mode = 2
  * Доступен для всех авторизованных пользователей
- * @param {string} userRole - роль пользователя
  * @param {number} cityId - id города
+ * @param {string} query - запрос поисковой строки
+ * @param {string} userRole - роль пользователя
+ * @param {[string]} roles - роли участников для выборки
  * @param {array} wastes - отходы пользователя
  * @param {array} wasteTypes - подвиды отходов пользователя
  * @param {number} offset - количество строк в БД которые нужно пропустить
  * @param {number} limit - количество строк в БД которые нужно предоставить
  */
-async function fetchPartners(offset, limit, { userRole, wastes, wasteTypes, cityId, roles}){
-    const options = await getRequestOptions();
-    const searchParams = new URLSearchParams({wastes, wasteTypes, cityId, offset, limit, roles});
-    return  await requestWrap({
-        options,
-        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}${userRole.toLowerCase()}/?${searchParams.toString()}`
-    });
+async function fetchPartners(offset, limit, {cityId, query, wastes, wasteTypes, userRole,  roles}){
+    if(userRole !== 'RECEIVER' && roles.includes(userRole)) return {success: false, message: `Пользователь с ролью ${userRole} не имеет доступа к участникам с такой же ролью`}
+    const userId = await getUserId();
+    return  await getUsersByParams( {userId, cityId, query, wastes, wasteTypes, roles, offset, limit});
 }

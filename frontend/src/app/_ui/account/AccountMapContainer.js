@@ -18,6 +18,8 @@ import ItemCard from "@/app/_ui/account/ItemCard";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
+import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
+import UserDescription from "@/app/_ui/user/UserDescription";
 
 export default function AccountMapContainer({userData}){
     const tabsRef = useRef(null);
@@ -37,6 +39,10 @@ export default function AccountMapContainer({userData}){
         initUserData(userData).then(res=> console.log(res));
     }, []);
 
+    function showModalWithActiveItem(el){
+        open(el.id);
+        setActiveItem(el);
+    }
     return (
         <>
             <AccountTabs tabsRef={tabsRef} className="h-40 w-full"
@@ -67,17 +73,14 @@ export default function AccountMapContainer({userData}){
                                             currentCityId={currentCityId}
                                             currentCityLong={currentCityLong}
                                             currentCityLat={currentCityLat}
-                                            setCurrentUser={setActiveItem}
-                                            currentUser={activeItem}
-                                />
+                                            setCurrentUser={showModalWithActiveItem}
+                                            currentUser={activeItem}/>
                                 <CardLayout key={mode}>
-                                    {(mode === 0 || mode === 1) && paginatedItems.rows.map(el => (
+                                    {paginatedItems.rows.map(el => (
                                         <ItemCard key={el.id}
-                                                  item={el} mode={mode}
-                                                  clickHandler={()=> {
-                                                  open(el.id);
-                                                  setActiveItem(el)
-                                              }}/>
+                                                  item={el}
+                                                  mode={mode}
+                                                  clickHandler={showModalWithActiveItem}/>
                                     ))}
                                 </CardLayout>
                             </>
@@ -96,8 +99,9 @@ export default function AccountMapContainer({userData}){
                            setActiveItem?.(null);
                            close();
                        }}>
-                <ResponseDescription response={activeItem}
-                                     isUser={false}/>
+                {mode === 0 && <ResponseDescription response={activeItem} isUser={false}/>}
+                {mode === 1 && <AdvertInfo advert={activeItem}/>}
+                {mode === 2 && <UserDescription data={activeItem}/>}
             </ModalView>
         </>
 
