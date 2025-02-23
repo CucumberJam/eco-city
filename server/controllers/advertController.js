@@ -5,48 +5,25 @@ const {Op} = require("sequelize");
 const AppError = require("../utils/appError");
 const {removeCreatedFields} = require("./authController");
 const response = require("../db/models/response");
-function queryMaker(queryObject, notAdmin = true){
-    const obj = {};
-    //userName includes
-    const nums = ['amount', 'price', 'totalPrice'];
-    const bools = ['isPickedUp', 'priceWithDelivery'];
-    const strings = ['userName','userRole', 'address'];
-    const wastes = ['waste', 'wasteType'];
-
-    //foo=bar&foo=qux => { wastes: [ 'стекло', 'пластик' ] }
-    // foo=bar  => { wastes: 'стекло' }
-    for(const key in queryObject){
-        if(nums.includes(key)){
-            obj.key = Number(queryObject[key]);
-        }else if(bools.includes(key)){
-            obj.key = Boolean(queryObject[key]);
-        }else if(strings.includes(key)){
-            if(key === 'userName' || key === 'address'){ //means they are searching by search
-                obj.key = {
-                    [Op.iLike]: `%${queryObject[key]}%`,
-                }
-            }
-            obj.key = queryObject[key];
-        }else if(wastes.includes(key)){
-            // https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#postgres-only-range-operators
-            obj.key = Array.isArray(queryObject[key]) ?
-                {
-                    [Op.or]: queryObject[key]
-                } : queryObject[key];
-        } else obj.key = queryObject[key];
-    }
-    return obj;
-}
-
-// получить заявки других участников:
+/**
+ * Метод возвращает список публикаций других участников
+ * для пользователя с ролью RECYCLER / ADMIN / RECEIVER
+ * с учетом пагинации
+ * @param {number} req.query.cityId - id города (не обязателен)
+ * @param {[number]} req.query.wastes - id видов отходов (не обязателен)
+ * @param {[number]} req.query.wasteTypes - id подвидов отходов (не обязателен)
+ * @param {number} req.query.offset - количество строк в БД для отступа
+ * @param {number} req.query.limit - количество строк в БД для получения
+ * @param {string} req.query.query - запрос в поисковой строке (не обязателен)
+ * @desc Get other participants adverts
+ * @route GET/api/v1/adverts/
+ * @access Private
+ **/
 const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const options = {
         userId: { // только чужие объявления
             [Op.ne]: userId
-        },
-        waste: {
-            [Op.or]: req.query?.wastes.split(',').map(el => +el)
         },
         status: 'На рассмотрении',
         cityId: +req.query?.cityId || +req?.user?.cityId,
@@ -54,15 +31,34 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
             [Op.gt]: new Date(), // актуальные
         }
     };
-    if(req.query?.wasteTypes){
-        options.wasteType = {
-            [Op.or]: req.query?.wasteTypes.split(',').map(el => +el)
+    if(req.query?.wasteTypes && req.query?.wastes){
+        options[Op.or] = {
+            waste: req.query?.wastes.split(',').map(el => +el),
+            wasteType: req.query?.wasteTypes.split(',').map(el => +el)
+        }
+    }else if(req.query?.wastes){
+        options.waste = req.query?.wastes.split(',').map(el => +el)
+    }
+
+    const includesCreature = {
+        model: user,
+        attributes: {
+            exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+        },
+    }
+    if(req.query?.query) {
+        includesCreature.where = {
+            name: {
+                [Op.iLike]: `%${req.query?.query}%`
+            }
         }
     }
     const adverts = await advert.findAndCountAll({
         where: options,
-        include: user,
-        attributes: {exclude: ['deletedAt']},
+        include: includesCreature,
+        attributes: {
+            exclude: ['userName', 'userRole','deletedAt']
+        },
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
         order: [
@@ -72,35 +68,83 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
     if(!adverts) return next(new AppError("Failed to get adverts", 400));
     return res.status(200).json({
         status: 'success',
-        data: adverts //{ count, rows }
+        data: adverts
     });
 });
 
+/**
+ * Метод возвращает список публикаций пользователя
+ * с ролью PRODUCER / ADMIN / RECEIVER
+ * с учетом пагинации
+ * @param {number} req.query.cityId - id города (не обязателен)
+ * @param {[number]} req.query.wastes - id видов отходов (не обязателен)
+ * @param {[number]} req.query.wasteTypes - id подвидов отходов (не обязателен)
+ * @param {string} req.query.query - запрос в поисковой строке (не обязателен)
+ * @param {number} req.query.offset - количество строк в БД для отступа
+ * @param {number} req.query.limit - количество строк в БД для получения
+ * @desc Get user's adverts
+ * @route GET/api/v1/adverts/:userId
+ * @access Private
+ **/
 const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+    let {offset, limit, cityId, wastes, wasteTypes, query} = req?.query;
+    const options = { userId: userId};
+    if(wasteTypes && wastes){
+        options[Op.or] = {
+            waste: wastes.split(',')?.map(el => +el),
+            wasteType: wasteTypes.split(',').map(el => +el)
+        }
+    }else if(wastes){
+        options.waste = wastes.split(',').map(el => +el)
+    }
+    if(cityId) options.cityId = +cityId;
+
+    const includesCreature = {
+        model: user,
+        attributes: {
+            exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+        },
+    }
+    if(query) {
+        includesCreature.where = {
+            name: {
+                [Op.iLike]: `%${query}%`
+            }
+        }
+    }
 
     const adverts = await advert.findAndCountAll({
-        where: {
-            userId: userId,
+        where: options,
+        attributes: {
+            exclude: ['userName', 'userRole', 'deletedAt']
         },
-        attributes: {exclude: ['deletedAt']},
-        offset: req.query?.offset || 0,
-        limit: req.query?.limit || 10,
+        offset: +offset || 0,
+        limit: +limit || 10,
         order: [
-            ['createdAt', 'DESC'],
+            ['updatedAt', 'DESC'],
         ],
+        include: includesCreature,
     });
+
     if(!adverts) return next(new AppError("Failed to get user's adverts", 400));
     return res.status(200).json({
         status: 'success',
         data: {
             count: adverts.count,
             rows: adverts.rows,
-        } //{ count, rows }
+        }
     });
 });
 
+/**
+ * Метод создаёт публикацию пользователя с ролью PRODUCER / ADMIN / RECEIVER
+ * @param {object} req.body.formData - данные для создания публикации
+ * @desc Post user's new advert
+ * @route POST/api/v1/adverts
+ * @access Private
+ **/
 const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
     const formData = req?.body?.formData;
     if(!formData) return next(new AppError('Failed to create new advert: no body in request', 400));
@@ -132,23 +176,36 @@ const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
+/**
+ * Метод изменяет публикацию пользователя по её id
+ * @param {number} req.params.advertId - id публикаций Пользователя
+ * @desc Update user's advert by id
+ * @route PATCH/api/v1/adverts/:advertId
+ * @access Private
+ **/
 const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
-    console.log(req.body);
     const updatedAdvert = await advert.update({...req.body}, {
         where: {
             id: advertId,
             userId: userId,
         }
     });
-    console.log(updatedAdvert);
     if(!updatedAdvert) return next(new AppError('Failed to update advert', 400));
     return res.status(400).json({
         status: 'success',
         data: updatedAdvert
     });
 });
+
+/**
+ * Метод удаляет публикацию пользователя, если статус 'На рассмотрении'
+ * @param {number} req.params.advertId - id публикации Пользователя
+ * @desc Delete user's advert if it's status === "On recognition"
+ * @route DELETE/api/v1/adverts/:advertId
+ * @access Private
+ **/
 const deleteAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
@@ -168,11 +225,31 @@ const deleteAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
+/**
+ * Метод возвращает публикацию пользователя по id вместе с откликами
+ * @param {number} req.params.advertId - id публикации
+ * @desc Get advert by id
+ * @route GET/api/v1/adverts/advert/:advertId
+ * @access Private
+ **/
 const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params?.advertId;
     if(!advertId) return next(new AppError("Не представлено id публикации", 400));
-    const found = await advert.findByPk(advertId);
+    const found = await advert.findOne({
+        where: {
+            id: advertId
+        },
+        attributes: {
+            exclude: ['userName', 'userRole', 'deletedAt']
+        },
+        include: {
+            model: user,
+            attributes: {
+                exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+            },
+        }
+    });
     if(!found) return next(new AppError(`Нет данных о публикации с таким id`, 400));
     const resObj = {
         status: 'success',
@@ -186,14 +263,21 @@ const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
             },
         },
         attributes: {
-            exclude: ['deletedAt']
+            exclude: ['deletedAt', 'userName', 'userRole', 'userId']
         },
         order: [
             ['updatedAt', 'DESC'],
         ],
+        include: {
+            model: user,
+            attributes: {
+                exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+            },
+        },
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
     });
+    console.log(responsesOfAdvert)
     if(responsesOfAdvert) resObj.responses = responsesOfAdvert;
     return res.status(200).json(resObj);
 });

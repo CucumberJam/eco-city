@@ -4,13 +4,13 @@ import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {useTab} from "@/app/_context/TabContext";
 import {useResponses} from "@/app/_context/ResponsesProvider";
 import {useModal} from "@/app/_context/ModalContext";
-import AccountTabs from "@/app/_ui/account/AccountTabs";
+import Tabs from "@/app/_ui/account/AccountTabs";
 import {showOthersResponses, showUserResponses} from "@/app/_store/constants";
 import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 
-export default function ResponseContainer({userData, userId, userToken}){
+export default function ResponseContainer({userData}){
     const {currentCity} = useGlobalUIStore((state) => state);
 
     const {initResponsesContext,
@@ -29,7 +29,7 @@ export default function ResponseContainer({userData, userId, userToken}){
     useEffect(() => {
         if(!currentCity) return;
 
-        initResponsesContext?.(userData, userToken, userId, currentCity?.id)
+        initResponsesContext?.(userData, currentCity?.id)
             .then(res => {
                 if(!res.success) console.log(res.message)
             })
@@ -50,10 +50,10 @@ export default function ResponseContainer({userData, userId, userToken}){
     return (
         <>
             {userRole === 'RECEIVER' && (
-                <AccountTabs tabsRef={tabsRef}
-                             defaultValue={selectedInternTabOpt}
-                             tabs={["Мои отклики", "Отклики других участников"]}
-                             setTabHandler={selectInternTabOpt}/>
+                <Tabs tabsRef={tabsRef}
+                      defaultValue={selectedInternTabOpt}
+                      tabs={["Мои отклики", "Отклики других участников"]}
+                      setTabHandler={selectInternTabOpt}/>
             )}
             {(showOthersResponses(userRole) && responses && selectedInternTabOpt === 1) && (
                 <ResponseList  responses={responses}
@@ -80,7 +80,6 @@ export default function ResponseContainer({userData, userId, userToken}){
                        }}>
                 <ResponseDescription response={activeResponse}
                                      revalidateData={revalidateData}
-                                     userToken={userToken}
                                      isUser={false}/>
             </ModalView>
         </>

@@ -24,17 +24,25 @@ export default function usePaginatedItems({
     const [pagination, setPagination] = useState({...initialPagination});
     const [items, setItems] = useState(null); //{count, rows}
     const [additional, setAdditional] = useState(null);
+    function clearPaginatedItems(){
+        setPagination({...initialPagination});
+        setItems(null);
+        setAdditional(null);
+    }
 
     useEffect(() => {
-        if(additionalArgs) setAdditional(prev => additionalArgs);
+        if(additionalArgs) {
+            setAdditional(additionalArgs);
+        }
         if(apiItems) setItems(prev => apiItems);
     }, []);
 
     async function fetchAndSetItems(    offset = initialPagination.offset,
                                         limit = initialPagination.limit,
-                                        currentPage = initialPagination.currentPage){
-
-        const res = await fetchFunc(offset, limit, additional);
+                                        currentPage = initialPagination.currentPage,
+                                        addArgs = null){
+        if(addArgs) setAdditional(addArgs);
+        const res = await fetchFunc(offset, limit, addArgs ? addArgs : additional);
         if(res.success === true){
             setItems(prev => res.data);
 
@@ -73,5 +81,7 @@ export default function usePaginatedItems({
         fetchAndSetItems,
         pagination,
         changePagination,
+        clearPaginatedItems,
+        setAdditional
     }
 }

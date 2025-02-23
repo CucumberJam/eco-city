@@ -25,7 +25,7 @@ router.route('/:userId')
     .get(authentication, restrictTo('ADMIN', 'RECYCLER', 'RECEIVER'),
     getResponsesByUserId) // получить только свои отклики
 
-router.route('/:advertId').put(authentication,
+router.route('/:advertId').patch(authentication,
     restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
     updateResponseByAdvertId); // изменить отклик только владелец объявления
 

@@ -1,7 +1,8 @@
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {useEffect, useState} from "react";
 import {fetchAddress} from "@/app/_lib/geo-api";
-import {getCities, getUsers} from "@/app/_lib/data-service";
+import {getCities} from "@/app/_lib/actions/global";
+import {getUsersByParams} from "@/app/_lib/actions/users";
 
 export default function useCities(citiesAPI = null, withUsers = false){
 
@@ -17,7 +18,7 @@ export default function useCities(citiesAPI = null, withUsers = false){
             else{
                 try{
                     const res = await getCities();
-                    if(res.status === 'success' && res.data) setCities(res.data);
+                    if(res?.success && res?.data) setCities(res.data);
                     else throw new Error(res?.message || 'Ошибка получения городов');
                 }catch (e) {
                     errors.push(e.message);
@@ -30,8 +31,8 @@ export default function useCities(citiesAPI = null, withUsers = false){
                 const currentCity = found? found : cities[1];
                 setCurrentCity(currentCity);
                 if(withUsers){
-                    const {status: statusUsers, data: users} = await getUsers({cityId: currentCity.id});
-                    if(statusUsers === 'success') setUsers(users);
+                    const {success, data: users} = await getUsersByParams({cityId: currentCity.id});
+                    if(success) setUsers(users.rows);
                 }
             }catch (e) {
                 errors.push(e.message)

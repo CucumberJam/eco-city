@@ -11,9 +11,11 @@ import {LockClosedIcon} from "@heroicons/react/24/outline";
 import {TrashIcon} from "@heroicons/react/24/outline";
 import {ChartBarIcon} from "@heroicons/react/24/outline";
 import {InformationCircleIcon} from "@heroicons/react/24/outline";
-import {useMemo} from "react";
 import {HiUserCircle} from "react-icons/hi2";
 import {HiClipboardList} from "react-icons/hi";
+import {ChatBubbleBottomCenterIcon} from "@heroicons/react/24/outline";
+import {RectangleStackIcon} from "@heroicons/react/24/outline";
+import {UsersIcon} from "@heroicons/react/24/outline";
 const statusTitle = {
     producer: 'Производитель отходов',
     recycler: 'Переработчик отходов',
@@ -308,14 +310,21 @@ const internalTabOptionStates = {
 }
 const advertStatuses = ['На рассмотрении', 'Отклонено', 'Принято', 'Исполнено'];
 const tabsTitles = ["Мои публикации", "Публикации других участников"];
+const accountMapTabsTitles = ['Отклики на мои заявки', 'Заявки участников', 'Партнеры'];
+const accountMapTabsIcons = [ChatBubbleBottomCenterIcon, RectangleStackIcon, UsersIcon];
+const accountMapModes = {
+    PRODUCER: [0, 2],
+    RECYCLER: [1, 2],
+    RECEIVER: [0, 1, 2]
+}
 const tabsIcons = [HiUserCircle, HiClipboardList];
 const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
     return {
         wastes: userData.wastes,
         wasteTypes: userData.wasteTypes,
-        cityId: cityId,
-        offset: offset, // skip 0 instances
-        limit: limit, //and fetch 10 after that
+        cityId: +cityId,
+        offset: +offset, // skip 0 instances
+        limit: +limit, //and fetch 10 after that
     };
 }
 
@@ -359,4 +368,6 @@ export {
     showUserAdverts, showOthersAdverts, showUserResponses, showOthersResponses,
     tabsTitles, tabsIcons, modalName,
     initialPagination,
+    accountMapTabsTitles, accountMapTabsIcons,
+    accountMapModes
 }

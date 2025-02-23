@@ -3,7 +3,7 @@ import "@/app/_styles/globals.css";
 import {auth} from "@/auth";
 import {GlobalStoreProvider} from '@/app/_context/GlobalUIContext';
 import {ModalProvider} from '@/app/_context/ModalContext'
-import {getCities, getDimensions, getRoles, getWastes, getWasteTypes} from "@/app/_lib/data-service";
+import {getCities, getDimensions, getRoles, getWastes, getWasteTypes} from "@/app/_lib/actions/global";
 import LayoutBodyContainer from "@/app/_ui/general/LayoutBodyContainer";
 import Header from "@/app/_ui/general/Header";
 

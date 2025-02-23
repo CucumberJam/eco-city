@@ -11,8 +11,8 @@ export default function AdvertTableBody({adverts, pickUpAdvertHandler}){
                            className="cursor-pointer bg-white dark:border-gray-700 dark:bg-gray-800"
                            onClick={(event)=> pickUpAdvertHandler(el)}>
                     <Table.Cell className="font-medium text-gray-900 dark:text-white">
-                        <TableCompanyName name={el?.userName}
-                                           role={el?.userRole}/>
+                        <TableCompanyName name={el?.user.name}
+                                           role={el?.user.role}/>
                     </Table.Cell>
                     <Table.Cell>
                         <TableCompanyWastes userWasteId={el?.waste}

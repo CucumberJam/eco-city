@@ -9,9 +9,7 @@ export default async function Page(){
     return (
         <div className="w-full h-fit overflow-auto">
             <ResponsesProvider>
-                <ResponseContainer userData={session?.user}
-                                    userToken={session?.accessToken}
-                                    userId={session?.user.id}/>
+                <ResponseContainer userData={session?.user}/>
             </ResponsesProvider>
         </div>
     );

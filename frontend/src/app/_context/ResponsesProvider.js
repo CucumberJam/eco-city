@@ -1,6 +1,6 @@
 'use client';
 import {createContext, useContext, useRef, useState} from "react";
-import {getOtherResponses, getResponsesOfUser} from "@/app/_lib/actions";
+import {getOtherResponses, getResponsesOfUser} from "@/app/_lib/actions/responses";
 import {preparePagination} from "@/app/_lib/helpers";
 import {
     initialPagination,
@@ -18,18 +18,16 @@ function ResponsesProvider({children}) {
 
     const [paginationResponsesUser, setPaginationResponsesUser] = useState({...initialPagination});
     const [paginationResponses, setPaginationResponses] = useState({...initialPagination});
-    function setUserData({data, token, id, cityId}){
+    function setUserData({data, cityId}){
         userData.current = {}
         userData.current.data = data;
-        userData.current.id = +id;
-        userData.current.token = token;
         userData.current.cityId = +cityId;
     }
     async function fetchAndSetUserResponses(offset = initialPagination.offset,
                                           limit = initialPagination.limit,
                                           currentPage = initialPagination.currentPage){
-        const res = await getResponsesOfUser(userData.current.id, userData.current.token, offset, limit);
-        if(res?.status === 'success' && res?.data){
+        const res = await getResponsesOfUser(offset, limit);
+        if(res?.success && res?.data){
             setResponsesUser(prev => res.data); //{count: 2, rows: []}
             // updatePagination:
             const totalPages = Math.ceil((res.data?.count || res.data?.rows?.length || 1) / limit);
@@ -48,8 +46,8 @@ function ResponsesProvider({children}) {
     async function fetchAndSetOthersResponses(offset = initialPagination.offset,
                                             limit = initialPagination.limit,
                                             currentPage = initialPagination.currentPage){
-        const res = await getOtherResponses(userData.current.token, offset, limit, userAdvertsIds.current);
-        if(res.status === 'success'){
+        const res = await getOtherResponses(offset, limit, userAdvertsIds.current);
+        if(res.success){
             setResponses(prev => res.data);
             if(!userAdvertsIds?.current && res.advertsIds) userAdvertsIds.current = res.advertsIds;
             // updatePagination:
@@ -65,8 +63,8 @@ function ResponsesProvider({children}) {
             return {success: true};
         }else return {success: false, message: res.message};
     }
-    async function initResponsesContext(userData, userToken, userId, cityId){
-        setUserData({data: userData, token: userToken, id: userId, cityId: cityId});
+    async function initResponsesContext(userData, cityId){
+        setUserData({data: userData, cityId: cityId});
         const result = {success: true, message: []}
         if(!responsesUser && showUserResponses(userData.role)) {
             const res = await fetchAndSetUserResponses();

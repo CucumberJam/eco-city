@@ -15,7 +15,7 @@ export default async function Page(props) {
     const userId = await getUserId();
     if(!data?.[0]?.isRead){
         const res = await makeDialogRead(params?.dialogId || data?.[0]?.id);
-        if(success) data = res.data;
+        if(success && res.success && res.data) data = res.data;
     }
     const {firstDialogMessages} = await getMessagesByDialogId(params?.dialogId || data?.[0]?.id);
 

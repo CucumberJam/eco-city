@@ -1,5 +1,5 @@
 'use client';
-import {signInAction} from '@/app/_lib/actions.js';
+import {signInAction} from '@/app/_lib/actions/auth';
 import {ExclamationCircleIcon} from '@heroicons/react/24/outline';
 import {useState } from "react";
 import {useRouter} from "next/navigation";

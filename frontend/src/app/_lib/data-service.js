@@ -1,4 +1,4 @@
-const serverAPI = 'http://localhost:4000/'
+/*const serverAPI = 'http://localhost:4000/'
 const getOptions = (token, method = 'GET')=>{
     return {
         method: method,
@@ -59,23 +59,6 @@ export const getWasteTypes = async ()=> {
         return {status: 'error', data: e.message};
     }
 }
-export async function getAdverts(userId, token){
-    console.log(userId);
-    if(!userId) return;
-    try{
-        const options = getOptions(token);
-        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/adverts/${userId}`, options);
-        const data = await res.json();
-        console.log('Response from Adverts: ', data)
-        if(data.status !== 'success'){
-            throw Error(data.message)
-        }
-        return {status: 'success', data: data.data};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', message: e.message};
-    }
-}
 export async function getUsers(params){
     const query = new URLSearchParams(params);
     try{
@@ -112,17 +95,6 @@ export async function getUserByEmailOrOGRN(params){
         return {status: 'error', data: e.message};
     }
 }
-export async function getUserById(id){
-    if(!id) return;
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/users/${id}`);
-        const data = await res.json();
-        return (data.status === 'fail') ? {status: 'error', data: data.message} : {status: 'success', data: data.data};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
 export async function loginAPI(email, password){
     if(!email || !password) return;
     try{
@@ -140,37 +112,17 @@ export async function loginAPI(email, password){
     }catch (e) {
         return {status: 'error', message: e.message};
     }
-}
+}*/
 
 export function hasAdvertCreateFormErrors(formData, currentCity, userData, wasteTypes, errorHandler){
     let params = {}
     // check address:
     params = setAddress(params, formData, userData.address, currentCity, errorHandler);
     if(!params) return;
-/*    let isPickedUp = formData.get('isPickedUp');
-    const address = formData.get('address');
-    const latitude =  formData.get('latitude');
-    const longitude = formData.get('longitude');
-    const priceWithDelivery = formData.get('priceWithDelivery');
-    if(isPickedUp === 'true'){
-        //check priceWithDelivery:
-        formData.set('priceWithDelivery', 'false');
-        if(errorHandler('advert', {type: 'address', currentCity, userAddress: userData.address, address, latitude, longitude})) return {hasErrors: true};;
-    }
-    params.address = address;
-    params.latitude = +latitude;
-    params.longitude = +longitude;
-    formData.append('cityId', currentCity.id);
-    params.cityId = +currentCity.id;
-    params.isPickedUp = isPickedUp === 'true';
-    params.priceWithDelivery = params.isPickedUp ? false : (priceWithDelivery === 'true');*/
 
     // check amount:
     params = setObjectFormItem(params, formData, errorHandler, 'amount', true);
     if(!params) return {hasErrors: true};
-/*    const amount = formData.get('amount');
-    if(errorHandler('advert', {type: 'amount', value: amount})) return {hasErrors: true};
-    params.amount = +amount;*/
 
     // check price:
     params = setObjectFormItem(params, formData, errorHandler, 'price', true);
@@ -178,38 +130,18 @@ export function hasAdvertCreateFormErrors(formData, currentCity, userData, waste
 
     params = setObjectFormItem(params, formData, errorHandler, 'totalPrice', true);
     if(!params) return {hasErrors: true};
-/*    const price = formData.get('price');
-    if(errorHandler('advert', {type: 'price', value: price})) return {hasErrors: true};
-    const totalPrice = formData.get('totalPrice');
-    if(errorHandler('advert', {type: 'price', value: totalPrice})) return {hasErrors: true};
-    params.price = parseFloat(price);
-    params.totalPrice = parseFloat(totalPrice);*/
 
     // check wastes:
     params = setObjectFormItem(params, formData, errorHandler, 'waste', true, 'wasteType', false, true);
-    //params = setWastes(params, formData, errorHandler);
     if(!params) return {hasErrors: true};
-
-    //setDefaultWasteType(formData, wasteTypes, userData.wasteTypes, userData.wastes);
-/*    let waste = formData.get('waste') + '';
-    const wasteType = formData.get('wasteType');
-    if(errorHandler('advert', {type: 'waste', waste})) return {hasErrors: true};
-    params.waste = +waste;
-    params.wasteType = wasteType ? +wasteType : null;*/
 
     // check dimension:
     params = setObjectFormItem(params, formData, errorHandler, 'dimension', true);
     if(!params) return {hasErrors: true};
-    /*const dimension = formData.get('dimension');
-    if(errorHandler('advert', {type: 'dimension', dimension})) return {hasErrors: true};
-    params.dimension = +dimension;*/
 
     // check finishDate:
     params = setObjectFormItem(params, formData, errorHandler, 'finishDate');
     if(!params) return {hasErrors: true};
-/*    const finishDate = formData.get('finishDate');
-    if(errorHandler('advert', {type: 'finishDate', finishDate})) return {hasErrors: true};
-    params.finishDate = finishDate;*/
 
     params.comment = formData.get('comment');
 

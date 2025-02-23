@@ -3,7 +3,7 @@ import {useRouter} from "next/navigation";
 import {useState} from "react";
 import useErrors from "@/app/_hooks/useErrors";
 import {prepareName} from "@/app/_lib/helpers";
-import {createResponseAction} from "@/app/_lib/actions";
+import {createResponse} from "@/app/_lib/actions/responses";
 
 import {Textarea} from "flowbite-react";
 import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
@@ -23,14 +23,14 @@ const col = 'flex flex-col';
 const rowSpace = "flex items-center justify-center space-x-2";
 const cardBlockStyles = 'flex items-center justify-between';
 
-export default function AdvertInfo({advert, token }){
+export default function AdvertInfo({advert}){
     const router = useRouter();
     const {roles, wastes, wasteTypes, dimensions} = useGlobalUIStore((state) => state);
 
     const wasteName = prepareName(wastes?.find(el => +el.id === +advert.waste)?.name || '');
     const wasteTypeName = prepareName(wasteTypes.find(el => +el.id === +advert?.wasteType)?.name || '');
     const userDimensionLabel = dimensions.find(el => +el.id === +advert.dimension).shortName;
-    const roleName = prepareName(roles.find(el => el.name === advert.userRole).label)
+    const roleName = prepareName(roles.find(el => el.name === advert.user.role).label)
 
     const {errMessage, hasError} = useErrors();
     const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
@@ -51,9 +51,9 @@ export default function AdvertInfo({advert, token }){
         }
         try{
             setIsFetching(true);
-            const response = await createResponseAction(data, token);
+            const response = await createResponse(data);
             setIsFetching(false);
-            if (response?.status !== 'success' && response.message !== "NEXT_REDIRECT") {
+            if (response?.success && response.message !== "NEXT_REDIRECT") {
                 throw new Error(response.message);
             } else {
                 setIsRegisterSucceeded(true);
@@ -74,7 +74,7 @@ export default function AdvertInfo({advert, token }){
             <FormStatus isRegisterSucceeded={isRegisterSucceeded}
                         errMessage={errMessage}
                         isFetching={isFetching}>
-                    <AdvertCard name={advert.userName}
+                    <AdvertCard name={advert.user.name}
                                 role={roleName}
                                 address={advert.address}
                                 waste={wasteName} wasteType={wasteTypeName}

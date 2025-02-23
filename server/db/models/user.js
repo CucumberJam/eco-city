@@ -6,6 +6,7 @@ const AppError = require("../../utils/appError");
 const advert = require("../../db/models/advert");
 const dialog = require("../../db/models/dialog");
 const message = require("../../db/models/message");
+const response = require("../../db/models/response");
 
 const user = sequelize.define('user',
     {
@@ -228,6 +229,13 @@ user.hasMany(advert, {
   foreignKey: 'userId'
 });
 advert.belongsTo(user, {
+  foreignKey: 'userId'
+});
+//responses:
+user.hasMany(response, {
+  foreignKey: 'userId'
+});
+response.belongsTo(user, {
   foreignKey: 'userId'
 });
 

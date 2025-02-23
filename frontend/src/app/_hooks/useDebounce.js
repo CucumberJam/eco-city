@@ -1,5 +1,5 @@
 import {debounce, getNameAddress} from "@/app/_lib/helpers";
-import {fetchCompanyByOGRN} from "@/app/_lib/actions";
+import {fetchCompanyByOGRN} from "@/app/_lib/actions/global";
 import {useState} from "react";
 
 export default function useDebounce(errorCallbackFunc){
