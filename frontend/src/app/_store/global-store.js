@@ -9,11 +9,10 @@ export const defaultInitState = {
     currentWaste: null,
     wasteTypes: [],
     currentWasteType: null,
-    users: [],
+    users: {count: 0, rows: []},
     query: '',
     currentUser: null,
     dimensions: [],
-    authUser: null,
 }
 
 export const createGlobalUIStore = (initState = defaultInitState) => {
@@ -27,11 +26,10 @@ export const createGlobalUIStore = (initState = defaultInitState) => {
         setCurrentWaste: (payload) => set(() => ({ currentWaste: payload})),
         setWasteTypes: (payload) => set((state) => ({ ...state, wasteTypes: [...payload]})),
         setCurrentWasteType: (payload) => set(() => ({ currentWasteType: payload})),
-        setUsers: (payload) => set((state) => ({...state, users: [...payload]})),
+        setUsers: (payload) => set((state) => ({users: {...payload}})),
         setQuery: (payload) => set(() => ({ query: payload})),
         setCurrentUser: (payload) => set(() => ({ currentUser: payload})),
         setDimensions: (payload) => set((state) => ({ ...state, dimensions: [...payload]})),
-        setAuthUser: (payload) => set(() => ({ authUser: {...payload}})),
         reset: ()=> { set(defaultInitState)}
     }))
 }

@@ -1,15 +1,24 @@
 "use server";
 import {apiServerRoutes} from "@/routes";
-import {getPublicPostOptions, requestWrap} from "@/app/_lib/helpers";
+import {requestWrap} from "@/app/_lib/helpers";
 
 /**
  * Метод возвращает коллекцию авторизованных пользователей с учетом параметров
  * @param {object} params - объект параметров, по которым фильтруются пользователи
+ * @param {number} params.userId - авторизованного пользователя (не обязателен)
+ * @param {number} params.cityId - id города (не обязателен)
+ * @param {string} params.query - запрос поисковой строки (не обязателен)
+ * @param {[number]} params.wastes - id видов отходов (не обязателен)
+ * @param {[number]} params.wasteTypes - id подвидов отходов (не обязателен)
+ * @param {[string]} params.roles - имена ролей пользователей (не обязателен)
+ * @param {number} params.offset - количество строк в БД для отступа
+ * @param {number} params.limit - количество строк в БД для получения
  **/
 export async function getUsersByParams(params){
     const searchParams = new URLSearchParams(params);
-    return  await requestWrap({route:
-            `${process?.env?.SERVER_URL}${apiServerRoutes.users}?${searchParams.toString()}`
+    return  await requestWrap({
+        cache: 'no-store',
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}?${searchParams.toString()}`
     });
 }
 

@@ -10,7 +10,6 @@ export default async function Page(){
     <div className="flex flex-col gap-6 mt-1 items-center ">
                 <h2 className="text-3xl font-semibold">Заявка на сбыт отходов</h2>
         <AdvertForm dataObject={session?.user}
-                    userToken={session?.accessToken}
                     successMessage='Заявка создана'/>
         </div>
     );

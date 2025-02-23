@@ -21,7 +21,7 @@ export default function LazyMap({
             loading: ()=> <p className='flex w-full my-0 mx-auto justify-items-center'>Загрузка гео-данных...</p>,
             ssr: false,
         }
-    ), [currentCity?.id, users?.length]);
+    ), [currentCity?.id, users.rows?.length]);
 
 
     if(!withUsers) return (
@@ -36,8 +36,8 @@ export default function LazyMap({
         </>
     );
     const displayedUsers = useMemo(()=>{
-        if(!currentRole && !currentWaste && !currentWasteType && query.length === 0) return users;
-        return users.filter(user => {
+        if(!currentRole && !currentWaste && !currentWasteType && query.length === 0) return users.rows;
+        return users.rows.filter(user => {
             let isValid = true;
 
             if(currentRole){
@@ -55,7 +55,7 @@ export default function LazyMap({
 
             if(isValid) return user;
         })
-    }, [users?.length, currentRole?.id, currentWaste?.id, currentWasteType?.id, query]);
+    }, [users.rows?.length, currentRole?.id, currentWaste?.id, currentWasteType?.id, query]);
 
     const PaginatedUserCardList = PaginatedList(UserCard, displayedUsers, '#F5F5F5');
 
@@ -67,7 +67,7 @@ export default function LazyMap({
                      activeUser={currentUser}
                      setActiveUser={setCurrentUser}/>
             </div>
-            {users.length > 0 && <PaginatedUserCardList wasteAPI={wastes}
+            {users.rows?.length > 0 && <PaginatedUserCardList wasteAPI={wastes}
                                                         wastesTypesAPI={wasteTypes}
                                                         handleSelect={setCurrentUser}/>}
         </>

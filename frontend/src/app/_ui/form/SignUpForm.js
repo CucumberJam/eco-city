@@ -4,7 +4,6 @@ import FormItem from "@/app/_ui/form/FormItem";
 import FormButton from "@/app/_ui/form/FormButton";
 import {USE_FNS2} from "@/app/_lib/URLS";
 import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
-import useCities from "@/app/_hooks/useCities";
 import FormSelectMultiple from "@/app/_ui/form/FormSelectMultiple";
 import useErrors from "@/app/_hooks/useErrors";
 import useDebounce from "@/app/_hooks/useDebounce";
@@ -19,7 +18,8 @@ import {Progress, Spinner} from "flowbite-react";
 import useSignUpForm from "@/app/_hooks/useSignUpForm";
 import {ChevronLeftIcon} from "@heroicons/react/24/outline";
 export default function SignUpForm() {
-    const {currentUser, setCurrentUser, roles, wastes, wasteTypes} = useGlobalUIStore((state) => state);
+    const {currentUser, setCurrentUser,
+        roles, wastes, wasteTypes, currentCity, cities} = useGlobalUIStore((state) => state);
 
     const [isFetching, setIsFetching] = useState(false);
     const {errMessage, hasError} = useErrors();
@@ -78,7 +78,9 @@ export default function SignUpForm() {
                                                  isFetchingOGRN={isFetchingOGRN}
                                                  ogrnUserAddress={ogrnUserAddress}
                                                  ogrnUserName={ogrnUserName}/>}
-            {signUpForm.step === 2 && <FormStep2 backHandler={signUpFormDispatch}/>}
+            {signUpForm.step === 2 && <FormStep2 currentCity={currentCity}
+                                                 cities={cities}
+                                                 backHandler={signUpFormDispatch}/>}
             {signUpForm.step === 3 && <FormStep3 roles={roles}
                                                  backHandler={signUpFormDispatch}/>}
             {signUpForm.step === 4 && <FormState4 wastes={wastes}
@@ -151,8 +153,7 @@ function FormStep1({debounceCheck, ogrnUserName, ogrnUserAddress, isFetchingOGRN
         </>
     );
 }
-function FormStep2({backHandler}){
-    const {currentCity, cities} = useCities();
+function FormStep2({backHandler, currentCity, cities}){
     const [latitude, setLatitude] = useState( 0);
     const [longitude, setLongitude] = useState( 0);
     const [chosenCity, setChosenCity] = useState(0);

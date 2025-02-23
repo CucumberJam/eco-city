@@ -1,7 +1,9 @@
 import PageContainer from "@/app/_ui/general/PageContainer";
 import CarouselComponent from "@/app/_ui/general/CarouselComponent";
-import MapContainer from "@/app/_ui/map/MapContainer";
 import WasteContainer from "@/app/_ui/waste/WasteContainer";
+import MapPanel from "@/app/_ui/map/MapPanel";
+import LazyMap from "@/app/_ui/map/LazyMap";
+import {PublicMapProvider} from "@/app/_context/PublicMapProvider";
 export default async function Page() {
   return (
       <div>
@@ -10,7 +12,10 @@ export default async function Page() {
           </div>
           <PageContainer>
               <WasteContainer/>
-              <MapContainer/>
+              <PublicMapProvider>
+                  <MapPanel/>
+                  <LazyMap/>
+              </PublicMapProvider>
           </PageContainer>
       </div>
   );

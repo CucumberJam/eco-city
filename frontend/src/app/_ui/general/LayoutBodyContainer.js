@@ -1,38 +1,66 @@
 "use client";
-import useCities from "@/app/_hooks/useCities";
 import useRolesWastes from "@/app/_hooks/useRolesWastes";
 import useDimensions from "@/app/_hooks/useDimensions";
-import {useEffect} from "react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
+import {useEffect} from "react";
+import {getUsersByParams} from "@/app/_lib/actions/users";
+import {fetchAddress} from "@/app/_lib/geo-api";
 
 export default function LayoutBodyContainer({
-
                                                 children,
                                                 serif,
-                                                citiesAPI, dimensionsApi,
+                                                citiesAPI,
+                                                dimensionsApi,
                                                 rolesAPI,
-                                                wastesApi, wasteTypesApi,
-                                                userData = null, userToken = null,  userId = null,
+                                                wastesApi,
+                                                wasteTypesApi,
+                                                usersAPI,
                                             }){
-    useCities(citiesAPI, true);
+
     useRolesWastes(rolesAPI, wastesApi, wasteTypesApi);
     useDimensions(dimensionsApi);
-    const {setAuthUser} = useGlobalUIStore((state) => state);
+    const {setUsers, setCities, setCurrentCity} = useGlobalUIStore(state => state);
 
-    useEffect(()=>{
-        if(!userData || !userToken || !userId) return;
-        setAuthUser(prev => ({
-            data: userData,
-            token: userToken,
-            id: userId
-        }));
+    useEffect(() => {
+        async function getUserCity(){
+            try{
+                const { address} = await fetchAddress();
+                const currentCityName = address?.city;
+                const found = citiesAPI.find(city => city.engName === currentCityName);
+                if(found) setCurrentCity(found);
+                return found ? found : citiesAPI[0];
+            }catch (e) {
+                console.log(e.message);
+            }
+        }
+
+        if(citiesAPI) {
+            setCities(citiesAPI);
+            setCurrentCity(citiesAPI[0]);
+        }
+
+        getUserCity()
+            .then(city => {
+                getUsersByParams({
+                    offset: 0,
+                    limit: 10,
+                    cityId: city.id
+                }).then(res => {
+                    const {success, data} = res;
+                    if(success) setUsers(data);
+                }).catch(err => console.log(err))
+            })
+            .catch(e => {
+                console.log(e);
+                setUsers(usersAPI);
+            });
     }, []);
 
     return (
         <body className={`${serif}
             bg-primary-50 text-primary-700 min-h-screen
             flex flex-col antialiasing`}>
-        {children}
+            {children}
         </body>
     );
 }
