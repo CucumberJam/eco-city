@@ -2,7 +2,7 @@ export default function UserWasteList({wastes}){
     return (
         <>
         {wastes.map((el) => (
-                <p key={el.id} className="text-black">
+                <p key={el.id} className="text-black text-left">
                     <span className="font-semibold">
                         {el.name.substring(0,1).toUpperCase() + el.name.substring(1).toLowerCase()}
                         {el.children.length > 0 && ': '}</span>

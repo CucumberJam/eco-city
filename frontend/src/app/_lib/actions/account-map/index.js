@@ -120,5 +120,5 @@ async function fetchUsersWithAdverts(wastes, wasteTypes, cityId, offset, limit){
 async function fetchPartners(offset, limit, {cityId, query, wastes, wasteTypes, userRole,  roles}){
     if(userRole !== 'RECEIVER' && roles.includes(userRole)) return {success: false, message: `Пользователь с ролью ${userRole} не имеет доступа к участникам с такой же ролью`}
     const userId = await getUserId();
-    return  await getUsersByParams( {userId, cityId, query, wastes, wasteTypes, roles, offset, limit});
+    return  await getUsersByParams( offset, limit, {userId, cityId, query, wastes, wasteTypes, roles});
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
 import "leaflet-defaulticon-compatibility";
@@ -7,9 +7,6 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import {MapContainer, Marker, TileLayer, Tooltip,} from "react-leaflet";
 import {useEffect, useRef} from "react";
 import {getIconByRole} from "@/app/_ui/map/MapIcons";
-import {useModal} from '@/app/_context/ModalContext'
-import {ModalView} from "@/app/_ui/general/ModalView";
-import UserDescription from "@/app/_ui/user/UserDescription";
 import LocationMarker from "@/app/_ui/map/LocationMarker";
 
 const Map = ({
@@ -18,14 +15,12 @@ const Map = ({
                 withUsers = true,
                 zoom = withUsers ? 11 : 13,
                 scrollWheelZoom = false,
-                activeUser = null,
                 setActiveUser,
                 needDefineLocation = false,
                 pickedUpPos = [],
              }) => {
 
     const isInitialized = useRef(false);
-    const {currentOpen, close, open} = useModal();
 
     useEffect(() => {
         isInitialized.current = true;
@@ -35,10 +30,6 @@ const Map = ({
             isInitialized.current = false;
         };
     }, []);
-    useEffect(() => {
-        if(activeUser?.id) open(activeUser.id);
-        else close();
-    }, [activeUser?.id]);
 
     if (!isInitialized) return null;
 
@@ -55,7 +46,7 @@ const Map = ({
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
                     {withUsers ? users.map(user => (
-                        <Marker key={user.id}
+                        <Marker key={user.id} style={{width: 0, height: 0}}
                                 position={[ +user.latitude, +user.longitude ]}
                                 draggable={false}
                                 icon={getIconByRole(user.role)}
@@ -72,8 +63,8 @@ const Map = ({
                                          needDefineLocation={needDefineLocation}/>
                         {(pickedUpPos[0] !== 0 && pickedUpPos[1] !== 0) && (
                             <Marker key={pickedUpPos[0]}
-                                                           position={pickedUpPos}
-                                                           draggable={false}>
+                                    position={pickedUpPos}
+                                    draggable={false}>
                             </Marker>
                         )}
                         </>
@@ -83,11 +74,6 @@ const Map = ({
                              draggable={false}>
                     </Marker>}
                 </>
-                <ModalView isOpen={currentOpen === activeUser?.id}
-                           title="Сведения об участнике"
-                           handleClose={()=> setActiveUser?.(null)}>
-                    <UserDescription data={activeUser}/>
-                </ModalView>
             </MapContainer>
     );
 }

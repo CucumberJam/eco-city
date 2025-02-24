@@ -6,7 +6,7 @@ import {prepareName} from "@/app/_lib/helpers";
 import {createResponse} from "@/app/_lib/actions/responses";
 
 import {Textarea} from "flowbite-react";
-import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
+import UserRoleCircle from "@/app/_ui/general/UserRoleCircle";
 import FormItem from "@/app/_ui/form/FormItem";
 import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 import FormButton from "@/app/_ui/form/FormButton";

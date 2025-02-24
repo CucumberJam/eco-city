@@ -1,4 +1,4 @@
-import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
+import UserRoleCircle from "@/app/_ui/general/UserRoleCircle";
 import Subtitle from "@/app/_ui/general/Subtitle";
 export default function DialogAnnounceItem({dialog, clickHandler, isOpen}){
     return (

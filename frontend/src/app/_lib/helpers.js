@@ -123,9 +123,9 @@ export async function getUserId(){
     const session = await auth();
     return session?.user?.id;
 }
-export async function requestWrap({options = null, route}){
+export async function requestWrap({options = null, route, cache = 'force-cache'}){
     try{
-        const res = options ? await fetch(route, options) :  await fetch(route);
+        const res = options ? await fetch(route, {...options, cache}) :  await fetch(route);
         if(res.status === 204 && res.ok){
             return {success: true, data: res?.data};
         }

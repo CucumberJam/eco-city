@@ -1,17 +1,15 @@
 "use client";
-import { Dropdown, DropdownItem } from "flowbite-react";
+import {Dropdown, DropdownItem, Spinner} from "flowbite-react";
 import { useGlobalUIStore } from '@/app/_context/GlobalUIContext'
-import useCities from "@/app/_hooks/useCities";
 import {getUsersByParams} from "@/app/_lib/actions/users";
 export default function CitySection(){
-    const {currentCity, cities, setCurrentCity}  = useCities(null, true);
-    const { setUsers } = useGlobalUIStore((state) => state);
+    const { currentCity, cities, setCurrentCity, setUsers } = useGlobalUIStore((state) => state);
     async function selectCity(city){
         setCurrentCity(city);
-        const {success, data: users} = await getUsersByParams({cityId: city.id});
-        if(success) setUsers(users.rows);
+        const {success, data: users} = await getUsersByParams(0, 10, {cityId: city.id});
+        if(success) setUsers(users);
     }
-    if(!cities) return <p>Fetching cities...</p>;
+    if(!currentCity) return <Spinner size={'sm'}/>;
     return (
     <Dropdown label={currentCity?.name || "Город: "} inline size="sm"
               dismissOnClick={true}>

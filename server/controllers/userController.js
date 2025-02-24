@@ -8,7 +8,7 @@ const AppError = require("../utils/appError");
  * с учетом пагинации
  * @param {number} req.query.userId - авторизованного пользователя (не обязателен)
  * @param {number} req.query.cityId - id города (не обязателен)
- * @param {string} query - запрос поисковой строки (не обязателен)
+ * @param {string} req.query.query - запрос поисковой строки (не обязателен)
  * @param {[number]} req.query.wastes - id видов отходов (не обязателен)
  * @param {[number]} req.query.wasteTypes - id подвидов отходов (не обязателен)
  * @param {[string]} req.query.roles - имена ролей пользователей

@@ -1,11 +1,11 @@
 import { Nunito_Sans } from "next/font/google";
 import "@/app/_styles/globals.css";
-import {auth} from "@/auth";
 import {GlobalStoreProvider} from '@/app/_context/GlobalUIContext';
 import {ModalProvider} from '@/app/_context/ModalContext'
 import {getCities, getDimensions, getRoles, getWastes, getWasteTypes} from "@/app/_lib/actions/global";
 import LayoutBodyContainer from "@/app/_ui/general/LayoutBodyContainer";
 import Header from "@/app/_ui/general/Header";
+import {getUsersByParams} from "@/app/_lib/actions/users";
 
 //https://fonts.google.com/specimen/Nunito+Sans?lang=ru_Cyrl
 const nunitoSans = Nunito_Sans({
@@ -22,7 +22,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-    const session = await auth();
     const [
         {status: statusRoles, data: roles},
         {status: statusWastes, data: wastes},
@@ -34,19 +33,17 @@ export default async function RootLayout({ children }) {
             getWasteTypes(), getDimensions(),
             getCities(),
         ]);
-
+    const {status: userStatus, data: usersAPI} = await getUsersByParams(0, 10, {cityId: cities[0]?.id})
     return (
         <html lang="en">
         <GlobalStoreProvider>
-            <LayoutBodyContainer userData={session?.user}
-                                 userToken={session?.accessToken}
-                                 userId={session?.user?.id}
-                                 citiesAPI={cities}
+            <LayoutBodyContainer citiesAPI={cities}
                                  rolesAPI={roles}
                                  wastesApi={wastes}
                                  wasteTypesApi={wasteTypes}
                                  dimensionsApi={dimensions}
-                                 serif={nunitoSans.className}>
+                                 serif={nunitoSans.className}
+                                 usersAPI={usersAPI}>
                 <Header/>
                 <MainSection>
                     <ModalProvider>

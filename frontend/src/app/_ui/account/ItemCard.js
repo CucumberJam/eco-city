@@ -24,7 +24,7 @@ export default function ItemCard({item, clickHandler, mode  = 2 }){
                         duration-300
                         px-2 py-2"
                         onClick={()=> clickHandler(item)}>
-                <figure>
+                <figure className='h-full flex flex-col justify-between'>
                     {item.status && <div className='w-full flex justify-end'>
                         <Status status={item.status}/>
                     </div>}
@@ -52,7 +52,7 @@ export default function ItemCard({item, clickHandler, mode  = 2 }){
                             <Subtitle label="Комментарий автора: " subTitle={item.comment}/>
                         </small>}
                     </figcaption>
-                    <div className="py-[0.75rem] px-[1.25rem] text-center
+                    <div className=" py-[0.75rem] px-[1.25rem] text-center
                                     bg-gray-100 border-t-1 px border-[rgba(0, 0, 0, .125)]">
                         {mode !== 2 ? (
                             <small className="text-muted">
@@ -92,8 +92,8 @@ function AddInfo({itemWastes,  itemWasteTypes, phone, email}){
 
     return (
         <div className="h-[80%] flex flex-col justify-between self-start">
-            <div className="flex flex-col">
-                <p className="text-red-10 font-bold">Виды отходов:</p>
+            <div className="flex flex-col self-start">
+                <p className="text-red-10 font-bold text-left">Виды отходов:</p>
                 <UserWasteList wastes={shownWastes}
                                style={{fontWeight: 'normal'}}/>
             </div>

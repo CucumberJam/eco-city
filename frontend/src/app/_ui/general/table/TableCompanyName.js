@@ -1,5 +1,5 @@
 import {prepareName} from "@/app/_lib/helpers";
-import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
+import UserRoleCircle from "@/app/_ui/general/UserRoleCircle";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 
 export default function TableCompanyName({role, name,
