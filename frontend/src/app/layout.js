@@ -33,11 +33,7 @@ export default async function RootLayout({ children }) {
             getWasteTypes(), getDimensions(),
             getCities(),
         ]);
-    const {status: userStatus, data: usersAPI} = await getUsersByParams({
-        cityId: cities[0]?.id,
-        offset: 0,
-        limit: 10
-    })
+    const {status: userStatus, data: usersAPI} = await getUsersByParams(0, 10, {cityId: cities[0]?.id})
     return (
         <html lang="en">
         <GlobalStoreProvider>

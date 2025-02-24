@@ -41,11 +41,8 @@ export default function LayoutBodyContainer({
 
         getUserCity()
             .then(city => {
-                getUsersByParams({
-                    offset: 0,
-                    limit: 10,
-                    cityId: city.id
-                }).then(res => {
+                getUsersByParams(0, 10, {cityId: city.id})
+                    .then(res => {
                     const {success, data} = res;
                     if(success) setUsers(data);
                 }).catch(err => console.log(err))

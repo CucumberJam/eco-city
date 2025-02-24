@@ -11,11 +11,12 @@ import {requestWrap} from "@/app/_lib/helpers";
  * @param {[number]} params.wastes - id видов отходов (не обязателен)
  * @param {[number]} params.wasteTypes - id подвидов отходов (не обязателен)
  * @param {[string]} params.roles - имена ролей пользователей (не обязателен)
- * @param {number} params.offset - количество строк в БД для отступа
- * @param {number} params.limit - количество строк в БД для получения
+ * @param {number} offset - количество строк в БД для отступа
+ * @param {number} limit - количество строк в БД для получения
  **/
-export async function getUsersByParams(params){
+export async function getUsersByParams(offset, limit, params){
     const searchParams = new URLSearchParams(params);
+    console.log(params);
     return  await requestWrap({
         cache: 'no-store',
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}?${searchParams.toString()}`

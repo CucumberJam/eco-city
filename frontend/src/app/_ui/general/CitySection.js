@@ -6,7 +6,7 @@ export default function CitySection(){
     const { currentCity, cities, setCurrentCity, setUsers } = useGlobalUIStore((state) => state);
     async function selectCity(city){
         setCurrentCity(city);
-        const {success, data: users} = await getUsersByParams({cityId: city.id, offset: 0, limit: 10});
+        const {success, data: users} = await getUsersByParams(0, 10, {cityId: city.id});
         if(success) setUsers(users);
     }
     if(!currentCity) return <Spinner size={'sm'}/>;

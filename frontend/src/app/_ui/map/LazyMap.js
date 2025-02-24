@@ -4,24 +4,33 @@ import {useMemo} from "react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import PaginatedList from "@/app/_ui/general/PaginatedList";
 import UserCard from "@/app/_ui/user/UserCard";
+import {useModal} from "@/app/_context/ModalContext";
+import {usePublicMap} from "@/app/_context/PublicMapProvider";
 
 export default function LazyMap({
                                     withUsers = true,
                                     needDefineLocation = false,
                                     changePositionHandler = null,
                                     pickedUpPos = []}){
-    const { currentCity,
-        users,
-        wastes, wasteTypes,
-        setCurrentUser, currentUser,
-        currentRole, currentWaste, currentWasteType, query } = useGlobalUIStore((state) => state);
+    const {open, close} = useModal();
+    const { currentCity, setCurrentUser, currentUser} = useGlobalUIStore((state) => state);
+    const {paginatedItems} = usePublicMap();
+    function showModalWithActiveItem(el){
+        if(el){
+            open(el.id);
+            setCurrentUser(el);
+        }else {
+            close();
+            setCurrentUser(null)
+        }
+    }
 
     const Map = useMemo(()=> dynamic(
         ()=> import('./Map'), {
             loading: ()=> <p className='flex w-full my-0 mx-auto justify-items-center'>Загрузка гео-данных...</p>,
             ssr: false,
         }
-    ), [currentCity?.id, users.rows?.length]);
+    ), [currentCity?.id, paginatedItems.rows?.length]);
 
 
     if(!withUsers) return (
@@ -35,7 +44,7 @@ export default function LazyMap({
             </div>
         </>
     );
-    const displayedUsers = useMemo(()=>{
+/*    const displayedUsers = useMemo(()=>{
         if(!currentRole && !currentWaste && !currentWasteType && query.length === 0) return users.rows;
         return users.rows.filter(user => {
             let isValid = true;
@@ -55,21 +64,21 @@ export default function LazyMap({
 
             if(isValid) return user;
         })
-    }, [users.rows?.length, currentRole?.id, currentWaste?.id, currentWasteType?.id, query]);
+    }, [users.rows?.length, currentRole?.id, currentWaste?.id, currentWasteType?.id, query]);*/
 
-    const PaginatedUserCardList = PaginatedList(UserCard, displayedUsers, '#F5F5F5');
+    //const PaginatedUserCardList = PaginatedList(UserCard, users.rows, '#F5F5F5');
 
     return (
         <>
             <div className="bg-white mx-auto my5 w-[98%] h-[548px] relative z-10">
-                <Map users={displayedUsers}
+                <Map users={paginatedItems.rows}
                      position={currentCity? [currentCity.latitude, currentCity.longitude] : [4.79029, -75.69003]}
                      activeUser={currentUser}
-                     setActiveUser={setCurrentUser}/>
+                     setActiveUser={showModalWithActiveItem}/>
             </div>
-            {users.rows?.length > 0 && <PaginatedUserCardList wasteAPI={wastes}
+            {/*{users.rows?.length > 0 && <PaginatedUserCardList wasteAPI={wastes}
                                                         wastesTypesAPI={wasteTypes}
-                                                        handleSelect={setCurrentUser}/>}
+                                                        handleSelect={setCurrentUser}/>}*/}
         </>
     );
 }

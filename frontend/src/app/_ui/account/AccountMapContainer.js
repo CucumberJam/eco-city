@@ -94,7 +94,7 @@ export default function AccountMapContainer({userData}){
                 </>)
             }
             <ModalView isOpen={currentOpen === activeItem?.id}
-                       title="Отклик на сбыт отходов"
+                       title={mode === 0 ? "Отклик на сбыт отходов" : (mode === 1 ? "Публикация на сбыт отходов" : "Описание участника")}
                        handleClose={()=> {
                            setActiveItem?.(null);
                            close();
