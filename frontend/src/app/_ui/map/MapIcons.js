@@ -1,6 +1,7 @@
 import L from "leaflet";
 
 const producerIcon = L.divIcon({
+    iconSize: [0, 0],
     html: `
 <svg width="40"
      height="40"
@@ -13,6 +14,7 @@ const producerIcon = L.divIcon({
 </svg>`
 });
 const recyclerIcon = L.divIcon({
+    iconSize: [0, 0],
     html: `
 <svg width="40"
      height="40"
@@ -25,6 +27,7 @@ const recyclerIcon = L.divIcon({
 </svg>`
 });
 const receiverIcon = L.divIcon({
+    iconSize: [0, 0],
     html: `
 <svg width="40"
      height="40"

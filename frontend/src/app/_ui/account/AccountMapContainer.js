@@ -11,7 +11,7 @@ import {Spinner} from "flowbite-react";
 import ServerPagination from "@/app/_ui/general/ServerPagination";
 import MapFilters from "@/app/_ui/map/MapFilters";
 import MapSearch from "@/app/_ui/map/MapSearch";
-import LazyMapNew from "@/app/_ui/map/LazyMapNew";
+import LazyMap from "@/app/_ui/map/LazyMap";
 import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import CardLayout from "@/app/_ui/general/CardLayout";
 import ItemCard from "@/app/_ui/account/ItemCard";
@@ -25,7 +25,6 @@ export default function AccountMapContainer({userData}){
     const tabsRef = useRef(null);
 
     const {mode, changeMode, isFetching,
-        currentCityId, currentCityLong, currentCityLat,
         setQuery,
         filterRoles, currentRole, setCurrentRole,
         userWastes, currentWaste, setCurrentWaste,
@@ -69,12 +68,9 @@ export default function AccountMapContainer({userData}){
                         </div>
                         {paginatedItems?.rows?.length > 0 ? (
                             <>
-                                <LazyMapNew users={paginatedItems.rows}
-                                            currentCityId={currentCityId}
-                                            currentCityLong={currentCityLong}
-                                            currentCityLat={currentCityLat}
-                                            setCurrentUser={showModalWithActiveItem}
-                                            currentUser={activeItem}/>
+                                <LazyMap    items={paginatedItems.rows}
+                                            setActiveItem={setActiveItem}
+                                            activeItem={activeItem}/>
                                 <CardLayout key={mode}>
                                     {paginatedItems.rows.map(el => (
                                         <ItemCard key={el.id}

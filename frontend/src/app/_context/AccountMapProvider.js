@@ -91,9 +91,6 @@ function AccountMapProvider({children}) {
             userWasteTypes, currentWasteType, setCurrentWasteType,
             filterRoles, currentRole, setCurrentRole,
             setQuery,
-            currentCityId: currentCity?.id,
-            currentCityLong: currentCity?.longitude,
-            currentCityLat: currentCity?.latitude,
             paginatedItems,
             pagination, changePagination,
             activeItem, setActiveItem

@@ -6,7 +6,7 @@ import { FaRegEnvelope } from "react-icons/fa6";
 import { FaPhone } from "react-icons/fa6";
 import UserWasteList from "@/app/_ui/user/UserWasteList";
 import Link from "next/link";
-import UserRoleCircle from "@/app/_ui/general/userRoleCircle";
+import UserRoleCircle from "@/app/_ui/general/UserRoleCircle";
 export default function UserCard({item, wasteAPI, wastesTypesAPI, handleSelect = null}){
     const wastes = useMemo(()=>{
         return getWastes(item.wastes, item.wasteTypes, wasteAPI, wastesTypesAPI);
