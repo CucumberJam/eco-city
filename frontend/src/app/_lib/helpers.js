@@ -1,6 +1,7 @@
 import {redirect} from "next/navigation";
 import {authRoutes} from "@/routes";
 import {auth} from "@/auth";
+import {workingDaysDB} from "@/app/_store/constants";
 
 export function debounce(func, timeout = 300){
     let timer;
@@ -153,13 +154,21 @@ export async function requestWrap({options = null, route, cache = 'force-cache'}
     }
 }
 
-export function getPublicPostOptions(body, method = 'POST'){
-    return {
-        method: method,
-        headers: {
-            "Content-Type":"application/json"
-        },
-        body: JSON.stringify(body),
-        redirect: "follow"
+export function getUserWorkTime(userWorkDays = [] || null,
+                                userWorkStarts = [] || null,
+                                userWorkEnds = [] || null){
+    if(!userWorkDays || !userWorkStarts || !userWorkEnds) return [];
+    else{
+        const arr = [];
+        for(let i = 0; i <= userWorkDays.length -1; i++){
+            const obj = {
+                id: userWorkDays[i] + 1,
+                name: Object.keys(workingDaysDB)[userWorkDays[i]],
+                start: userWorkStarts[i],
+                end: userWorkEnds[i]
+            }
+            arr.push(obj);
+        }
+        return arr;
     }
 }

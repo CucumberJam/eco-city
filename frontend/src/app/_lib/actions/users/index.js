@@ -1,6 +1,7 @@
 "use server";
 import {apiServerRoutes} from "@/routes";
-import {requestWrap} from "@/app/_lib/helpers";
+import {getRequestOptions, getUserId, requestWrap} from "@/app/_lib/helpers";
+import {auth} from "@/auth";
 
 /**
  * Метод возвращает коллекцию авторизованных пользователей с учетом параметров
@@ -16,7 +17,6 @@ import {requestWrap} from "@/app/_lib/helpers";
  **/
 export async function getUsersByParams(offset, limit, params){
     const searchParams = new URLSearchParams(params);
-    console.log(params);
     return  await requestWrap({
         cache: 'no-store',
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}?${searchParams.toString()}`

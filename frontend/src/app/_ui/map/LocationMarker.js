@@ -2,14 +2,20 @@
 import {useEffect, useState} from "react";
 import {Marker, Popup, useMapEvents} from "react-leaflet";
 import {Button} from "flowbite-react";
+import {getIconByRole} from "@/app/_ui/map/MapIcons";
 
 export default function LocationMarker({setUserPosition, needDefineLocation}) {
     const [position, setPosition] = useState(null);
+    const [isPicked, setIsPicked] = useState(false);
 
     const map = useMapEvents({
         click(e) {
-            setPosition(prev => e.latlng)
-            map.flyTo(e.latlng, map.getZoom())
+            if(!isPicked && !position){
+                setPosition(prev => e.latlng)
+                map.flyTo(e.latlng, map.getZoom());
+            }else{
+                setIsPicked(false)
+            }
         },
         locationfound(e) {
             setPosition(e.latlng);
@@ -25,7 +31,7 @@ export default function LocationMarker({setUserPosition, needDefineLocation}) {
 
     return position === null ? null : (
 
-        <Marker position={position}>
+        <Marker position={position} icon={getIconByRole()}>
             <Popup>
                 <div>
                     <p>Подтвердить позицию?</p>
@@ -33,11 +39,15 @@ export default function LocationMarker({setUserPosition, needDefineLocation}) {
                         <Button color="gray" onClick={(event)=> {
                             setPosition(null);
                             setUserPosition(null);
-                            console.log(event)
                         }}>
                             Нет
                         </Button>
-                        <Button onClick={()=> setUserPosition(position)}>Да</Button>
+                        <Button onClick={()=> {
+                            setIsPicked(true)
+                            setPosition(null);
+                            setUserPosition(position)
+                        }
+                        }>Да</Button>
                     </div>
                 </div>
             </Popup>

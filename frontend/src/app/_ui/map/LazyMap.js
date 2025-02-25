@@ -22,7 +22,7 @@ export default function LazyMap({
             loading: ()=> <Spinner className='flex w-full my-0 mx-auto justify-items-center'/>,
             ssr: false,
         }
-    ), [currentCity.id, items]);
+    ), [currentCity.id, items?.length]);
 
     function showModalWithActiveItem(el){
         if(el){
@@ -37,7 +37,7 @@ export default function LazyMap({
     if(!withUsers) return (
         <>
             <div className="bg-white mx-auto my5 w-[98%] h-full relative z-10">
-                <Map position={[currentCity.latitude, currentCity.longitude]}
+                <Map position={[Number.parseFloat(currentCity.latitude), Number.parseFloat(currentCity.longitude)]}
                      pickedUpPos={pickedUpPos}
                      withUsers={false}
                      needDefineLocation={needDefineLocation}

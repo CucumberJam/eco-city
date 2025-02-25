@@ -4,10 +4,11 @@ import {Checkbox} from "flowbite-react";
 import {prepareName} from "@/app/_lib/helpers";
 import {defaultEndTime, defaultStartTime} from "@/app/_store/constants";
 
-export default function TimeRangePicker({weekDay, weekDayHandler}){
-
-    const [startTime, setStartTime] = useState(defaultStartTime);
-    const [endTime, setEndTime] = useState(defaultEndTime);
+export default function TimeRangePicker({weekDay, weekDayHandler,
+                                            start = defaultStartTime,
+                                            end = defaultEndTime}){
+    const [startTime, setStartTime] = useState(start);
+    const [endTime, setEndTime] = useState(end);
     function toggleWeekDay(res){
         if(res){
             weekDayHandler({type: 'add', payload: {
@@ -46,6 +47,7 @@ export default function TimeRangePicker({weekDay, weekDayHandler}){
         <div className="flex items-center w-full justify-between mr-14">
             <label htmlFor={weekDay.id} className='w-[115px] text-left'>
                 <Checkbox style={{marginRight: '8px'}}
+                          checked={weekDay.checked}
                           onChange={(event)=> toggleWeekDay(event.target.checked)}/>
                 {weekDay?.label ? prepareName(weekDay.label) : prepareName(weekDay.name)}
             </label>

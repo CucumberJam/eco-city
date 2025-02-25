@@ -19,6 +19,9 @@ import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
 import FormInputLabel from "@/app/_ui/form/FormInputLabel";
 import FormItemMap from "@/app/_ui/form/FormItemMap";
 import FormStatus from "@/app/_ui/form/FormStatus";
+import FormColumnBlock from "@/app/_ui/form/FormColumnBlock";
+import FormRowBlock from "@/app/_ui/form/FormRowBlock";
+import FormMapBlock from "@/app/_ui/form/FormMapBlock";
 
 export default function AdvertForm({
                                        isEdit = false,
@@ -37,7 +40,7 @@ export default function AdvertForm({
     const [changeAddress, setChangeAddress] = useState(false);
 
     const [latitude, setLatitude] = useState(Number.parseFloat(dataObject.latitude));
-    const [longitude, setLongitude] = useState( Number.parseFloat(dataObject.longitude));
+    const [longitude, setLongitude] = useState(Number.parseFloat(dataObject.longitude));
 
     const currentWasteLabel = dataObject?.waste ? prepareName(wastes.find(el => el.id === dataObject.waste).name) : null;
     const currentWasteTypeLabel = dataObject?.wasteType ? prepareName(wasteTypes.find(el => el.id === dataObject.wasteType).name) : null;
@@ -143,21 +146,6 @@ export default function AdvertForm({
                 </form>
             </FormStatus>
         </>
-    );
-}
-function FormRowBlock({children}) {
-    return (
-        <div className='self-center w-[90%] flex justify-center space-x-1'>
-            {children}
-        </div>
-    );
-}
-function FormColumnBlock({children}){
-    return (
-        <div className='w-full py-2 px-3 h-fit
-                        flex flex-col items-center space-y-4'>
-            {children}
-        </div>
     );
 }
 function FormWasteBlock({userDataWastes, userDataWasteTypes, wastes, wasteTypes, widthBlock}){
@@ -422,14 +410,4 @@ function FormCommentBlock({width = ' w-[253px]', currentComment = null}){
 
         </div>
     );
-}
-function FormMapBlock({latitude, latitudeHandler, longitude, longitudeHandler}){
-    return <div className="w-[90%]">
-        <FormItemMap isPosSet={!!latitude && !!longitude}
-                     pickedUpPos={[latitude, longitude]}
-                     changePositionHandler={chosenPos => {
-                         latitudeHandler(+chosenPos?.lat || 0);
-                         longitudeHandler(+chosenPos?.lng  || 0)
-                     }}/>
-    </div>
 }

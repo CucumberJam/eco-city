@@ -4,7 +4,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 
-import {MapContainer, Marker, TileLayer, Tooltip,} from "react-leaflet";
+import {MapContainer, Marker, Popup, TileLayer, Tooltip,} from "react-leaflet";
 import {useEffect, useRef} from "react";
 import {getIconByRole} from "@/app/_ui/map/MapIcons";
 import LocationMarker from "@/app/_ui/map/LocationMarker";
@@ -45,34 +45,37 @@ const Map = ({
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
 
-                    {withUsers ? users.map(user => (
-                        <Marker key={user.id} style={{width: 0, height: 0}}
-                                position={[ +user.latitude, +user.longitude ]}
-                                draggable={false}
-                                icon={getIconByRole(user.role)}
-                                eventHandlers={{click: () => setActiveUser(user)}}>
-                            <Tooltip>
-                                <div>
-                                    <h2>{user?.name || ''}</h2>
-                                    <p>{user?.address || ''}</p>
-                                </div>
-                            </Tooltip>
-                        </Marker>
-                    )) : <>
-                            <LocationMarker setUserPosition={setActiveUser}
-                                         needDefineLocation={needDefineLocation}/>
-                        {(pickedUpPos[0] !== 0 && pickedUpPos[1] !== 0) && (
-                            <Marker key={pickedUpPos[0]}
-                                    position={pickedUpPos}
+                    {withUsers ?
+                        (<>
+                            {users.map(user => (
+                                <Marker key={user.id} style={{width: 0, height: 0}}
+                                        position={[+user.latitude, +user.longitude]}
+                                        draggable={false}
+                                        icon={getIconByRole(user.role)}
+                                        eventHandlers={{click: () => setActiveUser(user)}}>
+                                    <Tooltip>
+                                        <div>
+                                            <h2>{user?.name || ''}</h2>
+                                            <p>{user?.address || ''}</p>
+                                        </div>
+                                    </Tooltip>
+                                </Marker>
+                            ))}
+                            <Marker key={position.latitude}
+                                    position={position}
                                     draggable={false}>
                             </Marker>
-                        )}
-                        </>
+                        </>) : (<>
+                                <LocationMarker setUserPosition={setActiveUser}
+                                             needDefineLocation={needDefineLocation}/>
+                                {(pickedUpPos[0] !== 0 && pickedUpPos[1] !== 0) && (
+                                    <Marker key={pickedUpPos[0]}
+                                            position={pickedUpPos}
+                                            draggable={false}>
+                                    </Marker>
+                                )}
+                            </>)
                     }
-                    {withUsers && <Marker key={position.latitude}
-                             position={position}
-                             draggable={false}>
-                    </Marker>}
                 </>
             </MapContainer>
     );

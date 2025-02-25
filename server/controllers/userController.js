@@ -54,10 +54,12 @@ const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
  * @param {number} req.params.id - id пользователя
  * @desc Get participant by id
  * @route GET/api/v1/users/:id
- * @access Public
+ * @access Private
  **/
 const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
-    const userId = +req?.params?.id
+    const paramsId = +req?.params?.id
+    const userId = +req?.user?.id;
+    if(paramsId !== userId) return next(new AppError('Данные о пользователе не могут быть предоставлены', 400));
     const found = await user.findOne({
         where:{
             id: userId

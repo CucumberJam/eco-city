@@ -7,7 +7,7 @@ router.route('/')
     .get(getUsers);
 
 router.route('/:id')
-    .get(getUserById);
+    .get(authentication, getUserById);
 
 router.route('/user')
     .get(getUserByEmailOrOGRN);
