@@ -1,8 +1,9 @@
 const catchAsyncErrorHandler = require("../utils/catchAsync");
 const user = require("../db/models/user");
+const response = require("../db/models/response");
+const advert = require("../db/models/advert");
 const {Op} = require("sequelize");
 const AppError = require("../utils/appError");
-const response = require("../db/models/response");
 
 /**
  * Метод возвращает список авторизованных пользователей
@@ -86,6 +87,53 @@ const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
         data: updatedUser
     });
 })
+
+/**
+ * Метод удаляет данные об авторизованном пользователе
+ * @desc Delete auth user data
+ * @route Delete/api/v1/users
+ * @access Private
+ **/
+const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
+    console.log('HERE!')
+    const userId = +req?.user?.id;
+    const userRole = req?.user?.role;
+    console.log(req?.user?.role)
+
+    if((userRole === 'RECEIVER') || (userRole === 'PRODUCER')){
+        const adverts = await advert.findAll({
+            where: {
+                userId: userId,
+                status: 'Принято'
+            }
+        });
+        if(adverts.length > 0) {
+            return next(new AppError('Ошибка при удалении: у пользователя есть согласованные публикации', 400));
+        }
+    }
+    if((userRole === 'RECYCLER') || (userRole === 'PRODUCER')){
+        const responses = await response.findAll({
+            where: {
+                userId: userId,
+                status: 'Принято'
+            }
+        });
+        if(responses.length > 0) {
+            return next(new AppError('Ошибка при удалении: у пользователя есть согласованные отклики', 400));
+        }
+    }
+    const deletedUser = await user.destroy({
+        where: {
+            id: +userId
+        }
+    });
+    if(!deletedUser) return next(new AppError('Ошибка при удалении: пользователь не найден', 400));
+
+    return res.status(200).json({
+        status: 'success'
+    });
+
+});
 /**
  * Метод возвращает авторизованного пользователя по id
  * @param {number} req.params.id - id пользователя
@@ -163,5 +211,5 @@ const getAdmins = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
-module.exports = {getUsers, updateUser,
+module.exports = {getUsers, updateUser, deleteUser,
     getAdmins, getUserById, getUserByEmailOrOGRN};

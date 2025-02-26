@@ -46,6 +46,7 @@ export default function RemoveUserContainer({userData}){
             if(!res?.success)  throw new Error(res?.message || 'Ошибка при удалении аккаунта')
             setIsFetching(prev => false);
             setSuccess(true);
+            return;
             try{
                 await signOut();
             } catch (e) {

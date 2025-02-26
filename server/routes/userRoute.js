@@ -1,10 +1,12 @@
 const router = require('express').Router();
 const {authentication, restrictTo} = require('../controllers/authController');
-const {getUsers, updateUser,
+const {getUsers, updateUser, deleteUser,
     getAdmins, getUserById, getUserByEmailOrOGRN} = require("../controllers/userController");
 
 router.route('/')
     .get(getUsers);
+router.route('/user')
+    .delete(authentication, deleteUser);
 
 router.route('/:id')
     .get(authentication, getUserById);
@@ -14,6 +16,7 @@ router.route('/user')
 
 router.route('/user')
     .post(authentication, updateUser);
+
 
 router.route('/admins')
     .get(authentication,
