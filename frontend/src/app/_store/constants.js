@@ -317,6 +317,25 @@ const accountMapModes = {
     RECYCLER: [1, 2],
     RECEIVER: [0, 1, 2]
 }
+const statsData = {
+    tab: [
+        {
+            id: 0,
+            label: 'Отклики',
+            icon: ChatBubbleBottomCenterIcon,
+        },
+        {
+            id: 1,
+            label: 'Публикации',
+            icon: RectangleStackIcon
+        }
+    ],
+    roles: {
+        PRODUCER: [1],
+        RECYCLER: [0],
+        RECEIVER: [0, 1]
+    }
+}
 const tabsIcons = [HiUserCircle, HiClipboardList];
 const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
     return {
@@ -376,5 +395,5 @@ export {
     initialPagination,
     accountMapTabsTitles, accountMapTabsIcons,
     accountMapModes,
-    itemsCheckUpdateUser
+    itemsCheckUpdateUser, statsData
 }
