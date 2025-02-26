@@ -25,7 +25,7 @@ import FormMapBlock from "@/app/_ui/form/FormMapBlock";
 import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
 import FormWorkTime from "@/app/_ui/form/FormWorkTime";
 import useWorkTime from "@/app/_hooks/useWorkTime";
-import {checkUpdateUser} from "@/app/_lib/data-service";
+import {checkDisableUserAction, checkUpdateUser} from "@/app/_lib/data-service";
 import {updateUserParams} from "@/app/_lib/actions/users";
 import {useSession} from "next-auth/react";
 
@@ -43,26 +43,11 @@ export default function EditForm({userData}){//{userData}
     const [longitude, setLongitude] = useState(userData?.latitude ? Number.parseFloat(userData.longitude)  : 0);
 
     useEffect( () => {
-        const messages = [];
-        async function check() {
-            if (showUserAdverts(userData.role)) {
-                const res = await getAdvertsOfUser();
-                const {success, data} = res;
-                if (success && data.count > 0) messages.push('публикации');
-            }
-            if (showUserResponses(userData.role)) {
-                const res = await getResponsesOfUser();
-                const {success, data} = res;
-                if (success && data.count > 0) messages.push('отклики');
-            }
-            return messages;
-        }
-
-        check().then(res => {
+        checkDisableUserAction(userData.role).then(res => {
             if(res.length === 0){
                 setIsDisabled(false);
             }else {
-                const message = `У вас имеются активные ${messages.join(', ')}, поэтому Вы не можете изменить роль, город или отключить имеющиеся отходы`
+                const message = `У вас имеются активные ${res.join(', ')}, поэтому Вы не можете изменить роль, город или отключить имеющиеся отходы`
                 setWarning(message);
             }
         }).catch(err => hasError('default', err.message));

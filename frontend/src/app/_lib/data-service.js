@@ -1,4 +1,6 @@
-import {itemsCheckUpdateUser, workingDaysDB} from "@/app/_store/constants";
+import {itemsCheckUpdateUser, showUserAdverts, showUserResponses, workingDaysDB} from "@/app/_store/constants";
+import {getAdvertsOfUser} from "@/app/_lib/actions/adverts";
+import {getResponsesOfUser} from "@/app/_lib/actions/responses";
 export function hasAdvertCreateFormErrors(formData, currentCity, userData, wasteTypes, errorHandler){
     let params = {}
     // check address:
@@ -134,4 +136,18 @@ function getDoublesInArray(numbers){
         countItems[item] = countItems[item] ? countItems[item] + 1 : 1;
     }
     return Object.keys(countItems).filter((item) => countItems[item] > 1).map(el => +el);
+}
+export async function checkDisableUserAction(userRole, params = null) {
+    const messages = []
+    if (showUserAdverts(userRole)) {
+        const res = await getAdvertsOfUser(0, 10, params);
+        const {success, data} = res;
+        if (success && data.count > 0) messages.push('публикации');
+    }
+    if (showUserResponses(userRole)) {
+        const res = await getResponsesOfUser(0, 10, params);
+        const {success, data} = res;
+        if (success && data.count > 0) messages.push('отклики');
+    }
+    return messages;
 }

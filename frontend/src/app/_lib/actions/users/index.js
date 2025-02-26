@@ -66,3 +66,13 @@ export async function updateUserParams(params){
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}user`
     });
 }
+/**
+ * Метод удаляет авторизованного пользователя
+ **/
+export async function removeUser(){
+    const options = await getRequestOptions(null, 'DELETE');
+    return  await requestWrap({
+        options,
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}user`
+    });
+}

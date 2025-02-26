@@ -126,11 +126,14 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
 const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+    const options = {userId: userId}
+    if(req.query.status) {
+        const status = req.query.status;
+        options.status = Array.isArray(status) ? status.split(',') : status;
+    }
 
     const responses = await response.findAndCountAll({
-        where: {
-            userId: userId,
-        },
+        where: options,
         attributes: {
             exclude: ['deletedAt', 'userName', 'userRole', 'userId']
         },

@@ -80,6 +80,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
  * @param {[number]} req.query.wastes - id видов отходов (не обязателен)
  * @param {[number]} req.query.wasteTypes - id подвидов отходов (не обязателен)
  * @param {string} req.query.query - запрос в поисковой строке (не обязателен)
+ * @param {string} req.query.status - статус публикации (не обязателен)
  * @param {number} req.query.offset - количество строк в БД для отступа
  * @param {number} req.query.limit - количество строк в БД для получения
  * @desc Get user's adverts
@@ -89,7 +90,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
 const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
-    let {offset, limit, cityId, wastes, wasteTypes, query} = req?.query;
+    let {offset, limit, cityId, wastes, wasteTypes, query, status} = req?.query;
     const options = { userId: userId};
     if(wasteTypes && wastes){
         options[Op.or] = {
@@ -100,7 +101,7 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         options.waste = wastes.split(',').map(el => +el)
     }
     if(cityId) options.cityId = +cityId;
-
+    if(status) options.status = Array.isArray(status) ? status.split(',') : status;
     const includesCreature = {
         model: user,
         attributes: {
