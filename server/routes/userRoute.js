@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const {authentication, restrictTo} = require('../controllers/authController');
-const {getUsers,
+const {getUsers, updateUser,
     getAdmins, getUserById, getUserByEmailOrOGRN} = require("../controllers/userController");
 
 router.route('/')
@@ -11,6 +11,9 @@ router.route('/:id')
 
 router.route('/user')
     .get(getUserByEmailOrOGRN);
+
+router.route('/user')
+    .post(authentication, updateUser);
 
 router.route('/admins')
     .get(authentication,

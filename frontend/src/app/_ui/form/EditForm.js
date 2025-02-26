@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from 'next/navigation'
 import useErrors from "@/app/_hooks/useErrors";
 import {useEffect, useState} from "react";
 import FormStatus from "@/app/_ui/form/FormStatus";
@@ -24,12 +25,17 @@ import FormMapBlock from "@/app/_ui/form/FormMapBlock";
 import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
 import FormWorkTime from "@/app/_ui/form/FormWorkTime";
 import useWorkTime from "@/app/_hooks/useWorkTime";
+import {checkUpdateUser} from "@/app/_lib/data-service";
+import {updateUserParams} from "@/app/_lib/actions/users";
+import {useSession} from "next-auth/react";
 
-export default function EditForm({userData}){
+export default function EditForm({userData}){//{userData}
+    const router = useRouter();
+    const { data: session, update } = useSession();
     const {errMessage, hasError} = useErrors();
     const [isDisabled, setIsDisabled] = useState(true);
     const [warning, setWarning] = useState('');
-    const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
+    const [isSucceeded, setSuccess] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
 
     const [changeAddress, setChangeAddress] = useState(false);
@@ -64,22 +70,33 @@ export default function EditForm({userData}){
     async function handleForm(event){
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const name = formData.get('name');
-        console.log(name)
-        const address = formData.get('address');
-        console.log(address)
-        const latitude = formData.get('latitude');
-        const longitude = formData.get('longitude');
-        console.log(latitude)
-        console.log(userData.latitude)
-        console.log(longitude)
-        console.log(userData.longitude)
+        const resCheck = checkUpdateUser(formData, userData, isDisabled, hasError);
+       if(!resCheck?.success) return;
+       if(!resCheck.data) throw new Error('Перед обновлением данных нужно внести изменения');
+       try{
+            setIsFetching(prev => true);
+            const res = await updateUserParams(resCheck.data);
+            if(!res?.success || res?.data?.[0] !== 1)  throw new Error(res?.message || 'Ошибка при обновлении данных о Пользователе')
+            try{
+               await update({ ...session.user, ...resCheck.data });
+            } catch (e) {
+                console.log(e.message)
+            }
+            setIsFetching(prev => false);
+            setSuccess(true);
+            setTimeout(async ()=>{
+                await router.push('/account');
+            }, 1500);
+       }catch (e) {
+           setIsFetching(prev => false);
+           hasError?.('default', e.message);
+       }
     }
 
     return (
         <>
         {(isDisabled && warning) && <FormAnnounce type='warning' message={warning}/>}
-        <FormStatus isRegisterSucceeded={isRegisterSucceeded}
+        <FormStatus isRegisterSucceeded={isSucceeded}
                     errMessage={errMessage}
                     successMessage='Данные успешно изменены'
                     isFetching={isFetching}>
@@ -98,7 +115,7 @@ export default function EditForm({userData}){
                                          isDisabled={isDisabled}/>
                         <FormPhoneEmailWeb userPhone={userData.phone}
                                            userEmail={userData.email}
-                                           userWeb={userData.email}
+                                           userWeb={userData.website}
                                            errorHandler={hasError}/>
                     </FormColumnBlock>
                     <FormColumnBlock>
@@ -200,6 +217,8 @@ function FormRoleBlock({userRole, isDisabled}){
                 ) : (
                 <FormSelectUnique label='Роль:'
                                   htmlName='role'
+                                  hiddenValue={role}
+                                  defaultVal={roles.find(el => el.name === userRole)}
                                   key='role'
                                   options={roles}
                                   changeHandler={chosenRole => setRole(prev => chosenRole.name)}/>
@@ -210,8 +229,10 @@ function FormRoleBlock({userRole, isDisabled}){
 
 function FormWastesBlock({userWastes, userWasteTypes, isDisabled}){
     const {wastes, wasteTypes} = useGlobalUIStore((state) => state);
-    const {showedWasteTypes, pickWaste, pickWasteType,
-        getChosenWastesAndTypes} = useFormWastes(isDisabled ? wastes.filter(el => !userWastes.includes(el.id)): wastes);
+    const filteredWastes = isDisabled ? wastes.filter(el => !userWastes.includes(el.id)): wastes;
+    const filteredWasteTypes = isDisabled ? wasteTypes.filter(el => !userWasteTypes.includes(el.id)): wasteTypes;
+
+    const {showedWasteTypes, pickWaste, pickWasteType, getChosenWastesAndTypes} = useFormWastes(filteredWastes);
     const {wastes: chosenWastes = [], wasteTypes: chosenWastesTypes = []} = getChosenWastesAndTypes();
     return (
         <>
@@ -221,11 +242,8 @@ function FormWastesBlock({userWastes, userWasteTypes, isDisabled}){
                                 htmlName='waste'
                                 key='waste'
                                 styleBlock={{width: '200px', margin: '0 auto'}}
-                                options={isDisabled ?
-                                    wastes.filter(el => !userWastes.includes(el.id)): wastes}
-                                pickHandler={(item, res)=>
-                                    pickWaste(item, res, isDisabled ?
-                                        wasteTypes.filter(el => !userWasteTypes.includes(el.id)): wasteTypes)}/>
+                                options={filteredWastes}
+                                pickHandler={(item, res)=> pickWaste(item, res, filteredWasteTypes)}/>
             {showedWasteTypes.length > 0 && (
                 <FormSelectMultiple label='типы отходы:'
                                     htmlName='wasteTypes'

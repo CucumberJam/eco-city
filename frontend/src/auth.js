@@ -30,7 +30,12 @@ export const {auth, handlers, signIn, signOut} = NextAuth({
         signIn: '/login',
     },
     callbacks: {
-        async jwt({token, user}){
+        async jwt({token, user, trigger, session}){
+            if (trigger === "update" && session) {
+                // Обновляем токен новыми данными пользователя
+                token.user = { ...token.user, ...session };
+                return token;
+            }
             if (user) {
                 if(!token?.accessToken) token.accessToken = user?.token || '';
 

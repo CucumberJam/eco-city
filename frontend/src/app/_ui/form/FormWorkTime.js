@@ -13,7 +13,7 @@ export default function FormWorkTime({optionsProps = workingDays,
         const found = options.find(el => el.id === resObj.payload.id)
         if(resObj.type === 'add'){
             found.checked = true
-        }else{
+        }else if(resObj.type === 'remove'){
             found.checked = false
         }
         workDaysHandler?.(resObj)

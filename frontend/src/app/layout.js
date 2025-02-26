@@ -6,6 +6,7 @@ import {getCities, getDimensions, getRoles, getWastes, getWasteTypes} from "@/ap
 import LayoutBodyContainer from "@/app/_ui/general/LayoutBodyContainer";
 import Header from "@/app/_ui/general/Header";
 import {getUsersByParams} from "@/app/_lib/actions/users";
+import {SessionProvider} from "next-auth/react";
 
 //https://fonts.google.com/specimen/Nunito+Sans?lang=ru_Cyrl
 const nunitoSans = Nunito_Sans({
@@ -36,23 +37,25 @@ export default async function RootLayout({ children }) {
     const {status: userStatus, data: usersAPI} = await getUsersByParams(0, 10, {cityId: cities[0]?.id})
     return (
         <html lang="en">
-        <GlobalStoreProvider>
-            <LayoutBodyContainer citiesAPI={cities}
-                                 rolesAPI={roles}
-                                 wastesApi={wastes}
-                                 wasteTypesApi={wasteTypes}
-                                 dimensionsApi={dimensions}
-                                 serif={nunitoSans.className}
-                                 usersAPI={usersAPI}>
-                <Header/>
-                <MainSection>
-                    <ModalProvider>
-                        {children}
-                    </ModalProvider>
-                </MainSection>
-                <Footer/>
-            </LayoutBodyContainer>
-        </GlobalStoreProvider>
+        <SessionProvider>
+            <GlobalStoreProvider>
+                <LayoutBodyContainer citiesAPI={cities}
+                                     rolesAPI={roles}
+                                     wastesApi={wastes}
+                                     wasteTypesApi={wasteTypes}
+                                     dimensionsApi={dimensions}
+                                     serif={nunitoSans.className}
+                                     usersAPI={usersAPI}>
+                    <Header/>
+                    <MainSection>
+                        <ModalProvider>
+                            {children}
+                        </ModalProvider>
+                    </MainSection>
+                    <Footer/>
+                </LayoutBodyContainer>
+            </GlobalStoreProvider>
+        </SessionProvider>
         </html>
     );
 }

@@ -34,7 +34,17 @@ export async function getUserByEmailPhoneOGRN(params){
     const {email, ogrn, phone} = params;
     if(!email && !ogrn && !phone) return {success: false, message: 'Не представлено email, ОГРН или телефон'}
     const searchParams = new URLSearchParams(params);
-    return  await requestWrap({route:
-            `${process?.env?.SERVER_URL}${apiServerRoutes.users}user/?${searchParams.toString()}`
+    return  await requestWrap({
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}user/?${searchParams.toString()}`
+    });
+}
+
+export async function updateUserParams(params){
+    const options = await getRequestOptions(null, 'POST');
+    console.log(params)
+    options.body = JSON.stringify(params);
+    return  await requestWrap({
+        options,
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}user`
     });
 }

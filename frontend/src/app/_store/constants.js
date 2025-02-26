@@ -357,6 +357,12 @@ const initialPagination = {
     offset: 0,
     totalPages: 1
 };
+const itemsCheckUpdateUser = {
+    names: ['name', 'address', 'latitude', 'longitude', 'email', 'phone', 'website', 'workingDays', 'workingHourStart', 'workingHourEnd', 'chosen-city', 'role'],
+    needsErrorCheck: ['email', 'phone', 'website'],
+    workNames: ['workingDays', 'workingHourStart', 'workingHourEnd'],
+    namesIfNotDisabled: ['chosen-city', 'role'],
+}
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
@@ -369,5 +375,6 @@ export {
     tabsTitles, tabsIcons, modalName,
     initialPagination,
     accountMapTabsTitles, accountMapTabsIcons,
-    accountMapModes
+    accountMapModes,
+    itemsCheckUpdateUser
 }
