@@ -66,6 +66,8 @@ const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
  * @param {[number]} req.body.workingDays - список рабочих дней недели (не обязателен)
  * @param {[string]} req.body.workingHourStart - список начала рабочего дня (не обязателен)
  * @param {[string]} req.body.workingHourEnd - список окончания рабочего дня (не обязателен)
+ * @param {string} req.body.password - пароль (не обязателен)
+ * @param {string} req.body.confirmPassword - подтверждение пароля (не обязателен)
  * @desc Update auth user data
  * @route Post/api/v1/users/user
  * @access Private

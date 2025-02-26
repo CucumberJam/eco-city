@@ -30,8 +30,8 @@ import {updateUserParams} from "@/app/_lib/actions/users";
 import {useSession} from "next-auth/react";
 
 export default function EditForm({userData}){//{userData}
-    const router = useRouter();
     const { data: session, update } = useSession();
+    const router = useRouter();
     const {errMessage, hasError} = useErrors();
     const [isDisabled, setIsDisabled] = useState(true);
     const [warning, setWarning] = useState('');

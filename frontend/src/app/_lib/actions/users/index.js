@@ -39,9 +39,27 @@ export async function getUserByEmailPhoneOGRN(params){
     });
 }
 
+/**
+ * Метод изменяет данные об авторизованном пользователе
+ * @param {string} params.name - имя пользователя (не обязателен)
+ * @param {string} params.address - адрес пользователя (не обязателен)
+ * @param {number} params.latitude - широта на карте (не обязателен)
+ * @param {number} params.longitude - долгота на карте (не обязателен)
+ * @param {string} params.role - роль (не обязателен)
+ * @param {number} params.cityId - id города пользователя (не обязателен)
+ * @param {[number]} params.wastes - список id видов отходов (не обязателен)
+ * @param {[number]} params.wasteTypes - список id подвидов отходов (не обязателен)
+ * @param {string} params.email - email (не обязателен)
+ * @param {number} params.phone - телефон (не обязателен)
+ * @param {string} params.website - website (не обязателен)
+ * @param {[number]} params.workingDays - список рабочих дней недели (не обязателен)
+ * @param {[string]} params.workingHourStart - список начала рабочего дня (не обязателен)
+ * @param {[string]} params.workingHourEnd - список окончания рабочего дня (не обязателен)
+ * @param {string} params.password - пароль (не обязателен)
+ * @param {string} params.confirmPassword - подтверждение пароля (не обязателен)
+ **/
 export async function updateUserParams(params){
     const options = await getRequestOptions(null, 'POST');
-    console.log(params)
     options.body = JSON.stringify(params);
     return  await requestWrap({
         options,
