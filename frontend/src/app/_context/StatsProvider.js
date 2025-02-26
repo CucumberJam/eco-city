@@ -11,6 +11,14 @@ function StatsMapProvider({children}) {
     const [mode, setActiveMode] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
 
+    /*
+    * 0 = month,
+    * 1 = quarter,
+    * 2 = half-year,
+    * 3 = year
+    * */
+    const [period, setPeriod] = useState(statsData.filters[0].options[0]);
+
     function initUserData(userRole){
         setIsFetching(prev => true)
         setActiveMode(prev => statsData.roles[userRole][0]);
@@ -25,6 +33,7 @@ function StatsMapProvider({children}) {
             initUserData,
             mode, changeMode,
             isFetching,
+            period, setPeriod,
         }}>
             <main>
                 {currentCity && children}

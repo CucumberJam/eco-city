@@ -7,6 +7,7 @@ import Row from "@/app/_ui/general/Row";
 import Column from "@/app/_ui/general/Column";
 import {useEffect} from "react";
 import {Spinner} from "flowbite-react";
+import StatsFilters from "@/app/_ui/stats/StatsFilters";
 
 export default function StatsContainer({userRole}){
     const {initUserData, mode, changeMode, isFetching} = useStats();
@@ -35,7 +36,7 @@ export default function StatsContainer({userRole}){
                             }
                         </Column>
                         <Column width='w-full '>
-                            <div> filters </div>
+                            <StatsFilters/>
                             <LazyChart/>
                         </Column>
                     </Row>

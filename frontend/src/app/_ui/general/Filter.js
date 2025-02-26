@@ -4,6 +4,7 @@ import {Dropdown, DropdownItem} from "flowbite-react";
 import {prepareName} from "@/app/_lib/helpers";
 import DisabledButton from "@/app/_ui/general/DisabledButton";
 export default function Filter({
+                                    withAll = true,
                                    data = [],
                                    dataName = 'role',
                                    dataLabel = 'Статус участника',
@@ -39,7 +40,7 @@ export default function Filter({
                       inline size="sm"
                       dismissOnClick={true}
                       placement="top">
-                {itemValue.length > 0 &&
+                {withAll && itemValue.length > 0 &&
                     <DropdownItem key={0}
                                value='all'
                                onClick={() => clickHandler(null)}>
@@ -55,21 +56,3 @@ export default function Filter({
             </Dropdown>
     );
 }
-/*
-function DisabledButton({label,alternativeName}){
-    return (
-        <Popover placement="top"
-            trigger="hover"
-            content={
-                <div className="w-44 text-gray-500 text-sm
-                mx-0 my-auto flex justify-center py-1 px-2 text-center
-                dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                    <p className="mb-0 text-center">{alternativeName}</p>
-                </div>
-            }>
-            <a href="#" className="text-base text-gray-400 cursor-not-allowed">
-                {label}
-            </a>
-        </Popover>
-    );
-}*/

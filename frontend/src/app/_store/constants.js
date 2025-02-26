@@ -334,7 +334,42 @@ const statsData = {
         PRODUCER: [1],
         RECYCLER: [0],
         RECEIVER: [0, 1]
-    }
+    },
+    filters: [
+        {
+            id: 0,
+            label: 'Отчетный период',
+            urlName: 'period',
+            value: null,
+            options: [
+                {id: 0, label: 'месяц',  name: 'month'},
+                {id: 1, label: 'квартал',  name: 'quarter'},
+                {id: 2, label: 'пол года',  name: 'half-year'},
+                {id: 3, label: 'год',  name: 'year'},
+            ]
+        },
+        {
+            id: 1,
+            label: 'Вид данных',
+            urlName: 'type',
+            value: null,
+            options: [
+                {id: 0, label: 'выполненные',  name: 'performed'},
+                {id: 1, label: 'просроченные',  name: 'late'},
+                {id: 2, label: 'потенциальные',  name: 'potential'},// не просроченные
+            ]
+        },
+        {
+            id: 2,
+            label: 'Статус',
+            urlName: 'status',
+            value: null,
+            options: [
+                {id: 0, label: 'принято',  name: 'accepted'},
+                {id: 1, label: 'на рассмотрении',  name: 'on-recognition'},
+            ]
+        }
+    ]
 }
 const tabsIcons = [HiUserCircle, HiClipboardList];
 const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
