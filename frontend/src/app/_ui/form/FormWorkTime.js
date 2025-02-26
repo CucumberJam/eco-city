@@ -1,10 +1,23 @@
 import {ListGroup} from "flowbite-react";
-import {workingDays} from "@/app/_store/constants";
+import {defaultEndTime, defaultStartTime, workingDays} from "@/app/_store/constants";
 import TimeRangePicker from "@/app/_ui/general/TimeRangePicker";
+import {useState} from "react";
 
-export default function FormWorkTime({options = workingDays,
+export default function FormWorkTime({optionsProps = workingDays,
                                       workDaysHandler,
+                                         startTimes = [],
+                                         endTimes = []
 }){
+    const [options, setOptions] = useState(optionsProps);
+    function change(resObj){
+        const found = options.find(el => el.id === resObj.payload.id)
+        if(resObj.type === 'add'){
+            found.checked = true
+        }else if(resObj.type === 'remove'){
+            found.checked = false
+        }
+        workDaysHandler?.(resObj)
+    }
     return (
         <div className="w-full">
             <WorkTimeContainer>
@@ -14,10 +27,12 @@ export default function FormWorkTime({options = workingDays,
                     <WorkItemTitle title="Окончание:"/>
                 </WorkTimeItemWrapper>
                 <ListGroup>
-                    {options.map(item => (
+                    {options.map((item, index) => (
                         <ListGroup.Item key={item.id}>
                             <TimeRangePicker weekDay={item}
-                                             weekDayHandler={workDaysHandler}/>
+                                             start={startTimes[index] || defaultStartTime}
+                                             end={endTimes[index] || defaultEndTime}
+                                             weekDayHandler={change}/>
                         </ListGroup.Item>
                     ))}
                 </ListGroup>

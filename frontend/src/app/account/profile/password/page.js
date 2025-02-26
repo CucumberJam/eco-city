@@ -1,8 +1,13 @@
+import PasswordForm from "@/app/_ui/form/PasswordForm";
+import FormPageContainer from "@/app/_ui/form/FormPageContainer";
+
 export const metadata = {
     title: 'Сменить пароль'
 }
-export default async function Page(){
+export default function Page(){
     return (
-        <div>Сменить пароль</div>
+        <FormPageContainer title='Сменить пароль'>
+            <PasswordForm/>
+        </FormPageContainer>
     );
 }

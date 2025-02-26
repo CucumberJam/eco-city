@@ -24,6 +24,7 @@ export async function getAdvertsOfUser(offset = 0, limit = 10, params = null){
         if(params?.cityId) paramsObj.cityId = params.cityId;
         if(params?.wastes) paramsObj.wastes = params.wastes;
         if(params?.wasteTypes) paramsObj.wasteTypes = params.wasteTypes;
+        if(params?.status) paramsObj.status = params.status;
     }
     const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({

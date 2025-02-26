@@ -74,30 +74,23 @@ function InputPassword({   isControlled = false, value,
 
     return (
         <div className='flex relative items-center'>
-{/*            <input id={htmlName}
-                   type='text'
-                   name={htmlName}
-                   defaultValue={defaultVal}
-                   placeholder={placeholder}
-                   className={styleWide ? `w-full ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}` : `w-60 ${styles.input} ${isDisabled ? 'cursor-not-allowed' : 'cursor-auto'}`}
-                   disabled={isDisabled}
-                   onKeyUp={keyUpHandler}/>*/}
             <InputControlled isControlled={isControlled}
                              value={value}
+                             type={!showPassword ? 'password' : 'text'}
                              htmlName={htmlName}
                              defaultVal={defaultVal}
                              placeholder={placeholder}
                              styleWide={styleWide}
                              isDisabled={isDisabled}
                              keyUpHandler={keyUpHandler}/>
-            {!showPassword ? <EyeIcon color='grey'
+            {showPassword ? <EyeIcon color='grey'
                                       width={18}
                                       className='absolute right-5 cursor-pointer'
-                                      onClick={()=> setShowPassword(true)}/>
+                                      onClick={()=> setShowPassword(false)}/>
                 : <EyeSlashIcon color='grey'
                            width={18}
                            className='absolute right-5 cursor-pointer'
-                           onClick={() => setShowPassword(false)}/>}
+                           onClick={() => setShowPassword(true)}/>}
         </div>
     );
 }

@@ -25,13 +25,13 @@ const statusTitle = {
 const daysNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 //"workingDays": ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
 const workingDays = [
-    {id: 1, label: "Понедельник"},
-    {id: 2, label: "Вторник"},
-    {id: 3, label: "Среда"},
-    {id: 4, label: "Четверг"},
-    {id: 5, label: "Пятница"},
-    {id: 6, label: "Суббота"},
-    {id: 7, label: "Воскресенье"},
+    {id: 1, label: "Понедельник", checked: false},
+    {id: 2, label: "Вторник", checked: false},
+    {id: 3, label: "Среда", checked: false},
+    {id: 4, label: "Четверг", checked: false},
+    {id: 5, label: "Пятница", checked: false},
+    {id: 6, label: "Суббота", checked: false},
+    {id: 7, label: "Воскресенье", checked: false},
 ]
 const workingDaysDB = {
     "Понедельник": 0,
@@ -357,6 +357,12 @@ const initialPagination = {
     offset: 0,
     totalPages: 1
 };
+const itemsCheckUpdateUser = {
+    names: ['name', 'address', 'latitude', 'longitude', 'email', 'phone', 'website', 'workingDays', 'workingHourStart', 'workingHourEnd', 'chosen-city', 'role'],
+    needsErrorCheck: ['email', 'phone', 'website'],
+    workNames: ['workingDays', 'workingHourStart', 'workingHourEnd'],
+    namesIfNotDisabled: ['chosen-city', 'role'],
+}
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
@@ -369,5 +375,6 @@ export {
     tabsTitles, tabsIcons, modalName,
     initialPagination,
     accountMapTabsTitles, accountMapTabsIcons,
-    accountMapModes
+    accountMapModes,
+    itemsCheckUpdateUser
 }

@@ -22,8 +22,9 @@ function workDaysReducer(prevWorkDays, action) {
         }
     }
 }
-export default function useWorkTime(errorCallbackFunc){
-    const [chosenWorkDays, dispatch] = useReducer(workDaysReducer, []);
+export default function useWorkTime(errorCallbackFunc,
+                                    initialTime = []){
+    const [chosenWorkDays, dispatch] = useReducer(workDaysReducer, initialTime);
     function hasError(type, payload){
         if(errorCallbackFunc('workDay', { type, payload})) {
             return true;
@@ -58,7 +59,7 @@ export default function useWorkTime(errorCallbackFunc){
     }
     const getWorkTimeFormData = () => {
         const workingHourStart= [], workingHourEnd= [],  workingDays = [];
-        const sortedArr = chosenWorkDays.sort((a, b) => a.id - b.id);
+        const sortedArr = chosenWorkDays?.sort((a, b) => a.id - b.id);
 
         for(const item of sortedArr){
             workingDays.push(item.name);

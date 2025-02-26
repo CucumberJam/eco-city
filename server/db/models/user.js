@@ -226,14 +226,16 @@ const user = sequelize.define('user',
 );
 //advert:
 user.hasMany(advert, {
-  foreignKey: 'userId'
+  foreignKey: 'userId',
+  onDelete: 'CASCADE'
 });
 advert.belongsTo(user, {
   foreignKey: 'userId'
 });
 //responses:
 user.hasMany(response, {
-  foreignKey: 'userId'
+  foreignKey: 'userId',
+  onDelete: 'CASCADE'
 });
 response.belongsTo(user, {
   foreignKey: 'userId'

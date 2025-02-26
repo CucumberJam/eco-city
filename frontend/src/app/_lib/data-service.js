@@ -1,119 +1,6 @@
-/*const serverAPI = 'http://localhost:4000/'
-const getOptions = (token, method = 'GET')=>{
-    return {
-        method: method,
-        headers: {
-            authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-        }
-    }
-}
-
-export const getCities = async ()=> {
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/cities`);
-        const data = await res.json();
-        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export const getRoles = async ()=> {
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/roles`);
-        const data = await res.json();
-        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export const getDimensions = async ()=> {
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/dimensions`);
-        const data = await res.json();
-        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export const getWastes = async ()=> {
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/wastes`);
-        const data = await res.json();
-        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export const getWasteTypes = async ()=> {
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL  || serverAPI}api/v1/wastes/types/`);
-        const data = await res.json();
-        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export async function getUsers(params){
-    const query = new URLSearchParams(params);
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/users?${query.toString()}`);
-        const data = await res.json();
-        return (data.status) ? {status: 'success', data: data.data} : {status: 'error', data: data.message};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export async function getUserByEmailOrOGRN(params){
-    const email = params?.email;
-    const ogrn = params?.ogrn;
-    const phone = params?.phone;
-    if(!email && !ogrn && !phone) return;
-    let options = {};
-    if(email) options.email = email;
-    if(ogrn) options.ogrn = ogrn;
-    if(phone) options.phone = phone;
-    try{
-        const res = await fetch(`${serverAPI}api/v1/users`, {
-            method: 'POST',
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify(options),
-            redirect: "follow"
-        });
-        const data = await res.json();
-        return (data.status === 'fail') ? {status: 'error', data: data.message} : {status: 'success', data: data.data};
-    }catch (e) {
-        console.log(e);
-        return {status: 'error', data: e.message};
-    }
-}
-export async function loginAPI(email, password){
-    if(!email || !password) return;
-    try{
-        const res = await fetch(`${process?.env?.SERVER_URL || serverAPI}api/v1/auth/login`, {
-            method: 'POST',
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({email: email, password: password}),
-            redirect: "follow"
-        });
-        const data = await res.json();
-        if(data.status === 'fail') return {status: 'error', message: (data.message === 'Incorrect email or password' ? 'Неверные email или пароль' : data.message)};
-        return  {status: 'success', token: data.token, data: data.data};
-    }catch (e) {
-        return {status: 'error', message: e.message};
-    }
-}*/
-
+import {itemsCheckUpdateUser, showUserAdverts, showUserResponses, workingDaysDB} from "@/app/_store/constants";
+import {getAdvertsOfUser} from "@/app/_lib/actions/adverts";
+import {getResponsesOfUser} from "@/app/_lib/actions/responses";
 export function hasAdvertCreateFormErrors(formData, currentCity, userData, wasteTypes, errorHandler){
     let params = {}
     // check address:
@@ -189,4 +76,78 @@ function setObjectFormItem(obj, formData, errorHandler,
         obj[addItemName] = value ? isAddNumber ? Number(value) : value : null;
     }
     return obj;
+}
+
+export function checkUpdateUser(formData, userData, isDisabled, errorHandler){
+    let params = {};
+    const doubles = [];
+    for(const name of itemsCheckUpdateUser.names){
+        if(itemsCheckUpdateUser.workNames.includes(name)){
+            params = checkUpdateUserWork(userData, params, formData, name, name === 'workingDays', doubles)
+        }else{
+            const needErrorCheck = itemsCheckUpdateUser.needsErrorCheck.includes(name);
+            const includesInNotDisabled = itemsCheckUpdateUser.namesIfNotDisabled.includes(name);
+            if(!includesInNotDisabled || (includesInNotDisabled && !isDisabled)){
+                params = checkUpdateUserItem(userData, params, formData, name, needErrorCheck ? errorHandler : null);
+                if(!params) return {success: false};
+            }
+        }
+    }
+
+    const wastes = formData.get('wastes');
+    const wasteTypes = formData.get('wasteTypes');
+    if(wastes) params.wastes = isDisabled ? Array.from(new Set([...userData.wastes, ...wastes.split(',').map(el => +el)])).sort() : wastes.split(',').map(el => +el);
+    if(wasteTypes) params.wasteTypes = isDisabled ? Array.from(new Set([...userData.wasteTypes, ...wasteTypes.split(',').map(el => +el)])).sort() : wasteTypes.split(',').map(el => +el);
+
+    const res = Object.keys(params).length === 0 ? null : params;
+    return {success: true, data: res}
+}
+function checkUpdateUserItem(userData, params, formData, itemName,
+                             errorHandler = null){
+    const item = formData.get(itemName);
+    if(errorHandler && errorHandler('form', {type: itemName, payload: { [itemName]: item}})) return null;
+    if(userData[itemName] !== item) params[itemName] = item;
+    return params;
+}
+function checkUpdateUserWork(userData, params, formData, itemName, isDays = false, doubles = null){
+    let item = formData.get(itemName);
+    console.log(item)
+    if(isDays)  item = item.split(',').map(el => workingDaysDB[el]).join(',')
+    if(userData[itemName].join(',') !== item){
+        let res = item.split(',');
+        if(isDays) {
+            res = res.map(el => +el);
+            doubles = getDoublesInArray(res);
+            if(doubles.length > 0) res = Array.from(new Set(res));
+        }else{
+            if(doubles.length > 0){
+                for(const double of doubles){
+                    res = res.splice(double, 1);
+                }
+            }
+        }
+        params[itemName] = res;
+    }
+    return params;
+}
+function getDoublesInArray(numbers){
+    const countItems = {};
+    for (const item of numbers) {
+        countItems[item] = countItems[item] ? countItems[item] + 1 : 1;
+    }
+    return Object.keys(countItems).filter((item) => countItems[item] > 1).map(el => +el);
+}
+export async function checkDisableUserAction(userRole, params = null) {
+    const messages = []
+    if (showUserAdverts(userRole)) {
+        const res = await getAdvertsOfUser(0, 10, params);
+        const {success, data} = res;
+        if (success && data.count > 0) messages.push('публикации');
+    }
+    if (showUserResponses(userRole)) {
+        const res = await getResponsesOfUser(0, 10, params);
+        const {success, data} = res;
+        if (success && data.count > 0) messages.push('отклики');
+    }
+    return messages;
 }

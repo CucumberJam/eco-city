@@ -1,5 +1,7 @@
 const catchAsyncErrorHandler = require("../utils/catchAsync");
 const user = require("../db/models/user");
+const response = require("../db/models/response");
+const advert = require("../db/models/advert");
 const {Op} = require("sequelize");
 const AppError = require("../utils/appError");
 
@@ -42,7 +44,7 @@ const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
         offset: +offset || 0,
         limit: +limit || 10,
     });
-    if(!users) return next(new AppError('Failed to get all users', 400));
+    if(!users) return next(new AppError('Пользователей с такими параметрами не найдено', 400));
     return res.status(200).json({
         status: 'success',
         data: users
@@ -50,14 +52,99 @@ const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
 });
 
 /**
+ * Метод изменяет данные об авторизованном пользователе
+ * @param {string} req.body.name - имя пользователя (не обязателен)
+ * @param {string} req.body.address - адрес пользователя (не обязателен)
+ * @param {number} req.body.latitude - широта на карте (не обязателен)
+ * @param {number} req.body.longitude - долгота на карте (не обязателен)
+ * @param {string} req.body.role - роль (не обязателен)
+ * @param {number} req.body.cityId - id города пользователя (не обязателен)
+ * @param {[number]} req.body.wastes - список id видов отходов (не обязателен)
+ * @param {[number]} req.body.wasteTypes - список id подвидов отходов (не обязателен)
+ * @param {string} req.body.email - email (не обязателен)
+ * @param {number} req.body.phone - телефон (не обязателен)
+ * @param {string} req.body.website - website (не обязателен)
+ * @param {[number]} req.body.workingDays - список рабочих дней недели (не обязателен)
+ * @param {[string]} req.body.workingHourStart - список начала рабочего дня (не обязателен)
+ * @param {[string]} req.body.workingHourEnd - список окончания рабочего дня (не обязателен)
+ * @param {string} req.body.password - пароль (не обязателен)
+ * @param {string} req.body.confirmPassword - подтверждение пароля (не обязателен)
+ * @desc Update auth user data
+ * @route Post/api/v1/users/user
+ * @access Private
+ **/
+const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
+    if(Object.keys(req.body).length === 0) return next(new AppError('Параметров для изменения данных о Пользователе не передано', 400));
+    const userId = +req?.user?.id;
+    console.log(req.body);
+    const updatedUser = await user.update({...req.body}, {
+        where: {id: +userId}
+    });
+    if(!updatedUser) return next(new AppError('Ошибка при обновлении данных о Пользователе', 400));
+
+    return res.status(200).json({
+        status: 'success',
+        data: updatedUser
+    });
+})
+
+/**
+ * Метод удаляет данные об авторизованном пользователе
+ * @desc Delete auth user data
+ * @route Delete/api/v1/users
+ * @access Private
+ **/
+const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
+    console.log('HERE!')
+    const userId = +req?.user?.id;
+    const userRole = req?.user?.role;
+    console.log(req?.user?.role)
+
+    if((userRole === 'RECEIVER') || (userRole === 'PRODUCER')){
+        const adverts = await advert.findAll({
+            where: {
+                userId: userId,
+                status: 'Принято'
+            }
+        });
+        if(adverts.length > 0) {
+            return next(new AppError('Ошибка при удалении: у пользователя есть согласованные публикации', 400));
+        }
+    }
+    if((userRole === 'RECYCLER') || (userRole === 'PRODUCER')){
+        const responses = await response.findAll({
+            where: {
+                userId: userId,
+                status: 'Принято'
+            }
+        });
+        if(responses.length > 0) {
+            return next(new AppError('Ошибка при удалении: у пользователя есть согласованные отклики', 400));
+        }
+    }
+    const deletedUser = await user.destroy({
+        where: {
+            id: +userId
+        }
+    });
+    if(!deletedUser) return next(new AppError('Ошибка при удалении: пользователь не найден', 400));
+
+    return res.status(200).json({
+        status: 'success'
+    });
+
+});
+/**
  * Метод возвращает авторизованного пользователя по id
  * @param {number} req.params.id - id пользователя
  * @desc Get participant by id
  * @route GET/api/v1/users/:id
- * @access Public
+ * @access Private
  **/
 const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
-    const userId = +req?.params?.id
+    const paramsId = +req?.params?.id
+    const userId = +req?.user?.id;
+    if(paramsId !== userId) return next(new AppError('Данные о пользователе не могут быть предоставлены', 400));
     const found = await user.findOne({
         where:{
             id: userId
@@ -124,5 +211,5 @@ const getAdmins = catchAsyncErrorHandler(async (req, res, next) => {
     });
 });
 
-module.exports = {getUsers,
+module.exports = {getUsers, updateUser, deleteUser,
     getAdmins, getUserById, getUserByEmailOrOGRN};

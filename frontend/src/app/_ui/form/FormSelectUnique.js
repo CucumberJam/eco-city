@@ -13,7 +13,7 @@ export function FormSelectUnique({label = 'Город:',
                             defaultVal = null,//{id: 2, name: 'Тюмень'}
                             options = [],
                             changeHandler = null,
-                            hiddenValue = '' || 0,
+                            hiddenValue = '',
                             checkRightPosition = true,
                             styleBlock = {width: '100%', height: "35px", paddingTop: "0.2rem", borderRadius: "0.3rem"}}) {
     const [isChecked, setIsChecked] = useState(options.length === 1);
@@ -48,7 +48,7 @@ export function FormSelectUnique({label = 'Город:',
                     required
                     onChange={changeValue}>
 
-                {(!withLabel && !defaultVal) &&
+                {(withLabel && !defaultVal) &&
                     <>
                         <option key={label} disabled={true}>{label}</option>
                         {showedOptions.map(item => (
@@ -56,7 +56,7 @@ export function FormSelectUnique({label = 'Город:',
                         ))}
                     </>
                 }
-                {(!withLabel && defaultVal) &&
+                {(defaultVal) &&
                     <>
                         <option key={defaultVal.id}>{prepare(defaultVal)}</option>
                         {showedOptions.map(item => (

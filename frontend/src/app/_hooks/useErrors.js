@@ -117,7 +117,7 @@ export default function useErrors(){
                         }
                         break;
                     case 'website':
-                        if(payload.payload.website && !REG_EXPR_WEBSITES.test(payload?.website)) {
+                        if(payload.payload.website && !REG_EXPR_WEBSITES.test(payload.payload?.website)) {
                             showError('Некорректный адрес сайта');
                             return true;
                         }

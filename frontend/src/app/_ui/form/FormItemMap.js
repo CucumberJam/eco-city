@@ -25,7 +25,10 @@ export default function FormItemMap({changePositionHandler, isPosSet = false, pi
                 <LazyMap withUsers={false}
                          pickedUpPos={pickedUpPos}
                          needDefineLocation={needDefineLocation}
-                         changePositionHandler={changePositionHandler}/>
+                         changePositionHandler={(chosenPos)=> {
+                             changePositionHandler(chosenPos);
+                             setNeedDefineLocation(false);
+                         }}/>
             </div>
         </div>
     );

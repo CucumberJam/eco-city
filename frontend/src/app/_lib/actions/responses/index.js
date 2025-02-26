@@ -4,13 +4,16 @@ import {apiServerRoutes} from "@/routes";
 
 /**
  * Метод возвращает список откликов пользователя с учетом пагинации
+ * @param {object} params - параметры для фильтров
  * @param {number} offset - количество строк в коллекции БД для пропуска
  * @param {number} limit - максимальное количество строк в коллекции БД для получения
  **/
-export async function getResponsesOfUser(offset = 0, limit = 10){
+export async function getResponsesOfUser(offset = 0, limit = 10, params = null){
     const userId = await getUserId();
     const options = await getRequestOptions();
-    const searchParams = new URLSearchParams({offset, limit});
+    let paramsObj = {offset, limit};
+    if(params) paramsObj = {...paramsObj, ...params};
+    const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.responses}${userId}?${searchParams.toString()}`

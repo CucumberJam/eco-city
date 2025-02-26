@@ -1,16 +1,22 @@
 const router = require('express').Router();
 const {authentication, restrictTo} = require('../controllers/authController');
-const {getUsers,
+const {getUsers, updateUser, deleteUser,
     getAdmins, getUserById, getUserByEmailOrOGRN} = require("../controllers/userController");
 
 router.route('/')
     .get(getUsers);
+router.route('/user')
+    .delete(authentication, deleteUser);
 
 router.route('/:id')
-    .get(getUserById);
+    .get(authentication, getUserById);
 
 router.route('/user')
     .get(getUserByEmailOrOGRN);
+
+router.route('/user')
+    .post(authentication, updateUser);
+
 
 router.route('/admins')
     .get(authentication,
