@@ -9,6 +9,8 @@ import {useEffect} from "react";
 import {Spinner} from "flowbite-react";
 import StatsFilters from "@/app/_ui/account/stats/StatsFilters";
 import StatsTable from "@/app/_ui/account/stats/StatsTable";
+import StatsAdvertTables from "@/app/_ui/account/stats/StatsAdvertTables";
+import StatsResponseTables from "@/app/_ui/account/stats/StatsResponseTables";
 
 export default function StatsContainer({userRole}){
     const {init, mode, setActiveMode, isFetching} = useStats();
@@ -28,7 +30,7 @@ export default function StatsContainer({userRole}){
             <h2 className="text-4xl font-semibold text-center mb-3">Статистика</h2>
             {isFetching ? <Spinner size={'xl'} className='w-full m-auto flex justify-center'/> : (
                 <>
-                    <Row>
+                    <Row style='flex justify-between w-[90%] m-auto'>
                         <Column width='max-w-[600px] '>
                             <StatsTable/>
                         </Column>
@@ -38,11 +40,7 @@ export default function StatsContainer({userRole}){
                         </Column>
                     </Row>
                     <Row>
-                        {mode === 0 ?
-                            <div>TABLES - table for responses</div>
-                            :
-                            <div>TABLES - table for adverts</div>
-                        }
+                        {mode === 0 ? <StatsResponseTables/> : <StatsAdvertTables/>}
                     </Row>
                 </>
                 )}
