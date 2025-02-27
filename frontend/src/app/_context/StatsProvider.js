@@ -48,7 +48,8 @@ function StatsMapProvider({children}) {
     // user paginated responses:
     const {recognitionPaginatedObject: responsesRecognitionPaginatedObject,
         acceptPaginatedObject: responsesAcceptPaginatedObject,
-        performPaginatedObject: responsesPerformPaginatedObject
+        performPaginatedObject: responsesPerformPaginatedObject,
+        declinedPaginatedObject: responsesDeclinedPaginatedObject
     } = useStatsPaginatedItems(getArgs, getResponsesOfUser);
     /*const {items: responsesRecItems,
         fetchAndSetItems: fetchAndSetResponsesRecItems,
@@ -94,12 +95,13 @@ function StatsMapProvider({children}) {
     }
     async function fetchAllUserItems(){
         setIsFetching(prev => true);
-        let resRec,resAcc,  resPer;
+        let resRec,resAcc, resPer, resDec = {success: true};
         try{
             if(mode === 0){
                 resRec = await responsesRecognitionPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('На рассмотрении'));
                 resAcc = await responsesAcceptPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Принято'));
                 resPer = await responsesPerformPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Исполнено'));
+                resDec = await responsesDeclinedPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Отклонено'));
             }else{
                 resRec = await advertsRecognitionPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('На рассмотрении'));
                 resAcc = await advertsAcceptPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Принято'));
@@ -107,8 +109,8 @@ function StatsMapProvider({children}) {
             }
             setIsFetching(prev => false);
             dataInitialized.current = true;
-            if(!resRec?.success || !resAcc?.success || !resPer?.success){
-                return (resRec?.message || resAcc?.message || resPer?.message);
+            if(!resRec?.success || !resAcc?.success || !resPer?.success || !resDec?.success){
+                return (resRec?.message || resAcc?.message || resPer?.message || resDec?.message || 'Ошибка сети');
             }else return {success: true};
         }catch (e) {
             setIsFetching(prev => false);
@@ -130,6 +132,7 @@ function StatsMapProvider({children}) {
             responsesRecognitionPaginatedObject,
             responsesAcceptPaginatedObject,
             responsesPerformPaginatedObject,
+            responsesDeclinedPaginatedObject,
         }}>
             <main>
                 {currentCity && children}

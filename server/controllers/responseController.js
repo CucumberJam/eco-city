@@ -175,14 +175,14 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     }
     // посчитать количество просроченных и актуальных
     if(needStats === 'true'){
-        const late = await response.count({
+        result.late = await response.count({
             where: {
                 userId: +userId,
                 status: status,
             },
             include: {
                 model: advert,
-               // required: true, // INNER JOIN
+                required: true, // INNER JOIN
                 where: {
                     finishDate: {
                         [Op.lt]: Sequelize.literal('CURRENT_DATE')
@@ -190,15 +190,14 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
                 },
             }
         });
-        if(late) result.late = late;
-        const coming = await response.count({
+        result.coming = await response.count({
             where: {
                 userId: +userId,
                 status: status,
             },
             include: {
                 model: advert,
-                //required: true, // INNER JOIN
+                required: true, // INNER JOIN
                 where: {
                     finishDate: {
                         [Op.gte]: Sequelize.literal('CURRENT_DATE')
@@ -206,7 +205,6 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
                 },
             }
         });
-        if(coming) result.coming = coming;
     }
 
     return res.status(200).json({

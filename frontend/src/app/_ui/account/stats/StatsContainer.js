@@ -8,6 +8,7 @@ import Column from "@/app/_ui/general/Column";
 import {useEffect} from "react";
 import {Spinner} from "flowbite-react";
 import StatsFilters from "@/app/_ui/account/stats/StatsFilters";
+import StatsTable from "@/app/_ui/account/stats/StatsTable";
 
 export default function StatsContainer({userRole}){
     const {init, mode, setActiveMode, isFetching} = useStats();
@@ -24,18 +25,14 @@ export default function StatsContainer({userRole}){
                          icons={stats.map(el => el.icon)}
                          defaultValue={mode}
                          setTabHandler={setActiveMode}/>
-            <h2 className="text-3xl font-semibold text-center mb-3">Статистика</h2>
-            {isFetching ? <Spinner/> : (
+            <h2 className="text-4xl font-semibold text-center mb-3">Статистика</h2>
+            {isFetching ? <Spinner size={'xl'} className='w-full m-auto flex justify-center'/> : (
                 <>
                     <Row>
-                        <Column width='w-full '>
-                            {mode === 0 ?
-                                <div>stats - table for responses</div>
-                                :
-                                <div>stats - table for adverts</div>
-                            }
+                        <Column width='max-w-[600px] '>
+                            <StatsTable/>
                         </Column>
-                        <Column width='w-full '>
+                        <Column width='w-[250px] ml-8'>
                             <StatsFilters/>
                             <LazyChart/>
                         </Column>

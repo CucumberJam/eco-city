@@ -6,7 +6,7 @@ import Row from "@/app/_ui/general/Row";
 export default function StatsFilters(){
     const {period, setPeriod} = useStats();
     return (
-        <Row width='w-full '>
+        <Row width='w-full flex flex-start mt-3 ml-10'>
             <Filter data={statsData.filters[0].options}
                     key={statsData.filters[0].urlName}
                     isDisabled={false} withAll={false}

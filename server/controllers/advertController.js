@@ -141,7 +141,7 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     }
     // посчитать количество просроченных и актуальных
     if(needStats){
-        const late = await advert.count({
+       response.late = await advert.count({
             where: {
                 userId: +userId,
                 status: status,
@@ -149,10 +149,7 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
                 finishDate: {[Op.lt]: new Date()}
             }
         });
-        //if(!late) return next(new AppError("Ошибка при получении количества просроченных публикаций пользователя", 400));
-        response.late = late ? late : 0;
-        console.log(late);
-        const coming = await advert.count({
+        response.coming = await advert.count({
             where: {
                 userId: +userId,
                 status: status,
@@ -160,9 +157,6 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
                 finishDate: {[Op.gte]: new Date()}
             }
         });
-        console.log(coming);
-        //if(!coming) return next(new AppError("Ошибка при получении количества актуальных публикаций пользователя", 400));
-        response.coming = coming ? coming : 0;
     }
 
     return res.status(200).json({

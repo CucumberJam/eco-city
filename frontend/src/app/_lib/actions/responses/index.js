@@ -13,7 +13,6 @@ export async function getResponsesOfUser(offset = 0, limit = 10, params = null){
     const options = await getRequestOptions();
     let paramsObj = {offset: offset, limit: limit};
     if(params) paramsObj = {...paramsObj, ...params};
-    console.log(paramsObj)
     const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
         cache: 'no-store',

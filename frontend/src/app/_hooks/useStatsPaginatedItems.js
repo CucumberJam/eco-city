@@ -12,6 +12,11 @@ export default function useStatsPaginatedItems(getArgsFunc, serverAction){
         fetchFunc: serverAction,
         additionalArgs: getArgsFunc('Исполнено')
     });
+    const declinedPaginatedObject = usePaginatedItems({
+        fetchFunc: serverAction,
+        additionalArgs: getArgsFunc('Отклонено')
+    });
     // {items, fetchAndSetItems, pagination, changePagination}
-    return {recognitionPaginatedObject, acceptPaginatedObject, performPaginatedObject};
+    return {recognitionPaginatedObject, acceptPaginatedObject, performPaginatedObject
+    ,declinedPaginatedObject};
 }

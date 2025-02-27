@@ -4,9 +4,9 @@ import ServerPagination from "@/app/_ui/general/ServerPagination";
 
 export default function PaginatedTable({
                                            headerTitles = advertTableHeaders,
-                                           pagination,
+                                           pagination = null,
                                            options = paginationOptions,
-                                           changePagePagination,
+                                           changePagePagination = null,
                                            children
 }){
 
@@ -24,9 +24,9 @@ export default function PaginatedTable({
                     {children}
                 </Table.Body>
             </Table>
-            <ServerPagination pagination={pagination}
-                              options={options}
-                              changePagePagination={changePagePagination}/>
+            {pagination && <ServerPagination pagination={pagination}
+                               options={options}
+                               changePagePagination={changePagePagination}/>}
         </div>
     );
 }

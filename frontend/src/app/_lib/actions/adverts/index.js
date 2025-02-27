@@ -21,7 +21,6 @@ export async function getAdvertsOfUser(offset = 0, limit = 10, params = null){
     const options = await getRequestOptions();
     let paramsObj = {offset: offset, limit: limit};
     paramsObj = {...paramsObj, ...params}
-    console.log(paramsObj)
     const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
         options,

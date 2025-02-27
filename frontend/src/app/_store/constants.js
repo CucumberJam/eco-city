@@ -318,6 +318,7 @@ const accountMapModes = {
     RECEIVER: [0, 1, 2]
 }
 const statsData = {
+    tableHeaders: ['Статус', 'Количество', 'Просроченные', 'Актуальные'],
     tab: [
         {
             id: 0,
