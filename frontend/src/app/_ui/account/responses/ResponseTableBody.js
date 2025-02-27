@@ -3,6 +3,7 @@ import TableCompanyName from "@/app/_ui/general/table/TableCompanyName";
 import TableCompanyWastes from "@/app/_ui/general/table/TableCompanyWastes";
 import TableCompanyDimension from "@/app/_ui/general/table/TableCompanyDimension";
 import TableCompanyStatus from "@/app/_ui/general/table/TableCompanyStatus";
+import Status from "@/app/_ui/general/Status";
 
 export default function ResponseTableBody({responses, pickUpAdvertHandler, isUser = true}){
     return (
@@ -24,7 +25,12 @@ export default function ResponseTableBody({responses, pickUpAdvertHandler, isUse
                     <Table.Cell>
                         <TableCompanyDimension userDimensionId={el?.advert?.dimension}/>
                     </Table.Cell>
-                    <Table.Cell className="text-center">{el?.advert ? new Date(el?.advert?.finishDate).toLocaleDateString() : ''}</Table.Cell>
+                    <Table.Cell className="text-center">
+                        {el?.advert ? (
+                                <Status status={new Date(el.advert?.finishDate).toLocaleDateString()}
+                                        date={el?.advert?.finishDate}/>
+                        ) : ''}
+                    </Table.Cell>
                     <Table.Cell className="text-center">{el?.advert?.totalPrice}</Table.Cell>
                     <Table.Cell className="text-center">
                         {el?.advert && <Badge className='w-fit my-0 mx-auto py-1 px-2 text-center'
