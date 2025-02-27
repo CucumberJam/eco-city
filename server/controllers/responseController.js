@@ -5,6 +5,7 @@ const advert = require("../db/models/advert");
 const user = require("../db/models/user");
 const {removeCreatedFields} = require("./authController");
 const {Op, Sequelize} = require("sequelize");
+const getDBFilterByDatePeriod = require("../utils/helpers");
 
 /**
  * Метод возвращает список откликов других участников
@@ -117,6 +118,9 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
  * Метод возвращает список откликов пользователя
  * с ролью RECYCLER / ADMIN / RECEIVER на заявки других участников
  * с учетом пагинации
+ * @param {number} req.query.period - период времени (не обязателен)
+ * @param {boolean} req.query.needStats - необходимость отчетности (не обязателен)
+ * @param {string} req.query.status - статус публикации (не обязателен)
  * @param {number} req.query.offset - количество строк в БД для отступа
  * @param {number} req.query.limit - количество строк в БД для получения
  * @desc Get user's responses
@@ -125,20 +129,19 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
  **/
 const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+    if(+req?.params?.userId !== userId) return next(new AppError("id пользователя не соответствует url-param", 400));
+    let {offset, limit, status, period, needStats} = req?.query;
     const options = {userId: userId}
-    if(req.query.status) {
-        const status = req.query.status;
-        options.status = Array.isArray(status) ? status.split(',') : status;
-    }
+    if(status) options.status = Array.isArray(status) ? status.split(',') : status;
+    if(period) options.finishDate = getDBFilterByDatePeriod(period);
 
     const responses = await response.findAndCountAll({
         where: options,
         attributes: {
             exclude: ['deletedAt', 'userName', 'userRole', 'userId']
         },
-        offset: req.query?.offset || 0,
-        limit: req.query?.limit || 10,
+        offset: +offset || 0,
+        limit: +limit || 10,
         order: [
             ['updatedAt', 'DESC'],
         ],
@@ -163,10 +166,38 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
             }
         ]
     });
-    if(!responses) return next(new AppError("Failed to get user's responses", 400));
+    if(!responses) return next(new AppError("Ошибка при получении откликов пользователя", 400));
+
+    const result = {
+        count: responses.count,
+        rows: responses.rows,
+    }
+    // посчитать количество просроченных и актуальных
+    if(needStats){
+        const late = await response.count({
+            where: {
+                userId: +userId,
+                status: status,
+                finishDate: {[Op.lt]: new Date()}
+            }
+        });
+        if(!late) return next(new AppError("Ошибка при получении количества просроченных откликов пользователя", 400));
+        result.late = late;
+
+        const coming = await response.count({
+            where: {
+                userId: +userId,
+                status: status,
+                finishDate: {[Op.gte]: new Date()}
+            }
+        });
+        if(!coming) return next(new AppError("Ошибка при получении количества актуальных откликов пользователя", 400));
+        result.coming = coming;
+    }
+
     return res.status(200).json({
         status: 'success',
-        data: responses //{ count, rows }
+        data: result
     });
 });
 

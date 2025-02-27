@@ -5,6 +5,7 @@ const {Op} = require("sequelize");
 const AppError = require("../utils/appError");
 const {removeCreatedFields} = require("./authController");
 const response = require("../db/models/response");
+const getDBFilterByDatePeriod = require("../utils/helpers");
 /**
  * Метод возвращает список публикаций других участников
  * для пользователя с ролью RECYCLER / ADMIN / RECEIVER
@@ -81,6 +82,8 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
  * @param {[number]} req.query.wasteTypes - id подвидов отходов (не обязателен)
  * @param {string} req.query.query - запрос в поисковой строке (не обязателен)
  * @param {string} req.query.status - статус публикации (не обязателен)
+ * @param {number} req.query.period - период времени (не обязателен)
+ * @param {boolean} req.query.needStats - необходимость отчетности (не обязателен)
  * @param {number} req.query.offset - количество строк в БД для отступа
  * @param {number} req.query.limit - количество строк в БД для получения
  * @desc Get user's adverts
@@ -90,7 +93,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
 const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
-    let {offset, limit, cityId, wastes, wasteTypes, query, status} = req?.query;
+    let {offset, limit, cityId, wastes, wasteTypes, query, status, period, needStats} = req?.query;
     const options = { userId: userId};
     if(wasteTypes && wastes){
         options[Op.or] = {
@@ -102,6 +105,9 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     }
     if(cityId) options.cityId = +cityId;
     if(status) options.status = Array.isArray(status) ? status.split(',') : status;
+
+    if(period) options.finishDate = getDBFilterByDatePeriod(period);
+
     const includesCreature = {
         model: user,
         attributes: {
@@ -129,13 +135,40 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         include: includesCreature,
     });
 
-    if(!adverts) return next(new AppError("Failed to get user's adverts", 400));
+    if(!adverts) return next(new AppError("Ошибка при получении публикаций пользователя", 400));
+    const response = {
+        count: adverts.count,
+        rows: adverts.rows,
+    }
+
+    // посчитать количество просроченных и актуальных
+    if(needStats){
+        const late = await advert.count({
+            where: {
+                userId: +userId,
+                status: status,
+                cityId: +cityId || +req?.user?.cityId,
+                finishDate: {[Op.lt]: new Date()}
+            }
+        });
+        if(!late) return next(new AppError("Ошибка при получении количества просроченных публикаций пользователя", 400));
+        response.late = late;
+
+        const coming = await advert.count({
+            where: {
+                userId: +userId,
+                status: status,
+                cityId: +cityId || +req?.user?.cityId,
+                finishDate: {[Op.gte]: new Date()}
+            }
+        });
+        if(!coming) return next(new AppError("Ошибка при получении количества актуальных публикаций пользователя", 400));
+        response.coming = coming;
+    }
+
     return res.status(200).json({
         status: 'success',
-        data: {
-            count: adverts.count,
-            rows: adverts.rows,
-        }
+        data: response,
     });
 });
 
