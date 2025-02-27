@@ -1,15 +1,48 @@
 'use client';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import {useStats} from "@/app/_context/StatsProvider";
+import {useMemo} from "react";
+import {advertStatuses} from "@/app/_store/constants";
 
 export default function Chart(){
-    const data = [
-        { name: 'Group A', value: 400 },
-        { name: 'Group B', value: 300 },
-        { name: 'Group C', value: 300 },
-        { name: 'Group D', value: 200 },
-    ];
+    const {
+        mode, type,
+        advertsRecognitionPaginatedObject,
+        advertsAcceptPaginatedObject,
+        advertsPerformPaginatedObject,
+        responsesRecognitionPaginatedObject,
+        responsesAcceptPaginatedObject,
+        responsesPerformPaginatedObject,
+        responsesDeclinedPaginatedObject,
+    } = useStats();
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const data = useMemo(()=>{
+        const feature = type.id === 0 ? 'count' : (type.id === 1 ? 'late': 'coming')
+        return [
+            {
+                name: advertStatuses[0],
+                value: mode === 0 ? responsesRecognitionPaginatedObject.items?.[feature] || 0
+                    : advertsRecognitionPaginatedObject.items?.[feature] || 0
+            },
+            {
+                name: advertStatuses[2],
+                value: mode === 0 ? responsesAcceptPaginatedObject.items?.[feature] || 0
+                    : advertsAcceptPaginatedObject.items?.[feature] || 0
+            },
+            {
+                name: advertStatuses[3],
+                value: mode === 0 ? responsesPerformPaginatedObject.items?.[feature] || 0
+                    : advertsPerformPaginatedObject.items?.[feature] || 0
+            },
+            {
+                name: advertStatuses[1],
+                value: mode === 0 ? responsesDeclinedPaginatedObject.items?.[feature] || 0 : 0
+            },
+        ]
+    }, [mode, type.id])
+
+    const COLORS = ['#FFBB28', '#00C49F', '#0088FE', '#FF8042'];
+//    const COLORSLate = ['#98caf6', '#67f7dc', '#ccae6e', '#FF8042'];
 
     const RADIAN = Math.PI / 180;
     const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -35,10 +68,10 @@ export default function Chart(){
                     label={renderCustomizedLabel}
                     outerRadius={80}
                     fill="#8884d8"
-                    dataKey="value"
-                >
+                    dataKey="value">
                     {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]} />
                     ))}
                 </Pie>
             </PieChart>

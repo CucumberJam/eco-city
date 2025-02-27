@@ -12,6 +12,7 @@ function StatsMapProvider({children}) {
     const {currentCity} = useGlobalUIStore((state) => state);
     const [mode, setActiveMode] = useState(0);
     const [period, setPeriod] = useState(statsData.filters[0].options[0]); // 0 = month, 1 = quarter, 2 = half-year, 3 = year
+    const [type, setType] = useState(statsData.filters[1].options[0]);  // 0 = all, 1 = late, 2 = coming
     const dataInitialized = useRef(null);
     const [isFetching, setIsFetching] = useState(false);
     const [activeItem, setActiveItem] = useState(null);
@@ -21,29 +22,6 @@ function StatsMapProvider({children}) {
         acceptPaginatedObject: advertsAcceptPaginatedObject,
         performPaginatedObject: advertsPerformPaginatedObject
     } = useStatsPaginatedItems(getArgs, getAdvertsOfUser);
-/*
-    const {items: advertsRecItems,
-        fetchAndSetItems: fetchAndSetAdvertsRecItems,
-        pagination: advertsRecPagination,
-        changePagination: advertsRecChangePagination} = usePaginatedItems({
-        fetchFunc: getAdvertsOfUser,
-        additionalArgs: getArgs('На рассмотрении')
-    });
-    const {items: advertsAcceptItems,
-        fetchAndSetItems: fetchAndSetAdvertsAcceptItems,
-        pagination: advertsAcceptPagination,
-        changePagination: advertsAcceptChangePagination} = usePaginatedItems({
-        fetchFunc: getAdvertsOfUser,
-        additionalArgs: getArgs('Принято')
-    });
-    const {items: advertsPerformItems,
-        fetchAndSetItems: fetchAndSetAdvertsPerformItems,
-        pagination: advertsPerformPagination,
-        changePagination: advertsPerformChangePagination} = usePaginatedItems({
-        fetchFunc: getAdvertsOfUser,
-        additionalArgs: getArgs('Исполнено')
-    });
-*/
 
     // user paginated responses:
     const {recognitionPaginatedObject: responsesRecognitionPaginatedObject,
@@ -51,27 +29,6 @@ function StatsMapProvider({children}) {
         performPaginatedObject: responsesPerformPaginatedObject,
         declinedPaginatedObject: responsesDeclinedPaginatedObject
     } = useStatsPaginatedItems(getArgs, getResponsesOfUser);
-    /*const {items: responsesRecItems,
-        fetchAndSetItems: fetchAndSetResponsesRecItems,
-        pagination: responsesRecPagination,
-        changePagination: responsesRecChangePagination} = usePaginatedItems({
-        fetchFunc: getResponsesOfUser,
-        additionalArgs: getArgs('На рассмотрении')
-    });
-    const {items: responsesAcceptItems,
-        fetchAndSetItems: fetchAndSetResponsesAcceptItems,
-        pagination: responsesAcceptPagination,
-        changePagination: responsesAcceptChangePagination} = usePaginatedItems({
-        fetchFunc: getResponsesOfUser,
-        additionalArgs: getArgs('Принято')
-    });
-    const {items: responsesPerformItems,
-        fetchAndSetItems: fetchAndSetResponsesPerformItems,
-        pagination: responsesPerformPagination,
-        changePagination: responsesPerformChangePagination} = usePaginatedItems({
-        fetchFunc: getResponsesOfUser,
-        additionalArgs: getArgs('Исполнено')
-    });*/
 
     useEffect(() => {
         if(!dataInitialized.current) return;
@@ -124,6 +81,7 @@ function StatsMapProvider({children}) {
             init,
             mode, setActiveMode,
             period, setPeriod,
+            type, setType,
             activeItem, setActiveItem,
             isFetching,
             advertsRecognitionPaginatedObject,

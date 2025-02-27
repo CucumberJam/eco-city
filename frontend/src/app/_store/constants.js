@@ -355,6 +355,17 @@ const statsData = {
             urlName: 'type',
             value: null,
             options: [
+                {id: 0, label: 'все',  name: 'all'},
+                {id: 1, label: 'просроченные',  name: 'late'},
+                {id: 2, label: 'потенциальные',  name: 'coming'},// не просроченные
+            ]
+        },
+/*        {
+            id: 1,
+            label: 'Вид данных',
+            urlName: 'type',
+            value: null,
+            options: [
                 {id: 0, label: 'выполненные',  name: 'performed'},
                 {id: 1, label: 'просроченные',  name: 'late'},
                 {id: 2, label: 'потенциальные',  name: 'potential'},// не просроченные
@@ -369,8 +380,14 @@ const statsData = {
                 {id: 0, label: 'принято',  name: 'accepted'},
                 {id: 1, label: 'на рассмотрении',  name: 'on-recognition'},
             ]
-        }
-    ]
+        }*/
+    ],
+    colors: {
+        0: '#FFBB28',
+        1: '#00C49F',
+        2: '#0088FE',
+        3: '#FF8042'
+    }
 }
 const tabsIcons = [HiUserCircle, HiClipboardList];
 const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
