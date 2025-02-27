@@ -22,36 +22,36 @@ export default function StatsTable(){
                 {mode === 0 ? (
                     <>
                         <TableRow key={0}
-                                  id={0}
+                                  color={'#FFBB28'}
                                   title='На рассмотрении'
                                   el={responsesRecognitionPaginatedObject.items} />
                         <TableRow key={1}
-                                  id={1}
+                                  color={statsData.colors[1] || '#00C49F'}
                                   title='Принято'
                                   el={responsesAcceptPaginatedObject.items} />
                         <TableRow key={2}
-                                  id={2}
+                                  color={statsData.colors[2] || '#0088FE'}
                                   title='Исполнено'
                                   el={responsesPerformPaginatedObject.items} />
                         <TableRow key={3}
-                                  id={3}
+                                  color={statsData.colors[3] || '#FF8042'}
                                   title='Отклонено'
                                   el={responsesDeclinedPaginatedObject.items} />
                     </>
                 ) : (
                     <>
                         <TableRow key={0}
-                                  id={0}
+                                  color={statsData.colors[0] || '#FFBB28'}
                                   title='На рассмотрении'
                                   el={advertsRecognitionPaginatedObject.items} />
                         <TableRow key={1}
-                                  id={1}
+                                  color={statsData.colors[1] || '#00C49F'}
                                   title='Принято'
                                   el={advertsAcceptPaginatedObject.items} />
                         <TableRow  key={2}
-                                   id={2}
-                                  title='Исполнено'
-                                  el={advertsPerformPaginatedObject.items} />
+                                   color={statsData.colors[2] || '#0088FE'}
+                                   title='Исполнено'
+                                   el={advertsPerformPaginatedObject.items} />
                     </>
                 )}
             </PaginatedTable>
@@ -59,12 +59,11 @@ export default function StatsTable(){
     );
 }
 
-function TableRow({title = 'На рассмотрении', el, id = 0}){
+function TableRow({title = 'На рассмотрении', el, color}){
     return (
         <Table.Row className="cursor-pointer bg-white dark:border-gray-700 dark:bg-gray-800">
             <Table.Cell className="font-medium text-gray-900 dark:text-white text-center">
-                <span className={`bg-[${statsData.colors[id]}] 
-                py-1 px-1 rounded-xl text-white`}>
+                <span style={{backgroundColor: color}} className={`whitespace-nowrap py-1 px-1 rounded-xl text-white`}>
                     {title}
                 </span>
             </Table.Cell>
