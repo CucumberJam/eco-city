@@ -19,13 +19,9 @@ const otherAdvertsDefaultParams = {
 export async function getAdvertsOfUser(offset = 0, limit = 10, params = null){
     const userId = await getUserId();
     const options = await getRequestOptions();
-    const paramsObj = {offset: offset, limit: limit};
-    if(params){
-        if(params?.cityId) paramsObj.cityId = params.cityId;
-        if(params?.wastes) paramsObj.wastes = params.wastes;
-        if(params?.wasteTypes) paramsObj.wasteTypes = params.wasteTypes;
-        if(params?.status) paramsObj.status = params.status;
-    }
+    let paramsObj = {offset: offset, limit: limit};
+    paramsObj = {...paramsObj, ...params}
+    console.log(paramsObj)
     const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
         options,

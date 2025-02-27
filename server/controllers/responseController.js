@@ -118,9 +118,6 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
  * Метод возвращает список откликов пользователя
  * с ролью RECYCLER / ADMIN / RECEIVER на заявки других участников
  * с учетом пагинации
- * @param {number} req.query.period - период времени (не обязателен)
- * @param {boolean} req.query.needStats - необходимость отчетности (не обязателен)
- * @param {string} req.query.status - статус публикации (не обязателен)
  * @param {number} req.query.offset - количество строк в БД для отступа
  * @param {number} req.query.limit - количество строк в БД для получения
  * @desc Get user's responses
@@ -129,12 +126,27 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
  **/
 const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    if(+req?.params?.userId !== userId) return next(new AppError("id пользователя не соответствует url-param", 400));
+    if(+req?.params?.userId !== +userId) return next(new AppError("id пользователя не соответствует url-param", 400));
     let {offset, limit, status, period, needStats} = req?.query;
     const options = {userId: userId}
-    if(status) options.status = Array.isArray(status) ? status.split(',') : status;
-    if(period) options.finishDate = getDBFilterByDatePeriod(period);
-
+    if(status) options.status = status;
+    const modelAdvert =  {
+            model: advert,
+            attributes: {
+                exclude: ['userName', 'userRole', 'deletedAt']
+            },
+            include: {
+                model: user,
+                attributes: {
+                    exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+                },
+            }
+    };
+    if(period){
+        modelAdvert.where = {
+            finishDate: getDBFilterByDatePeriod(+period)
+        }
+    }
     const responses = await response.findAndCountAll({
         where: options,
         attributes: {
@@ -146,18 +158,7 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
             ['updatedAt', 'DESC'],
         ],
         include: [
-            {
-                model: advert,
-                attributes: {
-                    exclude: ['userName', 'userRole', 'deletedAt']
-                },
-                include: {
-                    model: user,
-                    attributes: {
-                        exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
-                    },
-                }
-            },
+            modelAdvert,
             {
                 model: user,
                 attributes: {
@@ -173,26 +174,39 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         rows: responses.rows,
     }
     // посчитать количество просроченных и актуальных
-    if(needStats){
+    if(needStats === 'true'){
         const late = await response.count({
             where: {
                 userId: +userId,
                 status: status,
-                finishDate: {[Op.lt]: new Date()}
+            },
+            include: {
+                model: advert,
+               // required: true, // INNER JOIN
+                where: {
+                    finishDate: {
+                        [Op.lt]: Sequelize.literal('CURRENT_DATE')
+                    },
+                },
             }
         });
-        if(!late) return next(new AppError("Ошибка при получении количества просроченных откликов пользователя", 400));
-        result.late = late;
-
+        if(late) result.late = late;
         const coming = await response.count({
             where: {
                 userId: +userId,
                 status: status,
-                finishDate: {[Op.gte]: new Date()}
+            },
+            include: {
+                model: advert,
+                //required: true, // INNER JOIN
+                where: {
+                    finishDate: {
+                        [Op.gte]: Sequelize.literal('CURRENT_DATE')
+                    },
+                },
             }
         });
-        if(!coming) return next(new AppError("Ошибка при получении количества актуальных откликов пользователя", 400));
-        result.coming = coming;
+        if(coming) result.coming = coming;
     }
 
     return res.status(200).json({
@@ -200,7 +214,6 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         data: result
     });
 });
-
 /**
  * Метод создаёт отклик пользователя с ролью RECYCLER / ADMIN / RECEIVER
  * на публикацию другого участника

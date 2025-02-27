@@ -92,7 +92,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
  **/
 const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+    if(+req?.params?.userId !== +userId) return next(new AppError("User id doesn't match url-params", 400));
     let {offset, limit, cityId, wastes, wasteTypes, query, status, period, needStats} = req?.query;
     const options = { userId: userId};
     if(wasteTypes && wastes){
@@ -104,9 +104,8 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         options.waste = wastes.split(',').map(el => +el)
     }
     if(cityId) options.cityId = +cityId;
-    if(status) options.status = Array.isArray(status) ? status.split(',') : status;
-
-    if(period) options.finishDate = getDBFilterByDatePeriod(period);
+    if(status) options.status = status;
+    if(period) options.finishDate = getDBFilterByDatePeriod(+period);
 
     const includesCreature = {
         model: user,
@@ -140,7 +139,6 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
         count: adverts.count,
         rows: adverts.rows,
     }
-
     // посчитать количество просроченных и актуальных
     if(needStats){
         const late = await advert.count({
@@ -151,9 +149,9 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
                 finishDate: {[Op.lt]: new Date()}
             }
         });
-        if(!late) return next(new AppError("Ошибка при получении количества просроченных публикаций пользователя", 400));
-        response.late = late;
-
+        //if(!late) return next(new AppError("Ошибка при получении количества просроченных публикаций пользователя", 400));
+        response.late = late ? late : 0;
+        console.log(late);
         const coming = await advert.count({
             where: {
                 userId: +userId,
@@ -162,8 +160,9 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
                 finishDate: {[Op.gte]: new Date()}
             }
         });
-        if(!coming) return next(new AppError("Ошибка при получении количества актуальных публикаций пользователя", 400));
-        response.coming = coming;
+        console.log(coming);
+        //if(!coming) return next(new AppError("Ошибка при получении количества актуальных публикаций пользователя", 400));
+        response.coming = coming ? coming : 0;
     }
 
     return res.status(200).json({
