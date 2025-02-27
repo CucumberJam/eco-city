@@ -27,7 +27,7 @@ const sendErrorProd = (err, res)=> {
 }
 const globalErrorHandler = (err, req, res, next) => {
     if(err.name === 'SequelizeDatabaseError'){
-        err = new AppError(err.parent, 401);
+        err = new AppError(err.parent, 400);
     }
     if(err.name === 'JsonWebTokenError'){
         err = new AppError('Invalid token', 401);

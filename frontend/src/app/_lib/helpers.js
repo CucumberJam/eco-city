@@ -131,7 +131,7 @@ export async function requestWrap({options = null, route, cache = 'force-cache'}
             return {success: true, data: res?.data};
         }
         if(res.status === 401 && !res.ok){
-            console.log(res)
+           //console.log(res)
             throw Error('Please login to get access')
         }
         const data = await res.json();

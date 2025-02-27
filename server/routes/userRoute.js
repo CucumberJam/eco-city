@@ -5,11 +5,12 @@ const {getUsers, updateUser, deleteUser,
 
 router.route('/')
     .get(getUsers);
-router.route('/user')
-    .delete(authentication, deleteUser);
 
 router.route('/:id')
     .get(authentication, getUserById);
+
+router.route('/user')
+    .delete(authentication, deleteUser);
 
 router.route('/user')
     .get(getUserByEmailOrOGRN);

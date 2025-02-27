@@ -11,10 +11,11 @@ import {apiServerRoutes} from "@/routes";
 export async function getResponsesOfUser(offset = 0, limit = 10, params = null){
     const userId = await getUserId();
     const options = await getRequestOptions();
-    let paramsObj = {offset, limit};
+    let paramsObj = {offset: offset, limit: limit};
     if(params) paramsObj = {...paramsObj, ...params};
     const searchParams = new URLSearchParams(paramsObj);
     return  await requestWrap({
+        cache: 'no-store',
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.responses}${userId}?${searchParams.toString()}`
     });

@@ -317,6 +317,78 @@ const accountMapModes = {
     RECYCLER: [1, 2],
     RECEIVER: [0, 1, 2]
 }
+const statsData = {
+    tableHeaders: ['Статус', 'Количество', 'Просроченные', 'Актуальные'],
+    tab: [
+        {
+            id: 0,
+            label: 'Отклики',
+            icon: ChatBubbleBottomCenterIcon,
+        },
+        {
+            id: 1,
+            label: 'Публикации',
+            icon: RectangleStackIcon
+        }
+    ],
+    roles: {
+        PRODUCER: [1],
+        RECYCLER: [0],
+        RECEIVER: [0, 1]
+    },
+    filters: [
+        {
+            id: 0,
+            label: 'Отчетный период',
+            urlName: 'period',
+            value: null,
+            options: [
+                {id: 0, label: 'месяц',  name: 'month'},
+                {id: 1, label: 'квартал',  name: 'quarter'},
+                {id: 2, label: 'пол года',  name: 'half-year'},
+                {id: 3, label: 'год',  name: 'year'},
+            ]
+        },
+        {
+            id: 1,
+            label: 'Вид данных',
+            urlName: 'type',
+            value: null,
+            options: [
+                {id: 0, label: 'все',  name: 'all'},
+                {id: 1, label: 'просроченные',  name: 'late'},
+                {id: 2, label: 'потенциальные',  name: 'coming'},// не просроченные
+            ]
+        },
+/*        {
+            id: 1,
+            label: 'Вид данных',
+            urlName: 'type',
+            value: null,
+            options: [
+                {id: 0, label: 'выполненные',  name: 'performed'},
+                {id: 1, label: 'просроченные',  name: 'late'},
+                {id: 2, label: 'потенциальные',  name: 'potential'},// не просроченные
+            ]
+        },
+        {
+            id: 2,
+            label: 'Статус',
+            urlName: 'status',
+            value: null,
+            options: [
+                {id: 0, label: 'принято',  name: 'accepted'},
+                {id: 1, label: 'на рассмотрении',  name: 'on-recognition'},
+            ]
+        }*/
+    ],
+    colors: {
+        0: '#FFBB28',
+        1: '#00C49F',
+        2: '#0088FE',
+        3: '#FF8042'
+    }
+}
 const tabsIcons = [HiUserCircle, HiClipboardList];
 const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
     return {
@@ -376,5 +448,5 @@ export {
     initialPagination,
     accountMapTabsTitles, accountMapTabsIcons,
     accountMapModes,
-    itemsCheckUpdateUser
+    itemsCheckUpdateUser, statsData
 }

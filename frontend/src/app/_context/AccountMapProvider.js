@@ -48,6 +48,7 @@ function AccountMapProvider({children}) {
         if(userData.role) {
             userRole.current = userData.role;
             filterRoles.current = userData.role === 'RECEIVER' ? roles : roles.filter(el => el.name !== userData.role);
+            if(userData.role === 'RECYCLER') setActiveMode(prev => 1);
         }
         const args = getArgs();
         const res =  await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs());

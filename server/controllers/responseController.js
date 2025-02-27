@@ -5,6 +5,7 @@ const advert = require("../db/models/advert");
 const user = require("../db/models/user");
 const {removeCreatedFields} = require("./authController");
 const {Op, Sequelize} = require("sequelize");
+const getDBFilterByDatePeriod = require("../utils/helpers");
 
 /**
  * Метод возвращает список откликов других участников
@@ -125,36 +126,39 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
  **/
 const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
-    if(+req?.params?.userId !== userId) return next(new AppError("User id doesn't match url-params", 400));
+    if(+req?.params?.userId !== +userId) return next(new AppError("id пользователя не соответствует url-param", 400));
+    let {offset, limit, status, period, needStats} = req?.query;
     const options = {userId: userId}
-    if(req.query.status) {
-        const status = req.query.status;
-        options.status = Array.isArray(status) ? status.split(',') : status;
+    if(status) options.status = status;
+    const modelAdvert =  {
+            model: advert,
+            attributes: {
+                exclude: ['userName', 'userRole', 'deletedAt']
+            },
+            include: {
+                model: user,
+                attributes: {
+                    exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+                },
+            }
+    };
+    if(period){
+        modelAdvert.where = {
+            finishDate: getDBFilterByDatePeriod(+period)
+        }
     }
-
     const responses = await response.findAndCountAll({
         where: options,
         attributes: {
             exclude: ['deletedAt', 'userName', 'userRole', 'userId']
         },
-        offset: req.query?.offset || 0,
-        limit: req.query?.limit || 10,
+        offset: +offset || 0,
+        limit: +limit || 10,
         order: [
             ['updatedAt', 'DESC'],
         ],
         include: [
-            {
-                model: advert,
-                attributes: {
-                    exclude: ['userName', 'userRole', 'deletedAt']
-                },
-                include: {
-                    model: user,
-                    attributes: {
-                        exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
-                    },
-                }
-            },
+            modelAdvert,
             {
                 model: user,
                 attributes: {
@@ -163,13 +167,51 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
             }
         ]
     });
-    if(!responses) return next(new AppError("Failed to get user's responses", 400));
+    if(!responses) return next(new AppError("Ошибка при получении откликов пользователя", 400));
+
+    const result = {
+        count: responses.count,
+        rows: responses.rows,
+    }
+    // посчитать количество просроченных и актуальных
+    if(needStats === 'true'){
+        result.late = await response.count({
+            where: {
+                userId: +userId,
+                status: status,
+            },
+            include: {
+                model: advert,
+                required: true, // INNER JOIN
+                where: {
+                    finishDate: {
+                        [Op.lt]: Sequelize.literal('CURRENT_DATE')
+                    },
+                },
+            }
+        });
+        result.coming = await response.count({
+            where: {
+                userId: +userId,
+                status: status,
+            },
+            include: {
+                model: advert,
+                required: true, // INNER JOIN
+                where: {
+                    finishDate: {
+                        [Op.gte]: Sequelize.literal('CURRENT_DATE')
+                    },
+                },
+            }
+        });
+    }
+
     return res.status(200).json({
         status: 'success',
-        data: responses //{ count, rows }
+        data: result
     });
 });
-
 /**
  * Метод создаёт отклик пользователя с ролью RECYCLER / ADMIN / RECEIVER
  * на публикацию другого участника
