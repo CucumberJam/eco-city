@@ -30,7 +30,7 @@ module.exports = sequelize.define('response',
         }
       },
       status: {
-        type: DataTypes.ENUM('На рассмотрении', 'Отклонено', 'Принято', 'Исполнено'),
+        type: DataTypes.ENUM('На рассмотрении', 'Отклонено', 'Принято', 'Исполнено', 'Aрхив'),
         allowNull: false,
         defaultValue: 'На рассмотрении',
         validate: {

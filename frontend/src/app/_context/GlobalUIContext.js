@@ -1,27 +1,4 @@
-/*'use client';
-import {createContext, useContext, useState} from "react";
-
-const GlobalUIContext = createContext();
-
-const initialWaste = [];
-
-function WasteProvider({children}){
-    const [wastes] = useState(initialWaste);
-    return (
-        <GlobalUIContext.Provider value={{wastes}}>
-            {children}
-        </GlobalUIContext.Provider>
-    );
-}
-function useWaste(){
-    const context = useContext(GlobalUIContext);
-    if(context === undefined) throw new Error('Waste context was used outside provider');
-    return context;
-}
-export {WasteProvider, useWaste};*/
-
-'use client'
-
+'use client';
 import { createContext, useRef, useContext } from 'react';
 import { useStore } from 'zustand';
 import { createGlobalUIStore } from '@/app/_store/global-store';

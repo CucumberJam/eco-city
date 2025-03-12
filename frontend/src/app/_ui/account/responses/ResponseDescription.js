@@ -17,7 +17,7 @@ import ResponseInfo from "@/app/_ui/account/responses/ResponseInfo";
 import Status from "@/app/_ui/general/Status";
 import ResponseActions from "@/app/_ui/account/responses/ResponseActions";
 
-export default function ResponseDescription({response, isUser = true, revalidateData = ()=> null}){
+export default function ResponseDescription({response, isUser = true, revalidateData = ()=> null, advertUser = null}){
     const router = useRouter()
     const {currentOpen, close, open} = useModal();
     const {errMessage, hasError} = useErrors();
@@ -73,7 +73,12 @@ export default function ResponseDescription({response, isUser = true, revalidate
             if(!res?.success){
                 throw new Error(res?.message || 'Ошибка при согласовании отклика')
             }else{
-                await revalidateData(false, status);
+                if(revalidateData){
+                    await revalidateData(false, status);
+                }else{
+                    response.status = status;
+                    response.advert.status = status === 'Отклонено' ? 'На рассмотрении' : status;
+                }
                 setLoading(prev => false);
                 setSuccess(true);
                 setTimeout(async ()=>{
@@ -90,6 +95,7 @@ export default function ResponseDescription({response, isUser = true, revalidate
             <Column width="w-full pb-2 px-4 ">
                 <AdvertInfoLarge advert={response.advert}
                                  isUser={isUser}
+                                 advertUser={advertUser}
                                  responseComponent={<ResponseInfo response={response} isUser={isUser}/>}
                                  responseStatusComponent={isUser ? null : <Status status={response.status} style={' absolute top-[20px] right-20 self-end flex justify-center text-center'}/>}
                                  responseActionsComponent={<ResponseActions isUser={isUser}
@@ -109,6 +115,7 @@ export default function ResponseDescription({response, isUser = true, revalidate
                             <Column width="w-full ">
                                 <p>Вы уверены, что хотите отозвать свой отклик на данную заявку?</p>
                                 <Button className="self-end"
+                                        disabled={response.advert.status === 'Принято' || response.advert.status === 'Исполнено'}
                                         onClick={deleteResponse}>
                                     Удалить
                                 </Button>

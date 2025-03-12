@@ -400,7 +400,7 @@ const getParamsToFetchAdverts = (userData, cityId, offset = 0, limit = 10)=>{
     };
 }
 
-const advertTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость (руб)"];
+const advertTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость (руб)", 'Статус'];
 const responseTableHeaders = ["Компании", "Отходы", "Количество", "Ед.изм.", "Срок подачи заявки", "Стоимость заявки (руб)", "Стоимость отклика (руб)", "Статус"];
 const statusColors = {
     0: '#FFC833',
@@ -448,5 +448,5 @@ export {
     initialPagination,
     accountMapTabsTitles, accountMapTabsIcons,
     accountMapModes,
-    itemsCheckUpdateUser, statsData
+    itemsCheckUpdateUser, statsData,
 }

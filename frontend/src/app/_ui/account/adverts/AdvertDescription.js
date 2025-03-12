@@ -1,12 +1,12 @@
 "use client";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import { useRouter } from 'next/navigation';
 import {useModal} from "@/app/_context/ModalContext";
 import usePaginatedItems from "@/app/_hooks/usePaginatedItems";
 import useErrors from "@/app/_hooks/useErrors";
 
-import {getResponsesByAdvertId} from "@/app/_lib/actions/responses";
-import {removeAdvertById} from "@/app/_lib/actions/adverts";
+import {getResponsesByAdvertId, updateResponseByAdvertId} from "@/app/_lib/actions/responses";
+import {removeAdvertById, updateAdvert} from "@/app/_lib/actions/adverts";
 import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import AdvertInfoLarge from "@/app/_ui/account/adverts/AdvertInfoLarge";
 import AdvertActions from "@/app/_ui/account/adverts/AdvertActions";
@@ -14,6 +14,10 @@ import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import AdvertForm from "@/app/_ui/form/AdvertForm";
+import ResponseInfo from "@/app/_ui/account/responses/ResponseInfo";
+import Title from "@/app/_ui/general/Title";
+import {Button} from "flowbite-react";
+import FormAnnounce from "@/app/_ui/form/FormAnnounce";
 
 export default function AdvertDescription({advert, responses}){
     const router = useRouter();
@@ -25,6 +29,16 @@ export default function AdvertDescription({advert, responses}){
 
     const [activeResponse, setActiveResponse] = useState(null);
     const {currentOpen, close, open} = useModal();
+
+    const acceptedResponse = useMemo(()=>{
+        if(advert.status === 'На рассмотрении' || advert.status === 'Отклонено') return null;
+        return responses.rows.find(el => el.status === advert.status);
+    }, [advert?.status]);
+
+    const showPerformBtn = useMemo(()=>{
+        if(!acceptedResponse || advert.status === 'На рассмотрении' || advert.status === 'Отклонено') return false;
+        return new Date(advert.finishDate) < new Date();
+    }, [advert?.finishDate]);
 
     const {
         items,
@@ -40,7 +54,6 @@ export default function AdvertDescription({advert, responses}){
     });
 
     if(!advert) return <NoDataBanner title={`Нет данных о публикации`}/>
-
     async function deleteAdvert(){
         setLoading(prev =>true);
         const res = await removeAdvertById(advert.id);
@@ -58,14 +71,39 @@ export default function AdvertDescription({advert, responses}){
         }
 
     }
-
-    async function revalidate(payload, status = 'Отклонено' || 'Принято'){
+    async function revalidate(payload, status = 'Отклонено' || 'Принято' || 'Исполнено'){
         const res = await fetchAndSetItems();
         if(!res.success){
             hasError?.('default', res.message);
             return;
         }
-        advert.status = (status ===  'Отклонено') ? 'На рассмотрении' : 'Принято';
+        advert.status = (status ===  'Отклонено') ? 'На рассмотрении' : status;
+    }
+    async function makeAdvertPerformed(){
+        setLoading(prev =>true);
+        try {
+            const res = await updateResponseByAdvertId(advert.id, acceptedResponse?.id, 'Исполнено');
+            setLoading(prev =>false);
+            if(!res?.success){
+                throw new Error(res?.message || 'Ошибка при изменении статуса публикации')
+            }
+        }catch (e) {
+            setLoading(prev =>false);
+            hasError?.('default', e.message);
+        }
+    }
+    async function makeAdvertHistory(){
+        setLoading(prev =>true);
+        try {
+            const res = await updateAdvert({status: 'Отклонено'}, advert.id)
+            setLoading(prev =>false);
+            if(!res?.success){
+                throw new Error(res?.message || 'Ошибка при изменении статуса публикации')
+            }
+        }catch (e) {
+            setLoading(prev =>false);
+            hasError?.('default', e.message);
+        }
     }
 
     return (
@@ -94,18 +132,53 @@ export default function AdvertDescription({advert, responses}){
                                        leftLabel='Редактировать'
                                        handleLeft={() => setIsEdit(true)}/>
                     </ActionsBtnsBox>
-                    <div className='h-fit mt-8'>
+                    {!showPerformBtn ? (
+                        <div className='h-fit mt-8'>
                         <ResponseList responses={items}
                                       title="Отклики на публикацию"
                                       pagination={pagination}
                                       changePagePagination={changePagination}
-                                      pickUpAdvertHandler={(response)=> {
+                                      pickUpAdvertHandler={(response) => {
                                           open(response.id);
                                           setActiveResponse(prev => response);
                                       }}/>
-                    </div>
+                    </div>) :(
+                        <Button className='mt-5'
+                                onClick={makeAdvertHistory}
+                                disabled={loading}>
+                            Переместить публикацию в "Архив"
+                        </Button>
+                    )}
                 </>
             }
+            {(!isEdit && advert.status === 'Отклонено') && (
+                <>
+                    <FormAnnounce type='history'
+                                  message='Публикация перенесена в архив'
+                                  topSpace='mt-0 self'/>
+                    <NoDataBanner title='На публикацию откликов не поступило'/>
+                </>
+            )}
+
+            {(!isEdit && (advert.status === 'Принято' || advert.status === 'Исполнено')) && (
+                <div className='flex flex-col mt-5 mr-12'>
+                    <div className='flex items-start w-full justify-between'>
+                        <div className='flex items-end justify-center h-full'>
+                            <FormAnnounce type={advert.status === 'Принято' ? 'success' : 'history'}
+                                          message={advert.status === 'Принято' ? 'Согласован отклик:' : 'Исполнен отклик:'}
+                                          topSpace='mt-0 self'/>
+                        </div>
+                        {(advert.status === 'Принято' && showPerformBtn) && (
+                            <Button onClick={makeAdvertPerformed}
+                                    disabled={loading}>
+                                Изменить статус публикации на "Исполнено"
+                            </Button>
+                        )}
+                    </div>
+                    <ResponseInfo response={acceptedResponse} isUser={false}/>
+                </div>)}
+
+
             <ModalView isOpen={currentOpen === activeResponse?.id}
                        title="Отклик на сбыт отходов"
                        handleClose={()=> {

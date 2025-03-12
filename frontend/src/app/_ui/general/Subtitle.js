@@ -9,7 +9,7 @@ export default function Subtitle({  label = null,
     return (advertPrice) ? (
         <div className='flex items-center w-full justify-start space-x-3'>
             {label && <p className={`font-bold ${labelStyle}`}>{label}</p>}
-            <Price fontSize="text-base" advertTotalPrice={advertPrice}
+            <Price fontSize="text-base" advertTotalPrice={+advertPrice}
                    responseTotalPrice={+subTitle}/>
         </div>
     ) : (

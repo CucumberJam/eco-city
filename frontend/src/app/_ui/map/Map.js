@@ -4,7 +4,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 
-import {MapContainer, Marker, Popup, TileLayer, Tooltip,} from "react-leaflet";
+import {MapContainer, Marker, TileLayer, Tooltip,} from "react-leaflet";
 import {useEffect, useRef} from "react";
 import {getIconByRole} from "@/app/_ui/map/MapIcons";
 import LocationMarker from "@/app/_ui/map/LocationMarker";

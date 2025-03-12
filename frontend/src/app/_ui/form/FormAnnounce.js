@@ -6,22 +6,26 @@ const styles = {
         common: 'flex gap-1 items-center justify-center mb-5 rounded  my-0 mx-auto px-2 py-1',
         error: 'bg-red-200',
         success: 'bg-green-200',
-        warn: 'bg-orange-200'
+        warn: 'bg-orange-200',
+        history: 'bg-grey-200'
     },
     icon: {
         common: 'h-5 w-5 ',
         error: 'text-red-500',
         success: 'text-green-500',
-        warn: 'text-orange-500'
+        warn: 'text-orange-500',
+        history: 'text-grey-500'
     },
     message: {
         common: 'text-lg',
         error: 'text-red-600',
         success: 'text-green-600',
-        warn: 'text-orange-600'
+        warn: 'text-orange-600',
+        history: 'text-grey-600'
     },
 };
-export default function FormAnnounce({message, type = 'error', href = null, linkTitle = ''}){
+export default function FormAnnounce({message, type = 'error', href = null, linkTitle = '',
+topSpace = ' mt-10 '}){
     if(type === 'warning') return (
         <div className='mx-auto w-[90%] flex justify-center mt-10 text-center'>
             <div className="flex flex-col">
@@ -37,12 +41,12 @@ export default function FormAnnounce({message, type = 'error', href = null, link
             </div>
         </div>
     )
-    else if(type === 'success') return (
-        <div className='w-full flex justify-center mt-10'>
+    else if(type === 'success' || type === 'history') return (
+        <div className={`w-full flex justify-center text-center ${topSpace}`}>
             <div className="flex flex-col">
-                <div className={`${styles.block.common} ${styles.block.success}`}>
-                    <CheckBadgeIcon className={`${styles.icon.common} ${styles.icon.success}`}/>
-                    <div className={`${styles.message.common} ${styles.message.success}`}>
+                <div className={`${styles.block.common} ${styles.block[type]}`}>
+                    <CheckBadgeIcon className={`${styles.icon.common} ${styles.icon[type]}`}/>
+                    <div className={`${styles.message.common} ${styles.message[type]}`}>
                         {message}
                     </div>
                 </div>

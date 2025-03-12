@@ -16,7 +16,7 @@ export default function ResponseActions({
     const {open} = useModal();
     return (
         <>
-            {isUser ? <Button style={{marginTop: '40px'}} disabled={status === 'Отклонено'}
+            {isUser ? <Button style={{marginTop: '40px'}} disabled={status !== 'На рассмотрении'}
                               onClick={() => open(modalName.response)}>
                 Отменить отклик
             </Button> : (
@@ -28,11 +28,13 @@ export default function ResponseActions({
                         <Column width="w-full space-y-6 ">
                             <Button color='green' size="sm"
                                     style={{marginTop: '40px'}}
+                                    disabled={loading}
                                     onClick={handleSend}>
                                 Написать сообщение
                             </Button>
                             <Row style="justify-between space-x-3">
                                 <Button color='gray' className='w-36'
+                                        disabled={loading}
                                         onClick={()=> handleUpdate(false)}>
                                     Отклонить
                                 </Button>

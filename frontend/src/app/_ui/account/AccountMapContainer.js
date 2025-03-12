@@ -1,7 +1,7 @@
 "use client";
 import {useEffect, useRef} from "react";
 import {
-    accountMapModes,
+    accountMapModes, accountMapTabs,
     accountMapTabsIcons,
     accountMapTabsTitles, paginationOptions
 } from "@/app/_store/constants";

@@ -3,9 +3,9 @@ import TableCompanyName from "@/app/_ui/general/table/TableCompanyName";
 import TableCompanyWastes from "@/app/_ui/general/table/TableCompanyWastes";
 import TableCompanyDimension from "@/app/_ui/general/table/TableCompanyDimension";
 import Status from "@/app/_ui/general/Status";
+import TableCompanyStatus from "@/app/_ui/general/table/TableCompanyStatus";
 
 export default function AdvertTableBody({adverts, pickUpAdvertHandler}){
-    //console.log(Date.parse(adverts.rows[0].finishDate) < new Date);
     return (
         <>
             {adverts?.rows?.map(el => (
@@ -29,6 +29,9 @@ export default function AdvertTableBody({adverts, pickUpAdvertHandler}){
                                 date={el.finishDate}/>
                     </Table.Cell>
                     <Table.Cell className="text-center">{el?.totalPrice}</Table.Cell>
+                    <Table.Cell className="text-center">
+                        <TableCompanyStatus status={el?.status}/>
+                    </Table.Cell>
                 </Table.Row>
             ))}
         </>

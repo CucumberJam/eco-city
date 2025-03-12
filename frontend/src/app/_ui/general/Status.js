@@ -7,7 +7,7 @@ export default function Status({status, style = '', date = null}){
     return (
         <Badge color={statusColorsFlowBite[colorIndex]}
                className={`flex justify-center text-center w-32 py-2 px-3 font-bold ${style}`}>
-            {status}
+            {status === 'Отклонено' ? 'Архив' : status}
         </Badge>
     );
 }

@@ -95,10 +95,8 @@ const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
  * @access Private
  **/
 const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
-    console.log('HERE!')
     const userId = +req?.user?.id;
     const userRole = req?.user?.role;
-    console.log(req?.user?.role)
 
     if((userRole === 'RECEIVER') || (userRole === 'PRODUCER')){
         const adverts = await advert.findAll({
@@ -142,18 +140,30 @@ const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
  * @access Private
  **/
 const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
+    console.log('HERE!')
     const paramsId = +req?.params?.id
     const userId = +req?.user?.id;
-    if(paramsId !== userId) return next(new AppError('Данные о пользователе не могут быть предоставлены', 400));
-    const found = await user.findOne({
-        where:{
-            id: userId
-        },
-        attributes: {
-            exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
-        },
-    });
-    if(!found) return next(new AppError('Failed to get user', 400));
+    let found;
+    console.log(paramsId)
+    console.log(userId)
+    if(paramsId !== userId) {
+        found = await user.findOne({
+            where:{
+                id: paramsId
+            },
+            attributes: ['name', 'role']
+        });
+    }else{
+        found = await user.findOne({
+            where:{
+                id: userId
+            },
+            attributes: {
+                exclude: ['password', 'deletedAt', 'updatedAt', 'createdAt']
+            },
+        });
+    }
+    if(!found) return next(new AppError('Ошибка при получении участника', 400));
     return res.status(200).json({
         status: 'success',
         data: found

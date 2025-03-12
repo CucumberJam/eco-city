@@ -28,8 +28,8 @@ export default function ItemCard({item, clickHandler, mode  = 2 }){
                     {item.status && <div className='w-full flex justify-end'>
                         <Status status={item.status}/>
                     </div>}
-                    <TableCompanyName name={mode !== 2 ? item.user.name: item.name}
-                        role={mode !== 2 ? item.user.role : item.role}
+                    <TableCompanyName name={mode !== 2 ? item?.user?.name: item.name}
+                        role={mode !== 2 ? item.user?.role : item.role}
                         height="h-[60px]" width="min-w-[60px]"
                         nameFontSize="text-[16px]" roleFontSize="text-[14px]"/>
                     <figcaption className="p-4 text-sm">
@@ -37,7 +37,7 @@ export default function ItemCard({item, clickHandler, mode  = 2 }){
                                                   address={item.address}/>
                         : (
                             <div className=" mb-4 font-bold leading-relaxed text-gray-800 dark:text-gray-300">
-                                <Subtitle label="Количество: " subTitle={mode === 0 ? item.advert.amount : item.amount}/>
+                                <Subtitle label="Количество: " subTitle={mode === 0 ? item.advert?.amount : item?.amount}/>
                                 <TableCompanyDimension label="Ед.изм.:"
                                                        userDimensionId={mode === 0 ? item.advert.dimension : item.dimension}/>
                                 <TableCompanyWastes userWasteId={mode === 0 ? item.advert.waste : item.waste}
