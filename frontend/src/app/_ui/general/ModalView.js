@@ -28,7 +28,7 @@ export function ModalView(
                     <Modal.Footer>
                         <Button onClick={handleAccept}>{titleAccept}</Button>
                         <Button color="gray" onClick={handleRefusal}>{titleRefusal}</Button>
-                </Modal.Footer>}
+                    </Modal.Footer>}
             </Modal>
         </>
     );

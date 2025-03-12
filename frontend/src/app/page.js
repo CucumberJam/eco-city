@@ -4,7 +4,7 @@ import WasteContainer from "@/app/_ui/waste/WasteContainer";
 import MapPanel from "@/app/_ui/map/MapPanel";
 import {PublicMapProvider} from "@/app/_context/PublicMapProvider";
 import PaginatedCardsLayout from "@/app/_ui/general/PaginatedCardsLayout";
-import UserModal from "@/app/_ui/user/UserModal";
+import Modal from "@/app/_ui/general/Modal";
 import MapContainer from "@/app/_ui/map/MapContainer";
 export default async function Page() {
   return (
@@ -18,7 +18,7 @@ export default async function Page() {
                   <MapPanel/>
                   <MapContainer/>
                   <PaginatedCardsLayout/>
-                  <UserModal/>
+                  <Modal/>
               </PublicMapProvider>
           </PageContainer>
       </div>

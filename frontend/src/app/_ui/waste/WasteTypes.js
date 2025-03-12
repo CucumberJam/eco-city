@@ -1,29 +1,31 @@
 'use client';
 import Image from "next/image";
-export default function WasteTypes({wasteTypes = [], imgPath = 'plastic'}) {
+import {prepareName} from "@/app/_lib/helpers";
+export default function WasteTypes({waste = {}}) {
     return (
         <div className="space-y-6 text-base leading-relaxed
                         text-gray-500 dark:text-gray-400">
-            <h4 className="text-center text-[24px]">Описание видов отходов:</h4>
-            <ul className="w-[700px] flex flex-col items-center justify-between">
-                {wasteTypes.map(el => (
+            <h4 className="text-center text-[24px]">Подвиды, описание:</h4>
+            <ul className="w-[600px] flex flex-col items-center justify-between space-y-3">
+                {waste?.types?.map(el => (
                     <WasteItem key={el.code}
                                type={el}
-                               path={imgPath}/>
+                               path={waste.picturesPath}/>
                 ))}
             </ul>
         </div>
     );
 }
 function WasteItem({type, path}){
-        const pathPics = `../../../../public/articles/${path}/pics/${type.code}.png`;
-        const pathLabels = `../../../../public/articles/${path}/labels/${type.code}.png`;
+        const pathPics = `/articles/${path}/pics/${type.code}.png`;
+        const pathLabels = `/articles/${path}/labels/${type.code}.png`;
 
         return (
             <li className="w-full m-auto
-                            flex
+                            flex space-x-5
                             items-center justify-center
-                            gap-[16px]">
+                            py-2 px-3
+                            border-gray-200 border-2 rounded-xl">
                 <WasteTypeImage imgPath={pathPics}
                                 alt={type?.codeName || 'waste-type'}/>
                 <WasteTypeDescription imgPath={pathLabels}
@@ -32,13 +34,12 @@ function WasteItem({type, path}){
             </li>
         );
 }
-function WasteTypeImage({imgPath, alt, width = '273px', height = 'auto'}){
+function WasteTypeImage({imgPath, alt}){
     return (
     <div className="relative aspect-square
-                    rounded-lg"
-                    style={{width: width, height: height}}>
+                    rounded-lg">
         <Image src={imgPath}
-               placeholder='blur'
+               width={300} height={300}
                quality={90}
                alt={alt}/>
     </div>
@@ -47,16 +48,18 @@ function WasteTypeImage({imgPath, alt, width = '273px', height = 'auto'}){
 function WasteTypeDescription({wasteType, imgPath}){
     return (
         <div className="border-gray-400 rounded-md
-                        flex flex-col">
+                        flex flex-col w-[440px]">
             <h4 className="text-blue-500">{wasteType.codeName}</h4>
             <div className="flex items-start justify-between">
                 <div className="flex flex-col">
-                    <h5>{wasteType.name}</h5>
+                    <h5>{prepareName(wasteType.name)}</h5>
                     <p>{wasteType.description}</p>
                 </div>
-                <WasteTypeImage imgPath={imgPath}
-                                width="100px" height="100px"
-                                style={{marginTop: '10px'}}/>
+                <Image src={imgPath}
+                       width={100} height={100}
+                       quality={90}
+                       alt={wasteType.name}
+                       style={{marginTop: '10px'}}/>
             </div>
         </div>
     );
