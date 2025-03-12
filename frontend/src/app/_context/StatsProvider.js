@@ -20,7 +20,8 @@ function StatsMapProvider({children}) {
     // user paginated adverts:
     const {recognitionPaginatedObject: advertsRecognitionPaginatedObject,
         acceptPaginatedObject: advertsAcceptPaginatedObject,
-        performPaginatedObject: advertsPerformPaginatedObject
+        performPaginatedObject: advertsPerformPaginatedObject,
+        declinedPaginatedObject: advertsDeclinedPaginatedObject,
     } = useStatsPaginatedItems(getArgs, getAdvertsOfUser);
 
     // user paginated responses:
@@ -63,6 +64,7 @@ function StatsMapProvider({children}) {
                 resRec = await advertsRecognitionPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('На рассмотрении'));
                 resAcc = await advertsAcceptPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Принято'));
                 resPer = await advertsPerformPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Исполнено'));
+                resDec = await advertsDeclinedPaginatedObject.fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs('Отклонено'));
             }
             setIsFetching(prev => false);
             dataInitialized.current = true;
@@ -87,6 +89,7 @@ function StatsMapProvider({children}) {
             advertsRecognitionPaginatedObject,
             advertsAcceptPaginatedObject,
             advertsPerformPaginatedObject,
+            advertsDeclinedPaginatedObject,
             responsesRecognitionPaginatedObject,
             responsesAcceptPaginatedObject,
             responsesPerformPaginatedObject,

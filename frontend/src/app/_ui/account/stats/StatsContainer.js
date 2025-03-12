@@ -1,5 +1,5 @@
 "use client";
-import LazyChart from "@/app/_ui/general/LazyChart";
+import LazyChart from "@/app/_ui/general/charts/LazyChart";
 import AccountTabs from "@/app/_ui/account/AccountTabs";
 import {statsData} from "@/app/_store/constants";
 import {useStats} from "@/app/_context/StatsProvider";
