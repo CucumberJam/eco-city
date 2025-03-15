@@ -3,8 +3,7 @@ import Image from "next/image";
 import arrow from "../../../../public/arrow-right.svg";
 export default function WasteList({handleClick}){
     return (
-        <div className="w-[30%]
-                        flex flex-col gap-10">
+        <div className="flex flex-col gap-10">
             <h3 className="font-bold text-black text-3xl">
                 Виды отходов, подлежащих переработке:
             </h3>

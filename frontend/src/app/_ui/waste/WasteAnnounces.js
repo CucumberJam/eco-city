@@ -1,9 +1,9 @@
 import Image from "next/image";
 import {recycledWastes} from "@/app/_store/constants";
 
-export default function WasteAnnounces({clickHandler = null}){
+export default function WasteAnnounces({handleClick = null}){
     return (
-        <div className="w-[70%] mx-auto">
+        <div className="min-w-[60%] mx-auto">
             <div className='grid grid-cols-2 gap-4 grid-rows-3'>
                 {recycledWastes.map(el => (
                     <Image key={el.id}
@@ -13,7 +13,7 @@ export default function WasteAnnounces({clickHandler = null}){
                            className='rounded-xl cursor-pointer overflow-hidden'
                            quality={100}
                            alt="trash cans"
-                           onClick={()=> clickHandler?.(el)}/>
+                           onClick={()=> handleClick?.(el)}/>
                 ))}
             </div>
         </div>

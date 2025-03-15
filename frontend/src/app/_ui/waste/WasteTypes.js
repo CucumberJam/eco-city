@@ -10,20 +10,21 @@ export default function WasteTypes({waste = {}}) {
                 {waste?.types?.map(el => (
                     <WasteItem key={el.code}
                                type={el}
+                               hasLabels={waste.hasLabels}
                                path={waste.picturesPath}/>
                 ))}
             </ul>
         </div>
     );
 }
-function WasteItem({type, path}){
+function WasteItem({type, path, hasLabels = false}){
         const pathPics = `/articles/${path}/pics/${type.code}.png`;
-        const pathLabels = `/articles/${path}/labels/${type.code}.png`;
+        const pathLabels = hasLabels ? `/articles/${path}/labels/${type.code}.png` : null;
 
         return (
             <li className="w-full m-auto
                             flex space-x-5
-                            items-center justify-center
+                            items-start justify-center
                             py-2 px-3
                             border-gray-200 border-2 rounded-xl">
                 <WasteTypeImage imgPath={pathPics}
@@ -45,21 +46,21 @@ function WasteTypeImage({imgPath, alt}){
     </div>
     );
 }
-function WasteTypeDescription({wasteType, imgPath}){
+function WasteTypeDescription({wasteType, imgPath = null}){
     return (
         <div className="border-gray-400 rounded-md
                         flex flex-col w-[440px]">
-            <h4 className="text-blue-500">{wasteType.codeName}</h4>
+            <h4 className="text-blue-500">{prepareName(wasteType.codeName)}</h4>
             <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                     <h5>{prepareName(wasteType.name)}</h5>
                     <p>{wasteType.description}</p>
                 </div>
-                <Image src={imgPath}
-                       width={100} height={100}
-                       quality={90}
-                       alt={wasteType.name}
-                       style={{marginTop: '10px'}}/>
+                {imgPath && <Image src={imgPath}
+                        width={100} height={100}
+                        quality={90}
+                        alt={wasteType.name}
+                        style={{marginTop: '10px'}}/>}
             </div>
         </div>
     );
