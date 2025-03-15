@@ -54,7 +54,7 @@ const login = catchAsyncErrorHandler(async(req, res, next)=>{
     const token = generateToken({
         id: result.id,
     })
-    return res.status(400).json({
+    return res.status(200).json({
         status: 'success',
         token,
         data: result
