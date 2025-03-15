@@ -327,15 +327,35 @@ const recycledWastes = [
          ]
      },
 ]
-
-const nonRecycledWastes = [
+const slogan = 'Переработка отходов в каждом городе'
+const carouselImages = [
     {
-        name: 'пластик',
-        codeName: 'С/PAP',
-        code: 84,
-        alternativeNames: ['c/pap'],
-        description: 'Многослойная упаковка из бумаги, пластика и алюминия, которую привычно называют тетрапаком. Из С/PAP делают коробки для сока и молока, а также тубы-упаковки для чипсов вроде Pringles.' +
-            'В теории упаковку с маркировкой «84» можно переработать, однако это намного дороже и труднее, чем ресайклинг обычного пластика. Тетрапак легко пачкается, с трудом отмывается и гниёт, а грязную упаковку на переработку не принимают.',
+        id: 1,
+        path: '/baner/banner.jpg',
+        alt: 'rubbish-bins',
+        textColor: '#FFFFFF',
+        phrase: slogan,
+    },
+    {
+        id: 2,
+        path: '/baner/carton.jpg',
+        alt: 'cardboard',
+        textColor: '#FFFFFF',
+        phrase: slogan,
+    },
+    {
+        id: 3,
+        path: '/baner/bottles.jpg',
+        alt: 'bottles',
+        textColor: '#000000',
+        phrase: slogan,
+    },
+    {
+        id: 4,
+        path: '/baner/plastic.avif',
+        alt: 'plastic',
+        textColor: '#FFFFFF',
+        phrase: slogan,
     }
 ]
 
@@ -579,5 +599,5 @@ export {
     initialPagination,
     accountMapTabsTitles, accountMapTabsIcons,
     accountMapModes,
-    itemsCheckUpdateUser, statsData,
+    itemsCheckUpdateUser, statsData, carouselImages, slogan
 }
