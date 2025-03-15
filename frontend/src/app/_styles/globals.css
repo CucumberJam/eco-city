@@ -29,6 +29,10 @@
     }
   }
 }
+body [data-floating-ui-portal]{
+  height: 100vh;
+  overflow-y: hidden;
+}
 /* For data picker */
 .rdp {
   --rdp-cell-size: 32px !important;
