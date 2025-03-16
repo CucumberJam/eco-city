@@ -35,7 +35,15 @@ export default function MapFilters({
 
 
     return (
-        <div className="flex w-full px-3 justify-end gap-4 content-center h-fit">
+        <div className="flex
+        flex-row
+        sm:flex-col
+        md:flex-row
+        justify-start sm:justify-end
+        items-start sm:items-center
+        sm:w-fit xl:w-full
+        gap-4
+        px-3 content-center h-fit">
             {showRoles && <Filter data={rolesProps ? rolesProps : roles}
                      key={filters[0].urlName}
                      isDisabled={false}

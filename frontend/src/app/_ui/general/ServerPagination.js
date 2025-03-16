@@ -11,7 +11,8 @@ export default function ServerPagination({
                                              options = paginationOptions}){
 
     return (
-        <div className="w-full flex items-center justify-center space-x-2 mt-3">
+        <div className="max-w-[600px] sm:max-w-[750px] md:max-w-[90%] lg:max-w-[98%]
+        flex items-center justify-center space-x-2 mt-3">
             <Pagination showIcons
                         nextLabel="Вперёд"
                         previousLabel="Назад"

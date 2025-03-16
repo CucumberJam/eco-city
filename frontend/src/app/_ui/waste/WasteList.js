@@ -3,18 +3,37 @@ import Image from "next/image";
 import arrow from "../../../../public/arrow-right.svg";
 export default function WasteList({handleClick}){
     return (
-        <div className="flex flex-col gap-10">
-            <h3 className="font-bold text-black text-3xl">
+        <div className="flex flex-col
+                        gap-2 sm:gap-4 md:gap-5 lg:gap-8">
+            <h3 className="font-bold text-black
+            text-xl md:text-2xl lg:text-3xl">
                 Виды отходов, подлежащих переработке:
             </h3>
-            <ul className="w-[256px] gap-[20px]
-                            flex flex-col
-                            justify-between">
-                {recycledWastes. map(el => (
-                    <WasteItem key={el.name}
-                               waste={el}
-                               handleClick={handleClick}/>
-                ))}
+            <ul className=" flex
+                            flex-row md:flex-col
+                            sm:mx-0
+                            space-x-6 sm:space-x-0
+                            lg:ml-10
+                            sm:gap-[10px]">
+                <li key={1}>
+                    <ul className='flex flex-col gap-[10px]
+                                   w-[256px]'>
+                        {recycledWastes.slice(0, 3).map(el => (
+                            <WasteItem key={el.name}
+                                       waste={el}
+                                       handleClick={handleClick}/>
+                        ))}
+                    </ul>
+                </li>
+                <li key={2}>
+                    <ul className='flex flex-col gap-[10px] w-[256px]'>
+                        {recycledWastes.slice(3).map(el => (
+                            <WasteItem key={el.name}
+                                       waste={el}
+                                       handleClick={handleClick}/>
+                        ))}
+                    </ul>
+                </li>
             </ul>
         </div>
     );

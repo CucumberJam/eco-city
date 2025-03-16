@@ -11,14 +11,20 @@ export default function WasteContainer(){
         open(waste.id);
     }
     return (
-        <div className="w-full h-auto
-                        flex flex-col
-                        items-start justify-between px-4
-                        mb-10 mt-3">
-            <div className='flex items-center justify-between'>
+            <div className='w-[600px] sm:w-[700px] md:w-[800px] lg:w-full
+                            md:m-x-auto
+                            md:mt-6
+                            px-2 sm:px-4
+                            mb-5 sm:mb-10 mt-3
+                            flex
+                            flex-col
+                            md:flex-row
+                            sm:items-center md:items-start
+                            sm:justify-between
+                            space-x-0 sm:space-x-3
+                            space-y-3 md:space-y-0'>
                 <WasteList handleClick={selectWaste}/>
                 <WasteAnnounces handleClick={selectWaste}/>
             </div>
-        </div>
     );
 }

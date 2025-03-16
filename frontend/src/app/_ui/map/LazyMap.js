@@ -36,7 +36,9 @@ export default function LazyMap({
 
     if(!withUsers) return (
         <>
-            <div className="bg-white mx-auto my5 w-[98%] h-full relative z-10">
+            <div className="max-w-[600px] sm:max-w-[750px] md:max-w-[90%] lg:max-w-[98%]
+            lg:mx-auto
+            bg-white my5 h-full relative z-10">
                 <Map position={[Number.parseFloat(currentCity.latitude), Number.parseFloat(currentCity.longitude)]}
                      pickedUpPos={pickedUpPos}
                      withUsers={false}
@@ -47,7 +49,9 @@ export default function LazyMap({
     );
     return (
         <>
-            <div className="bg-white mx-auto my5 w-[98%] h-[548px] relative z-10">
+            <div className="max-w-[600px] sm:max-w-[750px] md:max-w-[90%] lg:max-w-[98%]
+            lg:mx-auto
+            bg-white my5 h-[548px] relative z-10">
                 <Map users={items}
                      position={currentCity ? [currentCity.latitude, currentCity.longitude] : [4.79029, -75.69003]}
                      activeUser={activeItem}
