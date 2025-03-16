@@ -15,6 +15,15 @@ export const authRoutes = [
     '/login',
     '/register'
 ];
+
+/**
+ * An array of routes that are used for admins needs
+ * * These routes will redirect logged  users to /admin
+ * * @type {string[]}
+ **/
+export const protectedRoutes = [
+    '/admin'
+];
 /*
 * The prefix to authentication routes
 * Routes that start with this prefix are used for API
