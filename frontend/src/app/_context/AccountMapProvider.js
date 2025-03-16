@@ -95,7 +95,6 @@ function AccountMapProvider({children}) {
                 args.mode = value;
             }
         }
-        console.log(args)
         setAdditional(prev => args);
         const res = await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1,  args);
         setActiveMode(args.mode);

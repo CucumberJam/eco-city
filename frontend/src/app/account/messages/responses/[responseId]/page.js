@@ -13,9 +13,6 @@ export default async function Page(props) {
     const session = await auth();
     const {status, data} = await getResponseById(params.responseId);
     const advertUser = await geOtherUserNameRoleById(+data.advert.userId)
-    console.log(data.advert.userId)
-    console.log(advertUser)
-    console.log(session.user.id)
     return (
         <Suspense fallback={<Spinner/>}
                   key={status}>

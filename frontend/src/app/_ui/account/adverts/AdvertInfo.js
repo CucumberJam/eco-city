@@ -65,7 +65,6 @@ export default function AdvertInfo({advert, handleClose = null}){
                 }, 500);
             }
         }catch (e) {
-            console.log(e);
             setIsFetching(prev => false);
             hasError?.('default', e.message);
         }

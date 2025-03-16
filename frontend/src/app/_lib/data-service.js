@@ -111,7 +111,6 @@ function checkUpdateUserItem(userData, params, formData, itemName,
 }
 function checkUpdateUserWork(userData, params, formData, itemName, isDays = false, doubles = null){
     let item = formData.get(itemName);
-    console.log(item)
     if(isDays)  item = item.split(',').map(el => workingDaysDB[el]).join(',')
     if(userData[itemName].join(',') !== item){
         let res = item.split(',');

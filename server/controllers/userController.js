@@ -76,7 +76,6 @@ const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
 const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
     if(Object.keys(req.body).length === 0) return next(new AppError('Параметров для изменения данных о Пользователе не передано', 400));
     const userId = +req?.user?.id;
-    console.log(req.body);
     const updatedUser = await user.update({...req.body}, {
         where: {id: +userId}
     });
@@ -140,12 +139,9 @@ const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
  * @access Private
  **/
 const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
-    console.log('HERE!')
     const paramsId = +req?.params?.id
     const userId = +req?.user?.id;
     let found;
-    console.log(paramsId)
-    console.log(userId)
     if(paramsId !== userId) {
         found = await user.findOne({
             where:{

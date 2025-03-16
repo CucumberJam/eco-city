@@ -31,7 +31,8 @@ export default function PasswordForm(){
             try{
                 await update({ ...session.user, ...resCheck.data });
             } catch (e) {
-                console.log(e.message)
+                setIsFetching(prev => false);
+                hasError?.('default', e.message);
             }
             setIsFetching(prev => false);
             setSuccess(true);

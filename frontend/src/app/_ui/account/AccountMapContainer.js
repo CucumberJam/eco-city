@@ -35,7 +35,7 @@ export default function AccountMapContainer({userData}){
     const {currentOpen, close, open} = useModal();
 
     useEffect(()=>{
-        initUserData(userData).then(res=> console.log(res));
+        initUserData(userData);
     }, []);
 
     function showModalWithActiveItem(el){

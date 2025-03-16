@@ -304,7 +304,6 @@ const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
         offset: req.query?.offset || 0,
         limit: req.query?.limit || 10,
     });
-    console.log(responsesOfAdvert)
     if(responsesOfAdvert) resObj.responses = responsesOfAdvert;
     return res.status(200).json(resObj);
 });

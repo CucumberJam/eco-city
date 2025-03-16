@@ -61,7 +61,6 @@ export default function SignUpForm() {
                 await signUpFormDispatch(8);
             }
         } catch (e) {
-            console.log(e);
             setIsFetching(prev => false);
             hasError?.('default', e.message);
         }

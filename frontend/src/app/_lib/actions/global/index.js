@@ -92,7 +92,6 @@ export async function fetchCompanyByOGRN(ogrn, useApiFNS = true){
             }
         }
     }catch (e) {
-        console.log(e);
         return {success: false, message: 'Ошибка получения данных о компании'}
     }
 }

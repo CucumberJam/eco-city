@@ -31,7 +31,7 @@ export default function ResponseContainer({userData}){
 
         initResponsesContext?.(userData, currentCity?.id)
             .then(res => {
-                if(!res.success) console.log(res.message)
+                if(!res.success) throw new Error(res.message)
             })
             .catch(err => console.log(err.message));
 

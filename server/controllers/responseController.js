@@ -258,18 +258,18 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
     const {id, status} = req.query; //status ='Отклонено' | 'Принято'
-    console.log('currentResponseId: ', id)
+    //console.log('currentResponseId: ', id)
 
     //убедились что пользователь действительно владелец объявления:
     const foundAdvert = await advert.findByPk(advertId);
-    console.log('foundAdvert: ', foundAdvert.dataValues)
+    //console.log('foundAdvert: ', foundAdvert.dataValues)
 
     if(!foundAdvert) return next(new AppError("Публикация была удалена", 400));
     if(+foundAdvert?.dataValues?.userId !== +userId) return next(new AppError("Публикация не принадлежит Пользователю", 400));
 
     //'На рассмотрении', 'Архив = Отклонено', 'Принято', 'Исполнено'
     const advertOldStatus = foundAdvert?.dataValues?.status;
-    console.log('advertOldStatus: ', advertOldStatus);
+    //console.log('advertOldStatus: ', advertOldStatus);
 
     if(advertOldStatus === 'Исполнено' || advertOldStatus === 'Отклонено'){
         // если у объявления статус "Исполнено" или 'Архив',
@@ -288,7 +288,7 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
                 status: 'Принято'
             }
         });
-        console.log('oldResponse: ', oldResponse?.dataValues);
+        //console.log('oldResponse: ', oldResponse?.dataValues);
 
         if(oldResponse){ // обновить статус у старого отклика, если это другой отклик
             //  проверить id старого и нового откликов
@@ -324,7 +324,7 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
             advertId: +advertId,
         }
     });
-    console.log('updatedResponse: ', updatedResponse);
+    //console.log('updatedResponse: ', updatedResponse);
     if(!updatedResponse) return next(new AppError('Ошибка при обновлении отклика', 400));
 
     //изменить объявление, поменяв его статус ('Принято', 'Исполнено', 'Архив'):
@@ -335,7 +335,7 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
             id: +advertId
         }
     });
-    console.log('updatedAdvert: ', updatedAdvert);
+    //console.log('updatedAdvert: ', updatedAdvert);
     if(!updatedAdvert) return next(new AppError('Ошибка при обновлении публикации по отклику', 400));
 
     return res.status(200).json({
