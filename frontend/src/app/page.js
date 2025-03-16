@@ -9,10 +9,8 @@ import MapContainer from "@/app/_ui/map/MapContainer";
 import WasteArticles from "@/app/_ui/waste/WasteArticles";
 export default async function Page() {
   return (
-      <div>
-          <div className="relative w-full">
-              <CarouselComponent/>
-          </div>
+      <div className='w-full'>
+          <CarouselComponent/>
           <PageContainer>
               <WasteContainer/>
               <PublicMapProvider>

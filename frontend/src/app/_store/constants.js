@@ -724,6 +724,8 @@ const wasteArticles = [
     },
 
 ]
+const slogStyle = 'absolute z-10 font-bold right-1/4 top-24 text-right w-[400px] text-white leading-[4rem]'
+
 export {
     statusTitle, daysNames, recycledWastes, REG_EXPR_WEBSITES,
     workingDays, defaultStartTime, defaultEndTime, REG_EXPR_EMAIL, REG_EXPR_PHONE,
@@ -738,5 +740,5 @@ export {
     accountMapTabsTitles, accountMapTabsIcons,
     accountMapModes,
     itemsCheckUpdateUser, statsData, carouselImages, slogan,
-    wasteArticles
+    wasteArticles, slogStyle
 }
