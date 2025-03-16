@@ -15,10 +15,12 @@ export default function MapAddressPoint({
                                         height = 'h-[400px]',
                                         zIndex = ''}){
     const isInitialized = useRef(false);
+
     useEffect(() => {
         isInitialized.current = true;
         const elem = document.querySelector('.leaflet-control-attribution');
-        elem.style.display = 'none'
+        //elem.style.display = 'none';
+        elem?.remove()
         return () => {
             isInitialized.current = false;
         };

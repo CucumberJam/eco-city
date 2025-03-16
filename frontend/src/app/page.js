@@ -6,6 +6,7 @@ import {PublicMapProvider} from "@/app/_context/PublicMapProvider";
 import PaginatedCardsLayout from "@/app/_ui/general/PaginatedCardsLayout";
 import Modal from "@/app/_ui/general/Modal";
 import MapContainer from "@/app/_ui/map/MapContainer";
+import WasteArticles from "@/app/_ui/waste/WasteArticles";
 export default async function Page() {
   return (
       <div>
@@ -20,6 +21,7 @@ export default async function Page() {
                   <PaginatedCardsLayout/>
                   <Modal/>
               </PublicMapProvider>
+              <WasteArticles/>
           </PageContainer>
       </div>
   );
