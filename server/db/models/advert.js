@@ -1,8 +1,12 @@
 'use strict';
-const {Deferrable, DataTypes} = require('sequelize');
+/*const {Deferrable, DataTypes} = require('sequelize');
 const sequelize = require("../../config/database");
 const AppError = require("../../utils/appError");
-const response = require("../../db/models/response");
+const response = require("../../db/models/response");*/
+
+import {Deferrable, DataTypes} from 'sequelize';
+import sequelize from "../../config/database.js";
+import response from "../../db/models/response.js";
 
 const advert = sequelize.define('advert',
     {
@@ -264,5 +268,5 @@ advert.hasMany(response, {
 response.belongsTo(advert, {
   foreignKey: 'advertId'
 });
-
-module.exports = advert;
+export default advert;
+//module.exports = advert;

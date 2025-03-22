@@ -1,4 +1,4 @@
-const router = require('express').Router();
+/*const router = require('express').Router();
 const {authentication, restrictTo} = require("../controllers/authController");
 const {getOtherResponses,
     getResponsesByUserId,
@@ -7,7 +7,21 @@ const {getOtherResponses,
     deleteResponse,
     getResponseById,
     getResponsesByAdvertId,
-} = require("../controllers/responseController");
+} = require("../controllers/responseController");*/
+
+import Router from "express";
+import {authentication, restrictTo} from "../controllers/authController.js";
+import {getOtherResponses,
+    getResponsesByUserId,
+    createResponse,
+    updateResponseByAdvertId,
+    deleteResponse,
+    getResponseById,
+    getResponsesByAdvertId,
+} from "../controllers/responseController.js";
+
+//const router = route.Router();
+const router = Router();
 
 router.route('/')
     .get(authentication,
@@ -38,4 +52,5 @@ router.route('/advert/:advertId')
         restrictTo('ADMIN', 'PRODUCER', 'RECEIVER'),
         getResponsesByAdvertId);
 
-module.exports = router;
+export default router;
+//module.exports = router;

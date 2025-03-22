@@ -1,7 +1,13 @@
 'use strict';
+/*
 const {Sequelize, DataTypes} = require('sequelize');
 const sequelize = require("../../config/database");
 const wasteType = require("../../db/models/wasteType");
+*/
+import {Sequelize, DataTypes} from 'sequelize';
+import sequelize from "../../config/database.js";
+import wasteType from "../../db/models/wastetype.js";
+
 
 const waste = sequelize.define('waste',
     {
@@ -53,4 +59,7 @@ waste.hasMany(wasteType, {
 wasteType.belongsTo(waste, {
   foreignKey: 'typeId'
 });
-module.exports = waste;
+/*
+module.exports = waste;*/
+
+export default waste;

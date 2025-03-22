@@ -1,12 +1,11 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const message = require("../db/models/message");
-const dialog = require("../db/models/dialog");
-const user = require("../db/models/user");
-const AppError = require("../utils/appError");
-const {Op} = require("sequelize");
-const {removeCreatedFields} = require("./authController");
-
-const getMessages = catchAsyncErrorHandler(async (req, res, next) => {
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import message from "../db/models/message.js";
+import dialog from "../db/models/dialog.js";
+import user from "../db/models/user.js";
+import AppError from "../utils/appError.js";
+import {Op} from "sequelize";
+import {removeCreatedFields} from "./authController.js";
+export const getMessages = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const dialogId = +req?.params.dialogId;
 
@@ -31,7 +30,7 @@ const getMessages = catchAsyncErrorHandler(async (req, res, next) => {
         data: { count: messages.count, rows: messages.rows.reverse() }
     });
 });
-const postMessage = catchAsyncErrorHandler(async (req, res, next)=>{
+export const postMessage = catchAsyncErrorHandler(async (req, res, next)=>{
     const userId = +req?.user?.id;
     const { dialogId, text, toUserId } = req.body;
     const newMessage = await message.create({
@@ -54,7 +53,7 @@ const postMessage = catchAsyncErrorHandler(async (req, res, next)=>{
         data: result
     });
 });
-const updateMessage = catchAsyncErrorHandler(async (req, res, next)=>{
+export const updateMessage = catchAsyncErrorHandler(async (req, res, next)=>{
     const userId = +req?.user?.id;
     const messageId = +req?.params?.messageId;
     const needsSetToRead = req.body?.isRead || false;
@@ -88,5 +87,3 @@ const updateMessage = catchAsyncErrorHandler(async (req, res, next)=>{
         data: updatedMessage
     });
 });
-
-module.exports = {getMessages, postMessage, updateMessage}

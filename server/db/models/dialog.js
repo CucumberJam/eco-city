@@ -1,7 +1,13 @@
 'use strict';
+/*
 const {DataTypes, Deferrable} = require('sequelize');
 const sequelize = require("../../config/database");
 const message = require("../../db/models/message");
+*/
+import {DataTypes, Deferrable} from 'sequelize';
+import sequelize from "../../config/database.js";
+import message from "../../db/models/message.js";
+
 
 const dialog  = sequelize.define('dialog',
     {
@@ -77,5 +83,5 @@ message.belongsTo(dialog, {
   foreignKey: 'dialogId'
 });
 
-
-module.exports = dialog;
+export default dialog;
+//module.exports = dialog;

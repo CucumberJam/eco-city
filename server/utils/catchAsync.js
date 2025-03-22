@@ -3,4 +3,5 @@ const catchAsyncErrorHandler = (func) =>{
         func(req, res, next).catch(next)
     }
 }
-module.exports = catchAsyncErrorHandler;
+export default catchAsyncErrorHandler;
+//module.exports = catchAsyncErrorHandler;

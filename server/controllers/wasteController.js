@@ -1,11 +1,9 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const waste = require("../db/models/waste");
-const wasteType = require("../db/models/wasteType");
-const AppError = require("../utils/appError");
-const {removeCreatedFields} = require('./authController')
-const advert = require("../db/models/advert");
-
-const getWastes = catchAsyncErrorHandler(async (req, res, next) => {
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import waste from "../db/models/waste.js";
+import wasteType from "../db/models/wasteType.js";
+import AppError from "../utils/appError.js";
+import {removeCreatedFields} from './authController.js';
+export const getWastes = catchAsyncErrorHandler(async (req, res, next) => {
     let wastes = await waste.findAll({
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
     });
@@ -15,7 +13,7 @@ const getWastes = catchAsyncErrorHandler(async (req, res, next) => {
         data: wastes
     });
 });
-const createWaste = catchAsyncErrorHandler(async(req, res, next)=>{
+export const createWaste = catchAsyncErrorHandler(async(req, res, next)=>{
     const { name } = req.body;
 
     const newWaste = await waste.create({name});
@@ -27,8 +25,7 @@ const createWaste = catchAsyncErrorHandler(async(req, res, next)=>{
         data: result
     })
 });
-
-const getWasteTypesByWasteId = catchAsyncErrorHandler(async(req, res, next)=>{
+export const getWasteTypesByWasteId = catchAsyncErrorHandler(async(req, res, next)=>{
     const types = await wasteType.findAll({
         where: {
             typeId: +req.params?.wasteId // get wasteId
@@ -41,7 +38,7 @@ const getWasteTypesByWasteId = catchAsyncErrorHandler(async(req, res, next)=>{
         data: types
     });
 });
-const getWasteTypes = catchAsyncErrorHandler(async(req, res, next)=>{
+export const getWasteTypes = catchAsyncErrorHandler(async(req, res, next)=>{
     const types = await wasteType.findAll({
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
     });
@@ -51,7 +48,7 @@ const getWasteTypes = catchAsyncErrorHandler(async(req, res, next)=>{
         data: types
     });
 });
-const createWasteType = catchAsyncErrorHandler(async(req, res, next)=>{
+export const createWasteType = catchAsyncErrorHandler(async(req, res, next)=>{
     const { name, typeId } = req.body;
     const newWasteType = await wasteType.create({name, typeId});
     if(!newWasteType) return next(new AppError('Failed to create the wasteType', 400));
@@ -69,5 +66,3 @@ const createWasteType = catchAsyncErrorHandler(async(req, res, next)=>{
         data: result
     })
 });
-
-module.exports = {getWastes, createWaste, getWasteTypesByWasteId, createWasteType, getWasteTypes};

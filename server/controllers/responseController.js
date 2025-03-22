@@ -1,11 +1,11 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const response = require("../db/models/response");
-const AppError = require("../utils/appError");
-const advert = require("../db/models/advert");
-const user = require("../db/models/user");
-const {removeCreatedFields} = require("./authController");
-const {Op, Sequelize} = require("sequelize");
-const getDBFilterByDatePeriod = require("../utils/helpers");
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import response from "../db/models/response.js";
+import AppError from "../utils/appError.js";
+import advert from "../db/models/advert.js";
+import user from "../db/models/user.js";
+import {removeCreatedFields} from "./authController.js";
+import {Op, Sequelize} from "sequelize";
+import getDBFilterByDatePeriod from "../utils/helpers.js";
 
 /**
  * Метод возвращает список откликов других участников
@@ -22,7 +22,7 @@ const getDBFilterByDatePeriod = require("../utils/helpers");
  * @route GET/api/v1/responses
  * @access Private
  **/
-const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
+export const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     let {adverts, offset, limit, cityId, wastes, wasteTypes, query} = req?.query;
     if(!adverts || adverts?.length === 0){
@@ -124,7 +124,7 @@ const getOtherResponses = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/responses/:userId
  * @access Private
  **/
-const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
+export const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     if(+req?.params?.userId !== +userId) return next(new AppError("id пользователя не соответствует url-param", 400));
     let {offset, limit, status, period, needStats} = req?.query;
@@ -220,7 +220,7 @@ const getResponsesByUserId = catchAsyncErrorHandler(async (req, res, next) => {
  * @route POST/api/v1/responses
  * @access Private
  **/
-const createResponse = catchAsyncErrorHandler(async (req, res, next) => {
+export const createResponse = catchAsyncErrorHandler(async (req, res, next) => {
     const formData = req?.body?.formData;
     if(!formData) return;
     const newResponse = await response.create({
@@ -254,7 +254,7 @@ const createResponse = catchAsyncErrorHandler(async (req, res, next) => {
  * @route PATCH/api/v1/responses/:advertId
  * @access Private
  **/
-const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
+export const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
     const {id, status} = req.query; //status ='Отклонено' | 'Принято'
@@ -351,7 +351,7 @@ const updateResponseByAdvertId = catchAsyncErrorHandler(async (req, res, next) =
  * @route DELETE/api/v1/responses/:responseId
  * @access Private
  **/
-const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
+export const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const responseId = +req?.params?.responseId;
 
@@ -378,7 +378,7 @@ const deleteResponse = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/responses/response/:responseId
  * @access Private
  **/
-const getResponseById = catchAsyncErrorHandler(async (req, res, next)=>{
+export const getResponseById = catchAsyncErrorHandler(async (req, res, next)=>{
     const responseId = +req?.params?.responseId;
     if(!responseId) return next(new AppError("No response id presented", 400));
 
@@ -422,7 +422,7 @@ const getResponseById = catchAsyncErrorHandler(async (req, res, next)=>{
  * @route GET/api/v1/responses/advert/:advertId
  * @access Private
  **/
-const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
+export const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params?.advertId;
     if(!advertId) return next(new AppError("Не представлено id публикации", 400));
@@ -470,12 +470,3 @@ const getResponsesByAdvertId = catchAsyncErrorHandler(async (req, res, next) => 
     });
 });
 
-module.exports = {
-    getOtherResponses,
-    getResponsesByUserId,
-    createResponse,
-    updateResponseByAdvertId,
-    deleteResponse,
-    getResponseById,
-    getResponsesByAdvertId,
-}

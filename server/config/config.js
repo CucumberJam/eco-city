@@ -1,5 +1,5 @@
-require('dotenv').config({path: `${process.cwd()}/.env`}); //import 'dotenv/config'
-module.exports = {
+import 'dotenv/config' //require('dotenv').config({path: `${process.cwd()}/.env`});
+export default {
   development: {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,

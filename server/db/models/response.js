@@ -1,8 +1,11 @@
 'use strict';
-const {Deferrable, DataTypes} = require('sequelize');
-const sequelize = require("../../config/database");
+/*const {Deferrable, DataTypes} = require('sequelize');
+const sequelize = require("../../config/database");*/
 
-module.exports = sequelize.define('response',
+import {Deferrable, DataTypes} from 'sequelize';
+import sequelize from "../../config/database.js";
+
+const response = sequelize.define('response',
     {
       id: {
         allowNull: false,
@@ -160,3 +163,5 @@ module.exports = sequelize.define('response',
       modelName: 'response'
     }
 )
+export default response;
+
