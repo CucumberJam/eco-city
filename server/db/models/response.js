@@ -1,7 +1,4 @@
 'use strict';
-/*const {Deferrable, DataTypes} = require('sequelize');
-const sequelize = require("../../config/database");*/
-
 import {Deferrable, DataTypes} from 'sequelize';
 import sequelize from "../../config/database.js";
 

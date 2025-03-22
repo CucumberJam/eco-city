@@ -1,12 +1,7 @@
 'use strict';
-/*
-const {DataTypes, Deferrable} = require('sequelize');
-const sequelize = require("../../config/database");
-const message = require("../../db/models/message");
-*/
 import {DataTypes, Deferrable} from 'sequelize';
 import sequelize from "../../config/database.js";
-import message from "../../db/models/message.js";
+import message from "./message.js";
 
 
 const dialog  = sequelize.define('dialog',

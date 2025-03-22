@@ -1,10 +1,4 @@
-/*const express = require('express');
-require('dotenv').config({path: `${process.cwd()}/.env`});
-const setAppToRoutes = require('./routes/routes');
-const cors= require('cors');
-const AppError = require("./utils/appError");
-const catchAsyncErrorHandler = require('./utils/catchAsync');
-const globalErrorHandler = require("./controllers/errorController");*/
+import path from 'path';
 import express from 'express';
 import 'dotenv/config';
 import setAppToRoutes from './routes/routes.js';
@@ -13,6 +7,9 @@ import AppError from "./utils/appError.js";
 import catchAsyncErrorHandler from './utils/catchAsync.js';
 import globalErrorHandler from "./controllers/errorController.js";
 const app = express();
+
+let test = path.resolve('');
+console.log(test)
 
 app.use(express.json());
 app.use(cors({

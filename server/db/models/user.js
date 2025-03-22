@@ -1,20 +1,12 @@
 'use strict';
-/*const {Deferrable, DataTypes} = require('sequelize');
-const sequelize = require("../../config/database");
-const bcrypt = require('bcrypt');
-const AppError = require("../../utils/appError");
-const advert = require("../../db/models/advert");
-const dialog = require("../../db/models/dialog");
-const message = require("../../db/models/message");
-const response = require("../../db/models/response");*/
 import {Deferrable, DataTypes} from 'sequelize';
 import sequelize from "../../config/database.js";
 import bcrypt from 'bcrypt';
 import AppError from "../../utils/appError.js";
-import advert from "../../db/models/advert.js";
-import dialog from "../../db/models/dialog.js";
-import message from "../../db/models/message.js";
-import response from "../../db/models/response.js";
+import advert from "./advert.js";
+import dialog from "./dialog.js";
+import message from "./message.js";
+import response from "./response.js";
 
 const user = sequelize.define('user',
     {
