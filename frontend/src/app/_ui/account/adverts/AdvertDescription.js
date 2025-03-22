@@ -33,12 +33,12 @@ export default function AdvertDescription({advert, responses}){
     const acceptedResponse = useMemo(()=>{
         if(advert.status === 'На рассмотрении' || advert.status === 'Отклонено') return null;
         return responses.rows.find(el => el.status === advert.status);
-    }, [advert?.status]);
+    }, [advert?.status, responses?.rows?.length]);
 
     const showPerformBtn = useMemo(()=>{
         if(!acceptedResponse || advert.status === 'На рассмотрении' || advert.status === 'Отклонено') return false;
         return new Date(advert.finishDate) < new Date();
-    }, [advert?.finishDate]);
+    }, [advert?.finishDate, acceptedResponse]);
 
     const {
         items,
@@ -146,7 +146,7 @@ export default function AdvertDescription({advert, responses}){
                         <Button className='mt-5'
                                 onClick={makeAdvertHistory}
                                 disabled={loading}>
-                            Переместить публикацию в "Архив"
+                            Переместить публикацию в &quot;Архив&quot;
                         </Button>
                     )}
                 </>
@@ -171,7 +171,7 @@ export default function AdvertDescription({advert, responses}){
                         {(advert.status === 'Принято' && showPerformBtn) && (
                             <Button onClick={makeAdvertPerformed}
                                     disabled={loading}>
-                                Изменить статус публикации на "Исполнено"
+                                Изменить статус публикации на &quot;Исполнено&quot;
                             </Button>
                         )}
                     </div>

@@ -51,7 +51,7 @@ export default function EditForm({userData}){//{userData}
                 setWarning(message);
             }
         }).catch(err => hasError('default', err.message));
-    }, []);
+    }, [userData?.role]);
     async function handleForm(event){
         event.preventDefault();
         const formData = new FormData(event.currentTarget);

@@ -12,7 +12,7 @@ export default function useDimensions(dimensionsAPI, currentDimensionId = null){
         if(currentDimensionId){
             setFormDimension(currentDimensionId);
         }else setFormDimension(dimensionsAPI[0].id + '');
-    }, [currentDimensionId]);
+    }, [dimensions.length, dimensionsAPI?.length, setDimensions, currentDimensionId]);
 
 
     return {dimensions, formDimension, setFormDimension};
