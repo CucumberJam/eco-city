@@ -1,8 +1,8 @@
 'use strict';
-const {DataTypes} = require('sequelize');
-const sequelize = require("../../config/database");
+import {DataTypes} from 'sequelize';
+import sequelize from "../../config/database.js";
 
-module.exports = sequelize.define('role',
+const role = sequelize.define('role',
     {
       id: {
         allowNull: false,
@@ -52,3 +52,4 @@ module.exports = sequelize.define('role',
       freezeTableName: true,
       modelName: 'role'
     })
+export default role

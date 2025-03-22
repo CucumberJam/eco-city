@@ -1,8 +1,8 @@
 'use strict';
-const {DataTypes} = require('sequelize');
-const sequelize = require("../../config/database");
+import {DataTypes} from 'sequelize';
+import sequelize from "../../config/database.js";
 
-module.exports = sequelize.define('city',
+const city = sequelize.define('city',
     {
         id: {
         allowNull: false,
@@ -84,3 +84,5 @@ module.exports = sequelize.define('city',
       freezeTableName: true,
       modelName: 'city'
     })
+export default city;
+//module.exports = city;

@@ -1,9 +1,9 @@
-const dimension = require('../db/models/dimension');
-const catchAsyncErrorHandler = require('../utils/catchAsync');
-const AppError = require("../utils/appError");
-const {removeCreatedFields} = require("./authController");
+import dimension from '../db/models/dimension.js';
+import catchAsyncErrorHandler from '../utils/catchAsync.js';
+import AppError from "../utils/appError.js";
+import {removeCreatedFields} from "./authController.js";
 
-const getDimensions = catchAsyncErrorHandler(async (req, res, next) => {
+export const getDimensions = catchAsyncErrorHandler(async (req, res, next) => {
     const dimensions = await dimension.findAll({
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
     });
@@ -13,7 +13,7 @@ const getDimensions = catchAsyncErrorHandler(async (req, res, next) => {
         data: dimensions
     });
 });
-const createDimension = catchAsyncErrorHandler(async(req, res, next)=>{
+export const createDimension = catchAsyncErrorHandler(async(req, res, next)=>{
     const newDimension = await dimension.create({
         fullName: req.body.fullName,
         shortName: req.body.shortName || null
@@ -26,5 +26,3 @@ const createDimension = catchAsyncErrorHandler(async(req, res, next)=>{
         data: result
     })
 });
-
-module.exports = {getDimensions, createDimension};

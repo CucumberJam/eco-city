@@ -1,8 +1,8 @@
 'use strict';
-const {Sequelize, DataTypes, Deferrable} = require('sequelize');
-const sequelize = require("../../config/database");
+import {DataTypes, Deferrable} from 'sequelize';
+import sequelize  from "../../config/database.js";
 
-module.exports = sequelize.define('wasteType',
+const wasteType = sequelize.define('wasteType',
     {
       id: {
         allowNull: false,
@@ -51,10 +51,11 @@ module.exports = sequelize.define('wasteType',
         type: DataTypes.DATE
       },
       deletedAt: {
-        type: Sequelize.DATE
+        type: DataTypes.DATE
       }
     }, {
       paranoid: true,
       freezeTableName: true,
       modelName: 'wasteType'
     })
+export default wasteType;

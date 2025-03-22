@@ -1,11 +1,12 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const advert = require("../db/models/advert");
-const user = require("../db/models/user");
-const {Op} = require("sequelize");
-const AppError = require("../utils/appError");
-const {removeCreatedFields} = require("./authController");
-const response = require("../db/models/response");
-const getDBFilterByDatePeriod = require("../utils/helpers");
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import advert from "../db/models/advert.js";
+import user from "../db/models/user.js";
+import {Op} from "sequelize";
+import AppError from "../utils/appError.js";
+import {removeCreatedFields} from "./authController.js";
+import response from "../db/models/response.js";
+import getDBFilterByDatePeriod from "../utils/helpers.js";
+
 /**
  * Метод возвращает список публикаций других участников
  * для пользователя с ролью RECYCLER / ADMIN / RECEIVER
@@ -20,7 +21,7 @@ const getDBFilterByDatePeriod = require("../utils/helpers");
  * @route GET/api/v1/adverts/
  * @access Private
  **/
-const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
+export const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const options = {
         userId: { // только чужие объявления
@@ -90,7 +91,7 @@ const getAdverts = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/adverts/:userId
  * @access Private
  **/
-const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
+export const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     if(+req?.params?.userId !== +userId) return next(new AppError("User id doesn't match url-params", 400));
     let {offset, limit, cityId, wastes, wasteTypes, query, status, period, needStats} = req?.query;
@@ -172,7 +173,7 @@ const getAdvertsByUserId = catchAsyncErrorHandler(async (req, res, next) => {
  * @route POST/api/v1/adverts
  * @access Private
  **/
-const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
+export const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
     const formData = req?.body?.formData;
     if(!formData) return next(new AppError('Failed to create new advert: no body in request', 400));
     const newAdvert = await advert.create({
@@ -210,7 +211,7 @@ const createAdvert = catchAsyncErrorHandler(async (req, res, next) => {
  * @route PATCH/api/v1/adverts/:advertId
  * @access Private
  **/
-const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
+export const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
     const updatedAdvert = await advert.update({...req.body}, {
@@ -233,7 +234,7 @@ const updateAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
  * @route DELETE/api/v1/adverts/:advertId
  * @access Private
  **/
-const deleteAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
+export const deleteAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params.advertId;
     if(! advertId) return next(new AppError('Не представлено Id публикации для удаления', 400));
@@ -259,7 +260,7 @@ const deleteAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/adverts/advert/:advertId
  * @access Private
  **/
-const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
+export const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const advertId = +req?.params?.advertId;
     if(!advertId) return next(new AppError("Не представлено id публикации", 400));
@@ -308,11 +309,3 @@ const getAdvertById = catchAsyncErrorHandler(async (req, res, next) => {
     return res.status(200).json(resObj);
 });
 
-module.exports = {
-    getAdvertsByUserId,
-    getAdverts,
-    createAdvert,
-    updateAdvertById,
-    getAdvertById,
-    deleteAdvertById
-}

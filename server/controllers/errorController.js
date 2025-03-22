@@ -1,5 +1,5 @@
-const AppError = require("../utils/appError");
-const sendErrorDev = (err, res)=> {
+import AppError from "../utils/appError.js";
+function sendErrorDev(err, res){
     const statusCode = err.statusCode || 500;
     const status = err.status || 'error';
     const message  = err.message;
@@ -9,7 +9,7 @@ const sendErrorDev = (err, res)=> {
         status, message, stack,
     })
 }
-const sendErrorProd = (err, res)=> {
+function sendErrorProd(err, res){
     const statusCode = err.statusCode || 500;
     const status = err.status || 'error';
     const message  = err.message;
@@ -24,7 +24,7 @@ const sendErrorProd = (err, res)=> {
         message: 'Smth went wrong'
     })
 }
-const globalErrorHandler = (err, req, res, next) => {
+function globalErrorHandler(err, req, res, next){
     if(err.name === 'SequelizeDatabaseError'){
         err = new AppError(err.parent, 400);
     }
@@ -40,6 +40,7 @@ const globalErrorHandler = (err, req, res, next) => {
     if(process.env.NODE_ENV === 'development'){
         return sendErrorDev(err, res);
     }
-    sendErrorProd(err, res);
+    return sendErrorProd(err, res);
 }
-module.exports = globalErrorHandler;
+export default globalErrorHandler;
+//module.exports = globalErrorHandler;

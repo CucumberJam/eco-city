@@ -1,12 +1,12 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const dialog = require("../db/models/dialog");
-const AppError = require("../utils/appError");
-const {Op} = require("sequelize");
-const {removeCreatedFields} = require("./authController");
-const user = require("../db/models/user");
-const message = require("../db/models/message");
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import dialog from "../db/models/dialog.js";
+import AppError from "../utils/appError.js";
+import {Op} from "sequelize";
+import {removeCreatedFields} from "./authController.js";
+import user from "../db/models/user.js";
+import message from "../db/models/message.js";
 
-const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
+export const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
 
     const dialogs = await dialog.findAll({
@@ -49,7 +49,7 @@ const getDialogs = catchAsyncErrorHandler(async (req, res, next) => {
         data: dialogs
     });
 });
-const createDialog = catchAsyncErrorHandler(async (req, res, next) => {
+export const createDialog = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const { secondUserId } = req.body;
     if(!secondUserId) return next(new AppError('Не был передан параметр второго участника диалога', 400));
@@ -80,7 +80,7 @@ const createDialog = catchAsyncErrorHandler(async (req, res, next) => {
         data: result
     });
 });
-const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
+export const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const dialogId = +req?.params?.dialogId;
     if(!dialogId) return next(new AppError("Не представлено id диалога", 400));
@@ -116,8 +116,7 @@ const getDialogById = catchAsyncErrorHandler(async (req, res, next) => {
         data: found
     });
 });
-
-const updateDialogById = catchAsyncErrorHandler(async (req, res, next) => {
+export const updateDialogById = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const dialogId = +req?.params?.dialogId;
     //const {isRead} = req.query;
@@ -144,5 +143,3 @@ const updateDialogById = catchAsyncErrorHandler(async (req, res, next) => {
         data: updatedDialog
     });
 })
-
-module.exports = {getDialogs, createDialog, getDialogById, updateDialogById}

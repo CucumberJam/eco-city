@@ -1,15 +1,15 @@
-const user = require('../db/models/user');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const catchAsyncErrorHandler = require('../utils/catchAsync');
-const AppError = require("../utils/appError");
+import user from '../db/models/user.js';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import catchAsyncErrorHandler from '../utils/catchAsync.js';
+import AppError from "../utils/appError.js";
 const generateToken = (payload)=>{
     return jwt.sign(payload, process.env.JWT_SECRET_KEY, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     })
 }
 
-const signup = catchAsyncErrorHandler(async(req, res, next)=> {
+export const signup = catchAsyncErrorHandler(async(req, res, next)=> {
     const body = req.body;
     const newUser = await user.create({
         name: body.name,
@@ -33,15 +33,15 @@ const signup = catchAsyncErrorHandler(async(req, res, next)=> {
     if(!newUser) return next(new AppError('Failed to create a new user', 400));
 
     const result = removeCreatedFields(newUser, ['password']);
-    /*result.token = generateToken({
+    result.token = generateToken({
         id: result.id
-    });*/
+    });
     return res.status(201).json({
         status: 'success',
         data: result
     });
 });
-const login = catchAsyncErrorHandler(async(req, res, next)=>{
+export const login = catchAsyncErrorHandler(async(req, res, next)=>{
     const {email, password} = req.body;
     if(!email || !password) return next(new AppError('Please provide email and password', 400));
     const result = await user.findOne({
@@ -60,7 +60,7 @@ const login = catchAsyncErrorHandler(async(req, res, next)=>{
         data: result
     });
 });
-const authentication = catchAsyncErrorHandler(async(req, res, next)=>{
+export const authentication = catchAsyncErrorHandler(async(req, res, next)=>{
     // 1. get token from headers:
     let idToken = '';
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
@@ -81,7 +81,7 @@ const authentication = catchAsyncErrorHandler(async(req, res, next)=>{
     req.user = freshUser.dataValues;
     return next();
 })
-const restrictTo = (...userRole) => {
+export const restrictTo = (...userRole) => {
     return (req, res, next) => {
         if (!userRole.includes(req.user.role)) {
             return next(new AppError("You don't have permission to perform this action", 403));
@@ -89,10 +89,10 @@ const restrictTo = (...userRole) => {
         return next();
     };
 }
-function checkAdmin(role, next){
+export function checkAdmin(role, next){
     if(!['ADMIN'].includes(role)) return next(new AppError('Invalid user type', 400));
 }
-function removeCreatedFields(newObj, fieldsToDelete = null, withCreatedAt = true){
+export function removeCreatedFields(newObj, fieldsToDelete = null, withCreatedAt = true){
     const result = newObj.toJSON();
     delete result.deletedAt;
     delete result.updatedAt;
@@ -104,4 +104,3 @@ function removeCreatedFields(newObj, fieldsToDelete = null, withCreatedAt = true
     }
     return result;
 }
-module.exports = {signup, login, authentication, restrictTo, checkAdmin, removeCreatedFields};

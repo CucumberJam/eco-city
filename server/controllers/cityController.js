@@ -1,9 +1,9 @@
-const city = require('../db/models/city');
-const catchAsyncErrorHandler = require('../utils/catchAsync');
-const AppError = require("../utils/appError");
-const {removeCreatedFields} = require("./authController");
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import city from "../db/models/city.js";
+import AppError from "../utils/appError.js";
+import {removeCreatedFields} from "./authController.js";
 
-const getCities = catchAsyncErrorHandler(async (req, res, next) => {
+export const getCities = catchAsyncErrorHandler(async (req, res, next) => {
     const cities = await city.findAll({
         attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
     });
@@ -13,7 +13,7 @@ const getCities = catchAsyncErrorHandler(async (req, res, next) => {
         data: cities
     });
 });
-const createCity = catchAsyncErrorHandler(async(req, res, next)=>{
+export const createCity = catchAsyncErrorHandler(async(req, res, next)=>{
     const { name, region, engName, engRegion, latitude, longitude } = req.body;
     const newCity = await city.create({name, region, engName, engRegion, latitude, longitude});
     if(!newCity) return next(new AppError('Failed to create the city', 400));
@@ -24,27 +24,3 @@ const createCity = catchAsyncErrorHandler(async(req, res, next)=>{
         data: result
     })
 });
-
-
-/*const updateCity = async (req, res) => {
-    const { id } = req.params;
-    const { name, email } = req.body;
-    try {
-        const result = await pool.query('UPDATE cities SET name = $1 WHERE id = $2 RETURNING *', [name, id]);
-        res.status(200).json(result.rows[0]);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-const deleteCity = async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('DELETE FROM cities WHERE id = $1', [id]);
-        res.status(204).send();
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};*/
-
-module.exports = {getCities, createCity};

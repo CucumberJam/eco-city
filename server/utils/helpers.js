@@ -1,4 +1,5 @@
-const {Op} = require("sequelize");
+/*const {Op} = require("sequelize");*/
+import {Op}  from "sequelize";
 const  getDBFilterByDatePeriod = (period) =>{
     /*
     * 0 = month,
@@ -29,5 +30,5 @@ const  getDBFilterByDatePeriod = (period) =>{
             today.getDate())
     }*/
 }
-
-module.exports = getDBFilterByDatePeriod;
+export default getDBFilterByDatePeriod;
+//module.exports = getDBFilterByDatePeriod;

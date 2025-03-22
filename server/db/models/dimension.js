@@ -1,8 +1,8 @@
 'use strict';
-const {DataTypes} = require('sequelize');
-const sequelize = require("../../config/database");
+import {DataTypes} from 'sequelize';
+import sequelize from "../../config/database.js";
 
-module.exports = sequelize.define('dimension',
+const dimension = sequelize.define('dimension',
     {
       id: {
         allowNull: false,
@@ -46,3 +46,5 @@ module.exports = sequelize.define('dimension',
       modelName: 'dimension'
     }
 )
+export default dimension;
+//module.exports = dimension;

@@ -1,10 +1,10 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const role = require("../db/models/role");
-const AppError = require("../utils/appError");
-const {removeCreatedFields} = require("./authController");
-const {Op} = require("sequelize");
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import role from "../db/models/role.js";
+import AppError from "../utils/appError.js";
+import {removeCreatedFields} from "./authController.js";
+import {Op} from "sequelize";
 
-const getRoles = catchAsyncErrorHandler(async (req, res, next) => {
+export const getRoles = catchAsyncErrorHandler(async (req, res, next) => {
     const roles = await role.findAll({
         where: { name: { [Op.not]: 'ADMIN' }
         },
@@ -16,7 +16,7 @@ const getRoles = catchAsyncErrorHandler(async (req, res, next) => {
         data: roles
     });
 });
-const createRole = catchAsyncErrorHandler(async(req, res, next)=>{
+export const createRole = catchAsyncErrorHandler(async(req, res, next)=>{
     const { name, label } = req.body;
     const newRole = await role.create({name, label});
     if(!newRole) return next(new AppError('Failed to create the role', 400));
@@ -27,4 +27,3 @@ const createRole = catchAsyncErrorHandler(async(req, res, next)=>{
         data: result
     })
 });
-module.exports = {getRoles, createRole};

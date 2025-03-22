@@ -1,9 +1,9 @@
-const catchAsyncErrorHandler = require("../utils/catchAsync");
-const user = require("../db/models/user");
-const response = require("../db/models/response");
-const advert = require("../db/models/advert");
-const {Op} = require("sequelize");
-const AppError = require("../utils/appError");
+import catchAsyncErrorHandler from "../utils/catchAsync.js";
+import user from "../db/models/user.js";
+import response from "../db/models/response.js";
+import advert from "../db/models/advert.js";
+import {Op} from "sequelize";
+import AppError from "../utils/appError.js";
 
 /**
  * Метод возвращает список авторизованных пользователей
@@ -20,7 +20,7 @@ const AppError = require("../utils/appError");
  * @route GET/api/v1/users/
  * @access Public
  **/
-const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
+export const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
     const {userId, cityId, query, roles, wastes, wasteTypes, offset, limit} = req.query;
     const options = {};
     if(userId) options.id = {[Op.ne]: +userId};
@@ -73,7 +73,7 @@ const getUsers = catchAsyncErrorHandler(async (req, res, next) => {
  * @route Post/api/v1/users/user
  * @access Private
  **/
-const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
+export const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
     if(Object.keys(req.body).length === 0) return next(new AppError('Параметров для изменения данных о Пользователе не передано', 400));
     const userId = +req?.user?.id;
     const updatedUser = await user.update({...req.body}, {
@@ -93,7 +93,7 @@ const updateUser = catchAsyncErrorHandler(async (req, res, next) =>{
  * @route Delete/api/v1/users
  * @access Private
  **/
-const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
+export const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
     const userId = +req?.user?.id;
     const userRole = req?.user?.role;
 
@@ -138,7 +138,7 @@ const deleteUser = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/users/:id
  * @access Private
  **/
-const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
+export const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
     const paramsId = +req?.params?.id
     const userId = +req?.user?.id;
     let found;
@@ -175,7 +175,7 @@ const getUserById = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/users/user
  * @access Public
  **/
-const getUserByEmailOrOGRN = catchAsyncErrorHandler(async (req, res, next) => {
+export const getUserByEmailOrOGRN = catchAsyncErrorHandler(async (req, res, next) => {
     const {email, ogrn, phone} = req.query;
     if(!email && !ogrn && !phone) return next(new AppError(`Не представлено email, ОГРН или телефон`, 400));
     let options = {};
@@ -201,7 +201,7 @@ const getUserByEmailOrOGRN = catchAsyncErrorHandler(async (req, res, next) => {
  * @route GET/api/v1/admins
  * @access Private
  **/
-const getAdmins = catchAsyncErrorHandler(async (req, res, next) => {
+export const getAdmins = catchAsyncErrorHandler(async (req, res, next) => {
     const {cityId} = req.query;
     const admins = await user.findAll({
         where: {
@@ -216,6 +216,3 @@ const getAdmins = catchAsyncErrorHandler(async (req, res, next) => {
         data: admins
     });
 });
-
-module.exports = {getUsers, updateUser, deleteUser,
-    getAdmins, getUserById, getUserByEmailOrOGRN};
