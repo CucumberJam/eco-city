@@ -15,14 +15,14 @@ export default function LazyMap({
                                     setActiveItem
 }){
     const {open, close} = useModal();
-    const { currentCity} = useGlobalUIStore((state) => state);
+    const {currentCity, setCurrentUser} = useGlobalUIStore((state) => state);
 
     const Map = useMemo(()=> dynamic(
         ()=> import('./Map'), {
             loading: ()=> <Spinner className='flex w-full my-0 mx-auto justify-items-center'/>,
             ssr: false,
         }
-    ), [currentCity.id, items?.length]);
+    ), [currentCity?.id, items?.length]);
 
     function showModalWithActiveItem(el){
         if(el){
@@ -39,7 +39,7 @@ export default function LazyMap({
             <div className="max-w-[600px] sm:max-w-[750px] md:max-w-[90%] lg:max-w-[98%]
             lg:mx-auto
             bg-white my5 h-full relative z-10">
-                <Map position={[Number.parseFloat(currentCity.latitude), Number.parseFloat(currentCity.longitude)]}
+                <Map position={currentCity ? [Number.parseFloat(currentCity?.latitude), Number.parseFloat(currentCity?.longitude)] : [4.79029, -75.69003]}
                      pickedUpPos={pickedUpPos}
                      withUsers={false}
                      needDefineLocation={needDefineLocation}

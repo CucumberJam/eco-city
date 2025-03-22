@@ -7,14 +7,14 @@ const {getUsers, updateUser, deleteUser,
 router.route('/')
     .get(getUsers);
 
+router.route('/user')
+    .get(getUserByEmailOrOGRN);
+
 router.route('/:id')
     .get(authentication, getUserById);
 
 router.route('/user')
     .delete(authentication, deleteUser);
-
-router.route('/user')
-    .get(getUserByEmailOrOGRN);
 
 router.route('/user')
     .post(authentication, updateUser);
