@@ -51,7 +51,6 @@ export async function createDialog(token, secondUserId){
         }
         return {success: true, data: data.data};
     }catch (e) {
-        console.log(e);
         return {success: false, data: e.message};
     }
 }
@@ -61,13 +60,11 @@ export async function getDialogs(id, token){
         const options = getOptions(token);
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/dialogs`, options);
         const data = await res.json();
-        console.log('Response from dialogs: ', data)
         if(data.status === 'fail'){
             throw Error(data.message)
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', data: e.message};
     }
 }
@@ -83,7 +80,6 @@ export async function getDialogById(token, dialogId){
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }
@@ -101,7 +97,6 @@ export async function getAdvertsOfUser(userId, token, offset = 0, limit = 10){
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }
@@ -118,7 +113,6 @@ export async function getAdverts(paramsObj, token){ //params = {wastes, wasteTyp
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }
@@ -134,7 +128,6 @@ export async function removeAdvertById(advertId, token){
         }
         return {success: true, data: data.data};
     }catch (e) {
-        console.log(e);
         return {success: false, message: e.message};
     }
 }
@@ -154,7 +147,6 @@ export async function getAdvertById(token, advertId){
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }
@@ -166,14 +158,12 @@ export async function getResponsesOfUser(userId, token, offset = 0, limit = 10){
         const options = getOptions(token);
         const res = await fetch(`${process?.env?.SERVER_URL}api/v1/responses/${userId}?${searchParams.toString()}`, options);
         const data = await res.json();
-        console.log(data)
         if(data.status !== 'success'){
             if(checkToken(data.message)) throw Error(data.message)
             else throw Error(data.message)
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }
@@ -195,7 +185,6 @@ export async function getOtherResponses(token, offset = 0, limit = 10, adverts =
         if(!adverts) response.advertsIds = data.advertsIds;
         return response;
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }
@@ -211,7 +200,6 @@ export async function getResponseById(token, responseId){
         }
         return {status: 'success', data: data.data};
     }catch (e) {
-        console.log(e);
         return {status: 'error', message: e.message};
     }
 }

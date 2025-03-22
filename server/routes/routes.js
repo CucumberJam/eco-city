@@ -9,7 +9,6 @@ const messageRoute = require("./messageRoute");
 const responseRoute = require("./responseRoute");
 const authRoute = require("./authRoute");
 
-// all routes will be here:
 const routeDictionary = {
     '/api/v1/cities': cityRoute,
     '/api/v1/wastes':  wasteRoute,

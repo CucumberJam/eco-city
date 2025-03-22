@@ -28,7 +28,6 @@ function MessageList({userId}){
             const res = await fetchAndSetMessages?.(messages.rows[0]?.dialogId, 0, messages.rows.length + 10);
             setIsFetching(prev => false)
             if(!res.success) {
-                console.log(res.message);
                 setErrMessage(res.message || 'Ошибка при получении сообщений');
                 setTimeout(()=>{
                     setErrMessage('');

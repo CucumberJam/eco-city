@@ -4,7 +4,8 @@ import {Button} from "flowbite-react";
 import {useState} from "react";
 import {CheckIcon} from "@heroicons/react/24/outline";
 import {ExclamationCircleIcon} from "@heroicons/react/24/outline";
-export default function FormItemMap({changePositionHandler, isPosSet = false, pickedUpPos = []}){
+export default function FormItemMap({changePositionHandler, isPosSet = false,
+                                        pickedUpPos = []}){
     const [needDefineLocation, setNeedDefineLocation] = useState(false);
 
     return (

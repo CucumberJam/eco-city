@@ -63,7 +63,6 @@ export default function AdvertForm({
                 throw new Error(response.message);
             }
         }catch (e) {
-            console.log(e);
             setIsFetching(prev => false);
             hasError?.('default', e.message);
         }

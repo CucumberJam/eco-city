@@ -10,6 +10,7 @@ export default function Chart(){
         advertsRecognitionPaginatedObject,
         advertsAcceptPaginatedObject,
         advertsPerformPaginatedObject,
+        advertsDeclinedPaginatedObject,
         responsesRecognitionPaginatedObject,
         responsesAcceptPaginatedObject,
         responsesPerformPaginatedObject,
@@ -36,7 +37,8 @@ export default function Chart(){
             },
             {
                 name: advertStatuses[1],
-                value: mode === 0 ? responsesDeclinedPaginatedObject.items?.[feature] || 0 : 0
+                value: mode === 0 ? responsesDeclinedPaginatedObject.items?.[feature] || 0 :
+                    advertsDeclinedPaginatedObject.items?.[feature] || 0
             },
         ]
     }, [mode, type.id])

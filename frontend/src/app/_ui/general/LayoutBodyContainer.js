@@ -30,7 +30,7 @@ export default function LayoutBodyContainer({
                 if(found) setCurrentCity(found);
                 return found ? found : citiesAPI[0];
             }catch (e) {
-                console.log(e.message);
+                return citiesAPI[0];
             }
         }
 
@@ -48,7 +48,6 @@ export default function LayoutBodyContainer({
                 }).catch(err => console.log(err))
             })
             .catch(e => {
-                console.log(e);
                 setUsers(usersAPI);
             });
     }, []);

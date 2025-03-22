@@ -6,7 +6,11 @@ export default function Header() {
         <header className='px-4 py-2 sm:px-5 sm:py-4 md:px-8 md:py-5
                             w-full flex flex-row justify-between'>
             <Logo/>
-            <div className='flex justify-between items-center gap-8'>
+            <div className='flex
+            flex-col sm:flex-row
+            space-x-0 sm:space-x-8
+            justify-start sm:justify-between
+            items-center'>
                 <CitySection/>
                 <NavigationMain/>
             </div>

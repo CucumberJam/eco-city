@@ -23,7 +23,7 @@ const col = 'flex flex-col';
 const rowSpace = "flex items-center justify-center space-x-2";
 const cardBlockStyles = 'flex items-center justify-between';
 
-export default function AdvertInfo({advert}){
+export default function AdvertInfo({advert, handleClose = null}){
     const router = useRouter();
     const {roles, wastes, wasteTypes, dimensions} = useGlobalUIStore((state) => state);
 
@@ -53,16 +53,18 @@ export default function AdvertInfo({advert}){
             setIsFetching(true);
             const response = await createResponse(data);
             setIsFetching(false);
-            if (response?.success && response.message !== "NEXT_REDIRECT") {
+            if (!response?.success && response.message !== "NEXT_REDIRECT") {
                 throw new Error(response.message);
             } else {
                 setIsRegisterSucceeded(true);
                 setTimeout(()=>{
+                    if(handleClose){
+                        handleClose?.();
+                    }
                     router.push('/account/messages/responses');
                 }, 500);
             }
         }catch (e) {
-            console.log(e);
             setIsFetching(prev => false);
             hasError?.('default', e.message);
         }
@@ -84,7 +86,7 @@ export default function AdvertInfo({advert}){
                                 finishDate={advert.finishDate}
                                 isPickedUp={advert.isPickedUp} priceWithDelivery={advert.priceWithDelivery}/>
 
-                    <div className={`flex items-start w-full ${advert.isPickedUp ? 'justify-between' : 'justify-center'}`}>
+                    <div className={`mt-3 space-x-2 flex items-start w-full ${advert.isPickedUp ? 'justify-between' : 'justify-center'}`}>
                         {advert.isPickedUp &&  <div>
                             <MapAddressPoint position={[+advert?.latitude, +advert?.longitude]}
                                              address={advert.address} width='w-[330px]'

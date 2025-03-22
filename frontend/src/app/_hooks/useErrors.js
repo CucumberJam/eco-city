@@ -180,7 +180,6 @@ export default function useErrors(){
                         }
                         break;
                     case 'waste':
-                        console.log(payload)
                         if(!payload?.value || (typeof(payload?.value === 'string') && payload?.value?.length === 0)){
                             showError('Выберите вид отходов');
                             return true;

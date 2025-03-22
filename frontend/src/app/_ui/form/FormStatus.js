@@ -9,7 +9,7 @@ export default function FormStatus({
                                        children
 }){
     return (
-        <>
+        <div className='flex flex-col items-center'>
             {errMessage && <FormAnnounce message={errMessage}/>}
 
             {isRegisterSucceeded && <FormAnnounce message={successMessage}
@@ -20,6 +20,6 @@ export default function FormStatus({
                     {children}
                 </>
             )}
-        </>
+        </div>
     );
 }

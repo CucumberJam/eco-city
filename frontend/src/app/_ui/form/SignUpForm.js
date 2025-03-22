@@ -61,7 +61,6 @@ export default function SignUpForm() {
                 await signUpFormDispatch(8);
             }
         } catch (e) {
-            console.log(e);
             setIsFetching(prev => false);
             hasError?.('default', e.message);
         }
@@ -160,7 +159,7 @@ function FormStep2({backHandler, currentCity, cities}){
 
     return (
         <>
-            {currentCity && <input type='hidden' name='current-city' value={currentCity.id}/>}
+            {currentCity && <input type='hidden' name='current-city' value={currentCity?.id}/>}
             <input type='hidden' name='chosen-city' value={chosenCity}/>
             <input type='hidden' name='longitude' value={longitude}/>
             <input type='hidden' name='latitude' value={latitude}/>
@@ -174,9 +173,10 @@ function FormStep2({backHandler, currentCity, cities}){
                               changeHandler={chosenCity =>  setChosenCity(chosenCity.id)}/>
 
             <FormItemMap isPosSet={!!latitude && !!longitude}
+                         pickedUpPos={[latitude, longitude]}
                          changePositionHandler={chosenPos => {
-                setLatitude(chosenPos.lat);
-                setLongitude(chosenPos.lng)
+                setLatitude(chosenPos?.lat || 0);
+                setLongitude(chosenPos?.lng || 0)
             }}/>
             <FormButtonContinue conditionDisable={!currentCity || !latitude || !longitude}
                                 disableTip="Укажите Ваше местоположение"/>

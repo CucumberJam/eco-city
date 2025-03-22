@@ -1,34 +1,30 @@
 'use client';
 import WasteAnnounces from "@/app/_ui/waste/WasteAnnounces";
 import WasteList from "@/app/_ui/waste/WasteList";
-import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
-import {useState} from "react";
-import WasteTypes from "@/app/_ui/waste/WasteTypes";
+import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 export default function WasteContainer(){
-    const {currentOpen, close, open} = useModal();
-    const [activeWaste, setActiveWaste] = useState(null);
+    const {open} = useModal();
+    const {setWasteArticle} = useGlobalUIStore((state) => state);
     function selectWaste(waste){
-        setActiveWaste(waste);
-        open(waste.name);
-    }
-    function unSelectWaste(){
-        setActiveWaste(null);
-        close();
+        setWasteArticle(waste);
+        open(waste.id);
     }
     return (
-        <div className="w-full h-auto
-                        flex flex-col
-                        items-start justify-between px-4
-                        mb-10 mt-3">
-            <WasteList handleClick={selectWaste}/>
-            <WasteAnnounces/>
-            <ModalView isOpen={currentOpen === activeWaste?.name}
-                       title={`Вид отходов - ${activeWaste?.name.substring(0,1).toUpperCase() + activeWaste?.name.substring(1).toLowerCase() || ''}`}
-                       handleClose={unSelectWaste}>
-                <WasteTypes wasteTypes={activeWaste?.types || []}
-                            imgPath={activeWaste?.picturesPath || ''}/>
-            </ModalView>
-        </div>
+            <div className='w-[600px] sm:w-[700px] md:w-[800px] lg:w-full
+                            md:m-x-auto
+                            md:mt-6
+                            px-2 sm:px-4
+                            mb-5 sm:mb-10 mt-3
+                            flex
+                            flex-col
+                            md:flex-row
+                            sm:items-center md:items-start
+                            sm:justify-between
+                            space-x-0 sm:space-x-3
+                            space-y-3 md:space-y-0'>
+                <WasteList handleClick={selectWaste}/>
+                <WasteAnnounces handleClick={selectWaste}/>
+            </div>
     );
 }

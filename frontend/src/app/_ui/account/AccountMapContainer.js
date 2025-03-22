@@ -1,7 +1,7 @@
 "use client";
 import {useEffect, useRef} from "react";
 import {
-    accountMapModes,
+    accountMapModes, accountMapTabs,
     accountMapTabsIcons,
     accountMapTabsTitles, paginationOptions
 } from "@/app/_store/constants";
@@ -35,7 +35,7 @@ export default function AccountMapContainer({userData}){
     const {currentOpen, close, open} = useModal();
 
     useEffect(()=>{
-        initUserData(userData).then(res=> console.log(res));
+        initUserData(userData);
     }, []);
 
     function showModalWithActiveItem(el){

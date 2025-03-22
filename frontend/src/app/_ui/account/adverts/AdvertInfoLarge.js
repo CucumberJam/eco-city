@@ -15,7 +15,7 @@ export default function AdvertInfoLarge({
                                             responseStatusComponent = null,
                                             responseComponent = null,
                                             responseActionsComponent = null,
-                                            }){
+                                            advertUser = null}){
     return (
         <Column width="w-full ">
             {isUser && <>
@@ -28,8 +28,8 @@ export default function AdvertInfoLarge({
                 <Column space="space-y-6">
                     <Column style={{position: 'relative'}}>
                         {isUser && <>
-                            <TableCompanyName name={advert.user.name}
-                                              role={advert.user.role}
+                            <TableCompanyName name={advertUser ? advertUser.name || advert.userName : advert.user.name || advert.userName || ''}
+                                              role={advertUser ? advertUser.role || advert.userRole : advert.user.role || advert.userRole || ''}
                                               height="h-[60px]" width="w-[60px]"
                                               nameFontSize="text-[16px]" roleFontSize="text-[14px]"/>
                             {responseStatusComponent}
@@ -48,11 +48,16 @@ export default function AdvertInfoLarge({
                         <Subtitle label="Стоимость (руб): " subTitle={advert.totalPrice}/>
                         {advert.comment && <Subtitle label="Комментарий автора: " subTitle={advert.comment}/>}
                         <Subtitle label="Последнее обновление: " subTitle={new Date(advert.updatedAt).toLocaleDateString()}/>
-                        <Subtitle label="Дата окончания подачи заявок: " subTitle={new Date(advert.finishDate).toLocaleDateString()}/>
+                        <div className='cursor-pointer'>
+                            <p className='font-bold'>Дата окончания подачи заявок: </p>
+                            <Status status={new Date(advert.finishDate).toLocaleDateString()}
+                                    date={advert.finishDate}/>
+                        </div>
                     </Column>
                     {responseComponent}
                 </Column>
                 <Column width="w-[60%] ">
+                    {advert?.status &&<Row style=' items-end '> <Status status={advert.status}/></Row>}
                     <Row>
                         <Subtitle label="Адрес: "
                                   subTitle={advert.address}

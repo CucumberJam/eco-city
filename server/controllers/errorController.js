@@ -19,7 +19,6 @@ const sendErrorProd = (err, res)=> {
             status, message,
         })
     }
-    console.log(err.name, err.message, err.stack);
     return res.status(500).json({
         status: 'error',
         message: 'Smth went wrong'

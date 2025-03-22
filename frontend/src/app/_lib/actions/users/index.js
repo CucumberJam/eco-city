@@ -76,3 +76,13 @@ export async function removeUser(){
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}user`
     });
 }
+/**
+ * Метод получения авторизованного пользователя
+ **/
+export async function geOtherUserNameRoleById(otherUserId){
+    const options = await getRequestOptions();
+    return  await requestWrap({
+        options,
+        route: `${process?.env?.SERVER_URL}${apiServerRoutes.users}${otherUserId}`
+    });
+}

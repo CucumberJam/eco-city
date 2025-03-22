@@ -1,21 +1,32 @@
 import { Carousel } from "flowbite-react";
 import Image from "next/image";
-import banner from "../../../../public/baner/banner.jpg";
-import glasses from "../../../../public/baner/bottles.jpg";
-import carton from "../../../../public/baner/carton.jpg";
-import plastic from "../../../../public/baner/plastic.avif";
-//https://www.nationalgeographic.com/environment/article/plastic-pollution
+import {carouselImages, slogan, slogStyle} from "@/app/_store/constants";
 export default function CarouselComponent(){
-    return  <div className="h-[30rem] relative">
-        <div className="absolute z-10 font-bold text-4xl right-32 top-24
-                        text-right w-[400px] text-white leading-[4rem]">
-            Переработка отходов в каждом городе
+    const CarouselImages = () => (<Carousel slide={true}
+                                            slideInterval={3000} pauseOnHover>
+        {carouselImages.map(el => (
+            <Image key={el.id}
+                   src={el.path}
+                   alt={el.alt}
+                   width={1500} height={1200}
+                   quality={100}/>
+
+        ))}
+    </Carousel>);
+    return  (
+    <>
+        <div className='h-[30rem] relative w-full hidden md:block'>
+            <div className={` text-4xl ${slogStyle}`}>{slogan}</div>
+            <CarouselImages/>
         </div>
-        <Carousel slide={true} slideInterval={3000} pauseOnHover>
-            <Image src={banner} placeholder='blur' quality={100} alt="trash cans"/>
-            <Image src={carton} placeholder='blur' quality={100} alt="carton"/>
-            <Image src={glasses} placeholder='blur' quality={100} alt="glasses"/>
-            <Image src={plastic} placeholder='blur' quality={100} alt="plastic"/>
-        </Carousel>
-    </div>;
+        <div className='h-[20rem] relative w-[768px] hidden sm:block md:hidden'>
+            <div className={` text-2xl ${slogStyle}`}>{slogan}</div>
+            <CarouselImages/>
+        </div>
+        <div className='h-[18rem] relative w-[640px] block sm:hidden'>
+            <div className={` text-xl ${slogStyle}`}>{slogan}</div>
+            <CarouselImages/>
+        </div>
+    </>
+    );
 }

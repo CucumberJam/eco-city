@@ -26,7 +26,7 @@ function HeaderBack({pathName, mode, clickHandler}){
                 <ChevronLeftIcon className='w-[20px] cursor-pointer hover:text-gray-300 transition-colors'
                                  onClick={clickHandler}/>
             }
-            {mode !== 'all' && <p>{mode}</p>}
+           {/* {mode !== 'all' && <p>{mode}</p>}*/}
         </div>
     );
 }

@@ -9,6 +9,7 @@ export default function StatsTable(){
         advertsRecognitionPaginatedObject,
         advertsAcceptPaginatedObject,
         advertsPerformPaginatedObject,
+        advertsDeclinedPaginatedObject,
         responsesRecognitionPaginatedObject,
         responsesAcceptPaginatedObject,
         responsesPerformPaginatedObject,
@@ -52,6 +53,10 @@ export default function StatsTable(){
                                    color={statsData.colors[2] || '#0088FE'}
                                    title='Исполнено'
                                    el={advertsPerformPaginatedObject.items} />
+                        <TableRow  key={3}
+                                   color={statsData.colors[3] || '#FF8042'}
+                                   title='Архив'
+                                   el={advertsDeclinedPaginatedObject.items} />
                     </>
                 )}
             </PaginatedTable>

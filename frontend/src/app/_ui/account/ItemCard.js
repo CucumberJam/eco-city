@@ -14,22 +14,25 @@ import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 export default function ItemCard({item, clickHandler, mode  = 2 }){
     return (
         <div className="cursor-pointer text-gray-600
-                        my-8 rounded shadow-lg shadow-gray-200
+                        my-3 sm:my-4 md:my-6 lg:my-8
+                        px-2 py-2
+                        ml-2 sm:ml-0
+                        w-[90%] sm:w-[85%] md:w-[80%] lg:w-[98%]
+                        rounded shadow-lg shadow-gray-200
                         border-2 border-transparent
                         dark:shadow-gray-900
                         bg-white dark:bg-gray-800
                         hover:shadow-white
                         hover:border-accent-10
                         hover:scale-105
-                        duration-300
-                        px-2 py-2"
+                        duration-300"
                         onClick={()=> clickHandler(item)}>
                 <figure className='h-full flex flex-col justify-between'>
                     {item.status && <div className='w-full flex justify-end'>
                         <Status status={item.status}/>
                     </div>}
-                    <TableCompanyName name={mode !== 2 ? item.user.name: item.name}
-                        role={mode !== 2 ? item.user.role : item.role}
+                    <TableCompanyName name={mode !== 2 ? item?.user?.name: item.name}
+                        role={mode !== 2 ? item.user?.role : item.role}
                         height="h-[60px]" width="min-w-[60px]"
                         nameFontSize="text-[16px]" roleFontSize="text-[14px]"/>
                     <figcaption className="p-4 text-sm">
@@ -37,7 +40,7 @@ export default function ItemCard({item, clickHandler, mode  = 2 }){
                                                   address={item.address}/>
                         : (
                             <div className=" mb-4 font-bold leading-relaxed text-gray-800 dark:text-gray-300">
-                                <Subtitle label="Количество: " subTitle={mode === 0 ? item.advert.amount : item.amount}/>
+                                <Subtitle label="Количество: " subTitle={mode === 0 ? item.advert?.amount : item?.amount}/>
                                 <TableCompanyDimension label="Ед.изм.:"
                                                        userDimensionId={mode === 0 ? item.advert.dimension : item.dimension}/>
                                 <TableCompanyWastes userWasteId={mode === 0 ? item.advert.waste : item.waste}

@@ -7,6 +7,7 @@ import LayoutBodyContainer from "@/app/_ui/general/LayoutBodyContainer";
 import Header from "@/app/_ui/general/Header";
 import {getUsersByParams} from "@/app/_lib/actions/users";
 import {SessionProvider} from "next-auth/react";
+import Link from "next/link";
 
 //https://fonts.google.com/specimen/Nunito+Sans?lang=ru_Cyrl
 const nunitoSans = Nunito_Sans({
@@ -68,8 +69,19 @@ function MainSection({children}){
 }
 function Footer(){
     return (
-        <footer>
-            Footer
-        </footer>
+        <div className="px-[10%]  w-full mx-auto">
+            <footer className=" d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+                <div className="col-md-4 d-flex align-items-center justify-center text-center">
+                    <a href="/" className="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                        <svg className="text-blue-500" width="30" height="24"><use xlinkHref="#bootstrap"></use></svg>
+                    </a>
+                    <span className="mb-3 mb-md-0 text-muted">© 2025 Eco-City,
+                         <Link className="ml-3 text-blue-500 text-lg underline"
+                               target="_blank"  href="mailto:cucumber12@bk.ru">
+                             cucumber12@bk.ru</Link>
+                    </span>
+                </div>
+            </footer>
+        </div>
     );
 }

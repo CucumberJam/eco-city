@@ -6,7 +6,6 @@ async function getAddress({latitude, longitude}){
         const data = await res.json();
         return {success: true, data}
     }catch (e) {
-        console.log(e);
         return {success: false, message: e.message}
     }
 }

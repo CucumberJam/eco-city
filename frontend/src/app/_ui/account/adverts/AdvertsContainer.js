@@ -37,7 +37,10 @@ export default function AdvertsContainer({userData}){
             setActiveAdvert(prev => advert);
         }
     }
-
+    const closeModalWithAdvert = ()=>{
+        setActiveAdvert?.(null);
+        close();
+    }
     return (
         <>
             {userRole === 'RECEIVER' && (
@@ -64,11 +67,8 @@ export default function AdvertsContainer({userData}){
             )}
             <ModalView isOpen={currentOpen === activeAdvert?.id}
                        title="Сведения о заявке"
-                       handleClose={()=> {
-                           setActiveAdvert?.(null);
-                           close();
-                       }}>
-                <AdvertInfo advert={activeAdvert}/>
+                       handleClose={closeModalWithAdvert}>
+                <AdvertInfo advert={activeAdvert} handleClose={closeModalWithAdvert}/>
             </ModalView>
         </>
     );

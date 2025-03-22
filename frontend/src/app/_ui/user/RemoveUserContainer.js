@@ -50,7 +50,8 @@ export default function RemoveUserContainer({userData}){
             try{
                 await signOut();
             } catch (e) {
-                console.log(e.message)
+                setIsFetching(prev => false);
+                hasError?.('default', e.message);
             }
             setTimeout(async ()=>{
                 await router.push('/');

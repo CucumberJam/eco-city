@@ -45,13 +45,17 @@ function AccountMapProvider({children}) {
         if(userData?.wasteTypes && !wasteTypes.current && wasteTypes.length > 0){
             userWasteTypes.current = wasteTypes.filter(el => userData?.wasteTypes.includes(el.id));
         }
+        let args = getArgs();
         if(userData.role) {
             userRole.current = userData.role;
             filterRoles.current = userData.role === 'RECEIVER' ? roles : roles.filter(el => el.name !== userData.role);
-            if(userData.role === 'RECYCLER') setActiveMode(prev => 1);
+            args.userRole = userData.role;
+            if(userData.role === 'RECYCLER') {
+                setActiveMode(prev => 1);
+                args.mode = 1;
+            }
         }
-        const args = getArgs();
-        const res =  await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, getArgs());
+        const res =  await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1, args);
         setIsFetching(prev => false);
         userDataInitialized.current = true;
         return res;
@@ -78,10 +82,22 @@ function AccountMapProvider({children}) {
 
     async function changeMode(value){
         const args = getArgs();
-        args.mode = value;
+        switch (args.userRole) {
+            case 'PRODUCER': {
+                args.mode = value === 1 ? 2 : 0;
+                break;
+            }
+            case 'RECYCLER':{
+                args.mode = value === 0 ? 1 : 2;
+                break;
+            }
+            default:{
+                args.mode = value;
+            }
+        }
         setAdditional(prev => args);
         const res = await fetchAndSetItems(initialPagination.offset, initialPagination.limit, 1,  args);
-        setActiveMode(value);
+        setActiveMode(args.mode);
     }
     return (
         <AccountMapContext.Provider value={{

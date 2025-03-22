@@ -43,7 +43,6 @@ export default function useDebounce(errorCallbackFunc){
                 if(name) setOgrnUserName(prev => name);
                 if(address) setOgrnUserAddress(prev => address);
             }catch (e) {
-                console.log(e);
                 hasError('default', e?.message || 'Ошибка получения данных о компании');
             }
         }, 1000),

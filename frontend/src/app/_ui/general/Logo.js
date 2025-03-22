@@ -14,8 +14,9 @@ function Logo() {
              }}
              alt="Eco-city logo" />
       <span className="text-4xl font-bold
-      text-primary-10
-      hover:text-accent-10 transition-colors">
+                        text-primary-10
+                        hidden sm:block
+                        hover:text-accent-10 transition-colors">
         Eco-City
       </span>
     </Link>

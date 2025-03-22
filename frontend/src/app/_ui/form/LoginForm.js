@@ -1,12 +1,16 @@
 'use client';
 import {signInAction} from '@/app/_lib/actions/auth';
-import {ExclamationCircleIcon} from '@heroicons/react/24/outline';
 import {useState } from "react";
 import {useRouter} from "next/navigation";
+import FormItem from "@/app/_ui/form/FormItem";
+import FormStatus from "@/app/_ui/form/FormStatus";
+import FormButton from "@/app/_ui/form/FormButton";
 
 export default function LoginForm(){
     const [errMessage, setErrMessage] = useState('');
     const [isFetching, setIsFetching] = useState(false);
+    const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);
+
     const router = useRouter();
     async function handleSubmit(event){
         setErrMessage(prev=> '');
@@ -25,15 +29,15 @@ export default function LoginForm(){
             setIsFetching(prev => true);
 
             const response = await signInAction(formData);
+            setIsFetching(prev => false);
+
             if(!response?.success && response?.message !== "NEXT_REDIRECT"){
                 throw new Error(response?.message);
             }else {
-                setIsFetching(prev => false);
-
+                setIsRegisterSucceeded(true);
                 router.push('/account');
             }
         }catch (e) {
-            setIsFetching(prev => false);
             setErrMessage(e.message);
             setTimeout(()=>{
                 setErrMessage('')
@@ -42,31 +46,23 @@ export default function LoginForm(){
     }
 
     return (
-        <form className='w-80 flex flex-col'
+        <form className='w-80 flex flex-col justify-between space-y-3'
         onSubmit={handleSubmit}>
-            {errMessage.length > 0 &&
-                <div className="flex gap-1 items-center justify-center mb-5
-                                bg-red-200 rounded py-1">
-                    <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-                    <div className='text-red-600 text-lg'>{errMessage}</div>
-                </div>
-            }
-            <div className='flex justify-end items-center space-x-3'>
-                <label htmlFor='email'>Email:</label>
-                <input id='email' type='email' name='email'
-                       defaultValue="cucumber12@bk.ru"
-                       className='w-60 border mx-2 border-gray-500 rounded bg-inherit px-2 py-1'/>
-            </div>
-            <div className='mt-4 flex justify-end items-center space-x-3'>
-                <label htmlFor='password'>Пароль:</label>
-                <input id='password' type='password' name='password'
-                       defaultValue="test1234"
-                       className='w-60 border mx-2 border-gray-500 rounded bg-inherit px-2 py-1'/>
-            </div>
-            <button type='submit'  disabled={isFetching}
-                    className='mt-8 py-4 px-20 self-center bg-inherit border border-primary-300 hover:border-white rounded flex justify-center items-center'>
-                Вход в личный кабинет
-            </button>
+            <FormStatus isRegisterSucceeded={isRegisterSucceeded}
+                        errMessage={errMessage} successMessage='Аутентификация прошла успешна'
+                        isFetching={isFetching}>
+            <FormItem label='Email:' styleWide={false}
+                      htmlName='email'
+                      type='email'
+                      placeholder='Укажите свою почту'/>
+                <div className='h-5'></div>
+            <FormItem label='Пароль:'
+                      htmlName='password'
+                      type='password'/>
+                <FormButton title='Вход в личный кабинет'
+                            typeBtn="submit"
+                            isDisabled={isFetching}/>
+            </FormStatus>
         </form>
     );
 }

@@ -160,6 +160,10 @@ export default function useSignUpForm(errorCallbackFunc){
                     if(isUserExist.success) {
                         errorCallbackFunc('default', 'Пользователь с таким ОГРН уже зарегистрирован');
                         return;
+                    }else{
+                        if(!isUserExist?.message?.endsWith('не найден')){
+                            errorCallbackFunc('default', isUserExist.message);
+                        }
                     }
                 }catch (e) {
                     errorCallbackFunc('default', e.message);

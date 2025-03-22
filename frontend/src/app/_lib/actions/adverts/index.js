@@ -1,7 +1,7 @@
 "use server";
 import {getRequestOptions, getUserId, requestWrap} from "@/app/_lib/helpers";
 import {apiServerRoutes} from "@/routes";
-
+import { revalidatePath } from 'next/cache';
 const otherAdvertsDefaultParams = {
     wastes: [],
     wasteTypes: [],
@@ -52,10 +52,14 @@ export async function getAdverts(params = otherAdvertsDefaultParams){ //params =
 export async function removeAdvertById(advertId){
     if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
     const options = await getRequestOptions(null, 'DELETE');
-    return  await requestWrap({
+    const res = await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.adverts}${advertId}`
     });
+    if(res.success){
+        revalidatePath('/account', 'layout')
+    }
+    return res;
 }
 
 /**
@@ -93,10 +97,14 @@ export async function createAdvert(formData){
     if(!formData) return {success: false, message: 'Данные формы для создания публикации не были переданы'};
     const options = await getRequestOptions(null, 'POST');
     options.body = JSON.stringify({formData});
-    return  await requestWrap({
+    const res =  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.adverts}`
     });
+    if(res.success){
+        revalidatePath('/account', 'layout')
+    }
+    return res;
 }
 
 /**
@@ -123,8 +131,13 @@ export async function updateAdvert(formData, advertId){
     if(!advertId) return {success: false, message: 'Параметр id публикации не был передан'};
     const options = await getRequestOptions(null, 'PATCH');
     options.body = JSON.stringify(formData);
-    return  await requestWrap({
+    const res =  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.adverts}${advertId}`
     });
+    if(res.success){
+        revalidatePath('/account', 'layout')
+    }
+    return res;
+
 }

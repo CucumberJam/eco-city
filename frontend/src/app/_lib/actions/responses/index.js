@@ -1,7 +1,7 @@
 "use server";
 import {getRequestOptions, getUserId, requestWrap} from "@/app/_lib/helpers";
 import {apiServerRoutes} from "@/routes";
-
+import { revalidatePath } from 'next/cache';
 /**
  * Метод возвращает список откликов пользователя с учетом пагинации
  * @param {object} params - параметры для фильтров
@@ -73,10 +73,15 @@ export async function updateResponseByAdvertId(advertId, responseId, status){
     if(!status) return {success: false, message: 'статуса отклика не представлено'};
     const options = await getRequestOptions(null, 'PATCH');
     const searchParams = new URLSearchParams({id: responseId, status});
-    return  await requestWrap({
+
+    const res = await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.responses}${advertId}?${searchParams.toString()}`
     });
+    if(res.success){
+        revalidatePath('/account', 'layout')
+    }
+    return res;
 }
 
 /**
@@ -86,10 +91,14 @@ export async function updateResponseByAdvertId(advertId, responseId, status){
 export async function removeResponse(responseId){
     if(!responseId) return {success: false, message: 'Параметр id отклика не был передан'};
     const options = await getRequestOptions(null, 'DELETE');
-    return  await requestWrap({
+    const res =  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.responses}${responseId}`
     });
+    if(res.success){
+        revalidatePath('/account', 'layout')
+    }
+    return res;
 }
 
 /**
@@ -121,8 +130,12 @@ export async function getResponsesByAdvertId(offset = 0, limit = 10, additionalO
 export async function createResponse(formData){
     const options = await getRequestOptions(null, 'POST');
     options.body = JSON.stringify({formData});
-    return  await requestWrap({
+    const res =  await requestWrap({
         options,
         route: `${process?.env?.SERVER_URL}${apiServerRoutes.responses}`
     });
+    if(res.success){
+        revalidatePath('/account', 'layout')
+    }
+    return res;
 }

@@ -19,25 +19,25 @@ export default function StatsResponseTables(){
 
     return (
         <Column width='w-full '>
-            <ResponseList key={0}
+            <ResponseList key={0} isUser={true} withStats={true}
                           responses={responsesRecognitionPaginatedObject.items}
                           title={advertStatuses[0]}
                           pagination={responsesRecognitionPaginatedObject.pagination}
                           changePagePagination={responsesRecognitionPaginatedObject.changePagePagination}
                           pickUpAdvertHandler={pickUpResponseHandler}/>
-            <ResponseList key={1}
+            <ResponseList key={1} isUser={true} withStats={true}
                           responses={responsesAcceptPaginatedObject.items}
                           title={advertStatuses[2]}
                           pagination={responsesAcceptPaginatedObject.pagination}
                           changePagePagination={responsesAcceptPaginatedObject.changePagePagination}
                           pickUpAdvertHandler={pickUpResponseHandler}/>
-            <ResponseList key={2}
+            <ResponseList key={2} isUser={true} withStats={true}
                           responses={responsesPerformPaginatedObject.items}
                           title={advertStatuses[3]}
                           pagination={responsesPerformPaginatedObject.pagination}
                           changePagePagination={responsesPerformPaginatedObject.changePagePagination}
                           pickUpAdvertHandler={pickUpResponseHandler}/>
-            <ResponseList key={3}
+            <ResponseList key={3} isUser={true} withStats={true}
                           responses={responsesDeclinedPaginatedObject.items}
                           title={advertStatuses[1]}
                           pagination={responsesDeclinedPaginatedObject.pagination}

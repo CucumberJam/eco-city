@@ -8,7 +8,7 @@ export default function MapContainer(){
     const {paginatedItems} = usePublicMap();
 
     return (
-        <LazyMap    items={paginatedItems.rows}
+        <LazyMap    items={paginatedItems?.rows}
                     setActiveItem={setCurrentUser}
                     activeItem={currentUser}/>
     );
