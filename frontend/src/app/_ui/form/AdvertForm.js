@@ -1,6 +1,7 @@
 'use client';
 import {useRouter} from "next/navigation";
 import {useEffect, useMemo, useState} from "react";
+import {useSession} from "next-auth/react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import useDimensions from "@/app/_hooks/useDimensions";
 import useErrors from "@/app/_hooks/useErrors";
@@ -17,7 +18,6 @@ import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
 import FormItem from "@/app/_ui/form/FormItem";
 import FormHiddenInput from "@/app/_ui/form/FormHiddenInput";
 import FormInputLabel from "@/app/_ui/form/FormInputLabel";
-import FormItemMap from "@/app/_ui/form/FormItemMap";
 import FormStatus from "@/app/_ui/form/FormStatus";
 import FormColumnBlock from "@/app/_ui/form/FormColumnBlock";
 import FormRowBlock from "@/app/_ui/form/FormRowBlock";
@@ -25,13 +25,19 @@ import FormMapBlock from "@/app/_ui/form/FormMapBlock";
 
 export default function AdvertForm({
                                        isEdit = false,
-                                       dataObject,
+                                       dataObject = null,
                                        btnLeftLabel = 'Очистить',
                                        btnRightLabel = 'Опубликовать',
                                        successMessage = 'Отклик на заявку направлен'
 
 }){
     const router = useRouter();
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {router.push('/')},
+    })
+    dataObject = dataObject ? dataObject : session?.user;
+
     const {wastes, wasteTypes, currentCity, dimensions} = useGlobalUIStore((state) => state);
     const {errMessage, hasError} = useErrors();
     const [isRegisterSucceeded, setIsRegisterSucceeded] = useState(false);

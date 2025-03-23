@@ -34,7 +34,7 @@ body [data-floating-ui-portal]{
   overflow-y: hidden;
 }
 body [data-floating-ui-inert]{
-  overflow-y: hidden;
+  overflow: hidden;
 }
 /* For data picker */
 .rdp {

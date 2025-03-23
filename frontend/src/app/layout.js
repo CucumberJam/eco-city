@@ -35,7 +35,7 @@ export default async function RootLayout({ children }) {
             getWasteTypes(), getDimensions(),
             getCities(),
         ]);
-    const {status: userStatus, data: usersAPI} = await getUsersByParams(0, 10, {cityId: cities[0]?.id})
+    const {status: userStatus, data: usersAPI} = await getUsersByParams(0, 10, {cityId: cities?.[0]?.id})
     return (
         <html lang="en">
         <SessionProvider>

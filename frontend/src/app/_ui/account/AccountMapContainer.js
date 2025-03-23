@@ -1,12 +1,15 @@
 "use client";
 import {useEffect, useRef} from "react";
+import {useSession} from "next-auth/react";
+import { useRouter } from 'next/navigation';
+import {useModal} from "@/app/_context/ModalContext";
+import {useAccountMap} from "@/app/_context/AccountMapProvider";
 import {
-    accountMapModes, accountMapTabs,
+    accountMapModes,
     accountMapTabsIcons,
     accountMapTabsTitles, paginationOptions
 } from "@/app/_store/constants";
 import AccountTabs from "@/app/_ui/account/AccountTabs";
-import {useAccountMap} from "@/app/_context/AccountMapProvider";
 import {Spinner} from "flowbite-react";
 import ServerPagination from "@/app/_ui/general/ServerPagination";
 import MapFilters from "@/app/_ui/map/MapFilters";
@@ -16,14 +19,19 @@ import NoDataBanner from "@/app/_ui/general/NoDataBanner";
 import CardLayout from "@/app/_ui/general/CardLayout";
 import ItemCard from "@/app/_ui/account/ItemCard";
 import {ModalView} from "@/app/_ui/general/ModalView";
-import {useModal} from "@/app/_context/ModalContext";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
 import UserDescription from "@/app/_ui/user/UserDescription";
 
-export default function AccountMapContainer({userData}){
-    const tabsRef = useRef(null);
+export default function AccountMapContainer(){
+    const router = useRouter();
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {router.push('/')},
+    })
+    const userData = session?.user;
 
+    const tabsRef = useRef(null);
     const {mode, changeMode, isFetching,
         setQuery,
         filterRoles, currentRole, setCurrentRole,

@@ -1,28 +1,36 @@
-"use client"
-import AdvertList from "@/app/_ui/account/adverts/AdvertList";
-import {useAdverts} from "@/app/_context/AdvertsProvider";
+"use client";
+import {useRouter} from "next/navigation";
+import {useSession} from "next-auth/react";
 import {useEffect, useRef, useState} from "react";
+import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
+import {useAdverts} from "@/app/_context/AdvertsProvider";
+import AdvertList from "@/app/_ui/account/adverts/AdvertList";
 import {showOthersAdverts, showUserAdverts} from "@/app/_store/constants";
 import {useTab} from "@/app/_context/TabContext";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import {useModal} from "@/app/_context/ModalContext";
 import AdvertInfo from "@/app/_ui/account/adverts/AdvertInfo";
-import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import AccountTabs from "@/app/_ui/account/AccountTabs";
 
-export default function AdvertsContainer({userData}){
+export default function AdvertsContainer(){
+    const router = useRouter();
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {router.push('/')},
+    });
     const {currentCity} = useGlobalUIStore((state) => state);
 
     const {advertsUser, adverts, initAdvertsContext,
         paginationAdvertsUser, paginationAdverts, changePaginationPage} = useAdverts();
 
     const tabsRef = useRef(null);
-    const {selectedInternTabOpt, selectInternTabOpt, router} = useTab(); // 'Свои' -> 0, 'участников' -> 1
+    const {selectedInternTabOpt, selectInternTabOpt} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
     const {currentOpen, close, open} = useModal();
     const [activeAdvert, setActiveAdvert] = useState(null);
 
-    const userRole = userData.role;
+    const userData = session?.user;
+    const userRole = userData?.role;
 
     useEffect(() => {
         if(!currentCity) return;

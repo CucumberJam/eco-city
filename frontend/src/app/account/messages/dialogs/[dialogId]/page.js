@@ -9,8 +9,8 @@ import {getUserId} from "@/app/_lib/helpers";
 export const metadata = {
     title: 'Чат'
 }
-export default async function Page(props) {
-    const params = await props.params;
+export default async function Page({ searchParams }) {
+    const params = (await searchParams);
     let {success, data} = await getUserDialogs();
     const userId = await getUserId();
     if(!data?.[0]?.isRead){

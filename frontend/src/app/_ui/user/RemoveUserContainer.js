@@ -11,9 +11,15 @@ import Row from "@/app/_ui/general/Row";
 import {removeUser} from "@/app/_lib/actions/users";
 import {useRouter} from "next/navigation";
 import {signOut} from "@/auth";
+import {useSession} from "next-auth/react";
 
-export default function RemoveUserContainer({userData}){
+export default function RemoveUserContainer(){
     const router = useRouter();
+    const { data: session, status, update } = useSession({
+        required: true,
+        onUnauthenticated() {router.push('/')},
+    });
+    const userData = session?.user;
     const [warning, setWarning] = useState('');
     const [isSucceeded, setSuccess] = useState(false);
     const [isAccepted, setIsAccepted] = useState(false);
@@ -70,7 +76,7 @@ export default function RemoveUserContainer({userData}){
                         errMessage={errMessage}
                         successMessage='Данные успешно изменены'
                         isFetching={isFetching}>
-                <form className='m-auto flex flex-col space-y-4 items-end pb-2'
+                <form className='m-auto flex flex-col space-y-4 items-end pb-2 pt-2'
                       onSubmit={handleForm}>
                     <FormRowBlock>
                         <Row style='items-center space-x-5 mt-4'>
@@ -85,7 +91,7 @@ export default function RemoveUserContainer({userData}){
                         <FormButton title='Удалить'
                                     disableTip={warning ? 'Измените статус у своих согласованных откликов или публикаций'
                                         : 'Подтвердите удаление аккаунта'}
-                                    isDisabled={!!warning || !isAccepted}
+                                    disabled={!!warning || !isAccepted}
                                     typeBtn="submit"/>
                     </FormRowBlock>
                 </form>
