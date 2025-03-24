@@ -52,7 +52,7 @@ function SidebarItem({item, clickHandler, mode, selectInternalOption, active = f
 
     const haveOptions = useMemo(()=>{
         return item.hasOwnProperty('rights') && item?.personalRights?.[mode]?.length > 1;
-    }, []);
+    }, [mode]);
 
     function showOptionsHandler(){
         if(haveOptions) setShowOptions(true);

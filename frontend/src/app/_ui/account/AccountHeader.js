@@ -51,7 +51,7 @@ function HeaderMenuItem({item, link = '/account'}){
             const menuHrefs = item.menu.map(el => el.href);
             return menuHrefs.includes(link);
         } else return false;
-    }, [link]);
+    }, [link, item.href, item?.menu]);
     return (
         <li>
             <Link href={item.href} className={active ? `${activeStyle} ${commonStyle}` : `${commonStyle} `}>

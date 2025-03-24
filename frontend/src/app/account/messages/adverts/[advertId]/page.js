@@ -1,4 +1,3 @@
-import {auth} from "@/auth";
 import {Suspense} from "react";
 import {Spinner} from "flowbite-react";
 import AdvertDescription from "@/app/_ui/account/adverts/AdvertDescription";

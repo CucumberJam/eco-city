@@ -1,5 +1,4 @@
 import {useMemo} from "react";
-import {MapContainer, Marker, TileLayer, Popup} from "react-leaflet";
 import Link from "next/link";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {daysNames, statusTitle} from "@/app/_store/constants";
@@ -69,13 +68,13 @@ function WorkingTime({   label = 'Часы работы:',
                          workingStartHours = [] || null,
                          workingEndHours = [] || null,
                          workingId= ''}){
+    const weekDays = useMemo(()=> {
+        return hasWeekDays(workingDays, workingStartHours, workingEndHours);
+    }, [workingId]);
 
-    if(!workingDays?.length && !workingStartHours?.length && !workingEndHours?.length) return (
-        <div className="flex flex-col">
-            <p className="text-gray-500  text-[14px]">{label}</p>
-            <p className="text-black">Данных нет</p>
-        </div>
-    );
+    const weekends = useMemo(()=> {
+        return hasWeekendDays(workingDays, workingStartHours, workingEndHours);
+    }, [workingId]);
 
     const  getWorkingTimeToday = () => {
         const today = new Date();
@@ -90,14 +89,12 @@ function WorkingTime({   label = 'Часы работы:',
         }
     }
 
-    const weekDays = useMemo(()=> {
-        return hasWeekDays(workingDays, workingStartHours, workingEndHours);
-    }, [workingId]);
-
-    const weekends = useMemo(()=> {
-        return hasWeekendDays(workingDays, workingStartHours, workingEndHours);
-    }, [workingId]);
-
+    if(!workingDays?.length && !workingStartHours?.length && !workingEndHours?.length) return (
+        <div className="flex flex-col">
+            <p className="text-gray-500  text-[14px]">{label}</p>
+            <p className="text-black">Данных нет</p>
+        </div>
+    );
     return (
         <div className="flex flex-col">
             <p className="text-gray-500  text-[14px]">{label}</p>

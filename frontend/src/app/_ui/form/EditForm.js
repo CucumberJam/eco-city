@@ -1,5 +1,6 @@
 "use client";
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import {useSession} from "next-auth/react";
 import useErrors from "@/app/_hooks/useErrors";
 import {useEffect, useState} from "react";
 import FormStatus from "@/app/_ui/form/FormStatus";
@@ -13,9 +14,7 @@ import {fetchCompanyByOGRN} from "@/app/_lib/actions/global";
 import {getNameAddress, getUserWorkTime, prepareName} from "@/app/_lib/helpers";
 import {FormSelectUnique} from "@/app/_ui/form/FormSelectUnique";
 import useRolesWastes from "@/app/_hooks/useRolesWastes";
-import {getAdvertsOfUser} from "@/app/_lib/actions/adverts";
-import {showUserAdverts, showUserResponses, workingDays as defaultWorkDays} from "@/app/_store/constants";
-import {getResponsesOfUser} from "@/app/_lib/actions/responses";
+import {workingDays as defaultWorkDays} from "@/app/_store/constants";
 import FormAnnounce from "@/app/_ui/form/FormAnnounce";
 import FormSelectMultiple from "@/app/_ui/form/FormSelectMultiple";
 import useFormWastes from "@/app/_hooks/useFormWastes";
@@ -27,11 +26,14 @@ import FormWorkTime from "@/app/_ui/form/FormWorkTime";
 import useWorkTime from "@/app/_hooks/useWorkTime";
 import {checkDisableUserAction, checkUpdateUser} from "@/app/_lib/data-service";
 import {updateUserParams} from "@/app/_lib/actions/users";
-import {useSession} from "next-auth/react";
 
-export default function EditForm({userData}){//{userData}
-    const { data: session, update } = useSession();
+export default function EditForm(){
     const router = useRouter();
+    const { data: session, status, update } = useSession({
+        required: true,
+        onUnauthenticated() {router.push('/')},
+    });
+    const userData = session?.user;
     const {errMessage, hasError} = useErrors();
     const [isDisabled, setIsDisabled] = useState(true);
     const [warning, setWarning] = useState('');
@@ -51,7 +53,7 @@ export default function EditForm({userData}){//{userData}
                 setWarning(message);
             }
         }).catch(err => hasError('default', err.message));
-    }, []);
+    }, [userData?.role]);
     async function handleForm(event){
         event.preventDefault();
         const formData = new FormData(event.currentTarget);

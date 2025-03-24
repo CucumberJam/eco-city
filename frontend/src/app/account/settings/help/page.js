@@ -3,7 +3,7 @@ import FormPageContainer from "@/app/_ui/form/FormPageContainer";
 export const metadata = {
     title: 'Помощь'
 }
-export default async function Page(){
+export default function Page(){
     return (
         <FormPageContainer title=''>
             <div className='py-2 px-3 w-[450px] text-center'>

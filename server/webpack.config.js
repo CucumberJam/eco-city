@@ -9,7 +9,7 @@ export default {
     target: 'node',
     entry: './app.js',
     output: {
-        filename: 'index.[contenthash].js',
+        filename: 'index.js',
         path: path.resolve(__dirname, 'dist'),
     },
     externals: [nodeExternals()],

@@ -1,5 +1,7 @@
 "use client";
 import {useEffect, useRef, useState} from "react";
+import {useRouter} from "next/navigation";
+import {useSession} from "next-auth/react";
 import {useGlobalUIStore} from "@/app/_context/GlobalUIContext";
 import {useTab} from "@/app/_context/TabContext";
 import {useResponses} from "@/app/_context/ResponsesProvider";
@@ -10,7 +12,12 @@ import ResponseList from "@/app/_ui/account/responses/ResponseList";
 import {ModalView} from "@/app/_ui/general/ModalView";
 import ResponseDescription from "@/app/_ui/account/responses/ResponseDescription";
 
-export default function ResponseContainer({userData}){
+export default function ResponseContainer(){
+    const router = useRouter();
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {router.push('/')},
+    })
     const {currentCity} = useGlobalUIStore((state) => state);
 
     const {initResponsesContext,
@@ -18,12 +25,13 @@ export default function ResponseContainer({userData}){
         paginationResponses, responses,
         changePaginationPage, revalidateData} = useResponses();
 
-    const {selectedInternTabOpt, selectInternTabOpt, router} = useTab(); // 'Свои' -> 0, 'участников' -> 1
+    const {selectedInternTabOpt, selectInternTabOpt} = useTab(); // 'Свои' -> 0, 'участников' -> 1
 
     const {currentOpen, close, open} = useModal();
     const [activeResponse, setActiveResponse] = useState(null);
     const tabsRef = useRef(null);
 
+    const userData = session?.user;
     const userRole = userData.role;
 
     useEffect(() => {

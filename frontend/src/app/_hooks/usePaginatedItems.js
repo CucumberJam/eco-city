@@ -2,19 +2,6 @@
 import {initialPagination} from "@/app/_store/constants";
 import {useEffect, useState} from "react";
 import {preparePagination} from "@/app/_lib/helpers";
-
-/*
-* additionalArgs = {
-*   id: required,
-*   token: required,
-*   cityId: required,
-*   userAdvertsIds: null
-* }
-* */
-/*
-* function addFuncSet(apiResult){
-*   return (!additionalArgs.userAdvertsIds && apiResult.advertsIds) ? {...additionalArgs, userAdvertsIds: apiResult.advertsIds} : null;
-* */
 export default function usePaginatedItems({
         apiItems = null,
         fetchFunc = async ()=>{},
